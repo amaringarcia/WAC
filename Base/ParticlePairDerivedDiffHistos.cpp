@@ -225,6 +225,16 @@ void ParticlePairDerivedDiffHistos::downscale(const TH2* source, TH2* target, in
     }
   }
 
+  double max = -1;
+  for (int k = 0; k < nWrk; ++k) {
+    if (max < denominator[k]) {
+      max = denominator[k];
+    }
+  }
+  for (int k = 0; k < nWrk; ++k) {
+    denominator[k] /= max;
+  }
+
   target->Reset();
   for (dEta = 0; dEta < 2 * nEtaBins - 1; ++dEta) {
     for (dPhi = 0; dPhi < nPhiBins; ++dPhi) {
@@ -235,8 +245,8 @@ void ParticlePairDerivedDiffHistos::downscale(const TH2* source, TH2* target, in
     }
   }
   /* recover the integral */
-  target->Scale(source->Integral() / target->Integral());
-  target->SetEntries(source->GetEntries());
+  // target->Scale(source->Integral() / target->Integral());
+  // target->SetEntries(source->GetEntries());
 
   delete[] denominator;
 }
@@ -311,12 +321,12 @@ void ParticlePairDerivedDiffHistos::calculateDerivedHistograms(ParticleHistos* p
   p_PrattBf_DetaDphi_shft->Reset();
   p_PrattBf_DetaDphi_shft->Add(p_n2_DetaDphi, 1.0);
 
-  /* calculate Pratt's BF component from histograms */
-  double rho1_2 = part2Histos->h_n1_phiEta->Integral() / (kTWOPI * (configuration->max_eta - configuration->min_eta));
+  /* calculate Pratt's BF component from n2 and n1 histograms */
+  double n1_2 = part2Histos->h_n1_phiEta->Integral();
   TH2* tbf = (TH2*)h_n2_DetaDphi->Clone(TString::Format("%s_clone", h_PrattBf_DetaDphi_shft->GetName()).Data());
   downscale(h_n2_DetaDphi, tbf, configuration->nBins_eta, configuration->nBins_phi);
   shiftY(*tbf, *h_PrattBf_DetaDphi_shft, configuration->nBins_Dphi_shft);
-  h_PrattBf_DetaDphi_shft->Scale(1.0 / rho1_2);
+  h_PrattBf_DetaDphi_shft->Scale(1.0 / (n1_2 * h_PrattBf_DetaDphi_shft->GetXaxis()->GetBinWidth(1) * h_PrattBf_DetaDphi_shft->GetYaxis()->GetBinWidth(1)));
   delete tbf;
 
   delete h_n1n1_phiEtaPhiEta;
