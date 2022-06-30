@@ -33,7 +33,7 @@ class ParticlePairDerivedDiffHistos : public ParticlePairDiffHistos
                                   double bincorrection);
   void reduce(const TH2* source, TH2* target, int nEtaBins, int nPhiBins);
   void downscale(const TH2* source, TH2* target, int nEtaBins, int nPhiBins);
-
+  double downscaleMax(int nEtaBins, int nPhiBins);
   //////////////////////////////////////////////////////////////////////////////////////////////////////
   // Data Members - Computed
   //////////////////////////////////////////////////////////////////////////////////////////////////////

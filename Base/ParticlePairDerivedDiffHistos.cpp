@@ -196,7 +196,6 @@ void ParticlePairDerivedDiffHistos::reduce(const TH2* source, TH2* target, int n
 void ParticlePairDerivedDiffHistos::downscale(const TH2* source, TH2* target, int nEtaBins, int nPhiBins)
 {
   /* downscale to compensate the limited acceptance */
-  /* always presesrve the integral                  */
   int dPhi, dEta, iPhi, iEta, jPhi, jEta, i, j;
   int nWrk = nPhiBins * (2 * nEtaBins - 1);
   int index;
@@ -244,11 +243,49 @@ void ParticlePairDerivedDiffHistos::downscale(const TH2* source, TH2* target, in
       target->SetBinError(dEta + 1, dPhi + 1, source->GetBinError(dEta + 1, dPhi + 1) / v);
     }
   }
-  /* recover the integral */
-  // target->Scale(source->Integral() / target->Integral());
-  // target->SetEntries(source->GetEntries());
-
   delete[] denominator;
+}
+
+double ParticlePairDerivedDiffHistos::downscaleMax(int nEtaBins, int nPhiBins)
+{
+  /* maximum downscale to compensate the limited acceptance */
+  /* always presesrve the integral                  */
+  int dPhi, dEta, iPhi, iEta, jPhi, jEta, i, j;
+  int nWrk = nPhiBins * (2 * nEtaBins - 1);
+  int index;
+  double* denominator = new double[nWrk];
+  for (int k = 0; k < nWrk; ++k) {
+    denominator[k] = 0;
+  }
+
+  i = 1;
+  for (iEta = 0; iEta < nEtaBins; ++iEta) {
+    for (iPhi = 0; iPhi < nPhiBins; ++iPhi) {
+      j = 1;
+      for (jEta = 0; jEta < nEtaBins; ++jEta) {
+        for (jPhi = 0; jPhi < nPhiBins; ++jPhi) {
+          dPhi = iPhi - jPhi;
+          if (dPhi < 0)
+            dPhi += nPhiBins;
+          dPhi += 1;
+          dEta = iEta - jEta + nEtaBins;
+          index = (dEta - 1) * nPhiBins + dPhi - 1;
+          denominator[index] += 1.;
+          ++j;
+        }
+      }
+      ++i;
+    }
+  }
+
+  double max = -1;
+  for (int k = 0; k < nWrk; ++k) {
+    if (max < denominator[k]) {
+      max = denominator[k];
+    }
+  }
+  delete[] denominator;
+  return max;
 }
 
 // Histograms from ParticlePairDerivedDiffHistos must be normalized "per event" before calling this function
@@ -317,9 +354,10 @@ void ParticlePairDerivedDiffHistos::calculateDerivedHistograms(ParticleHistos* p
 
   /* calculate Pratt's BF component from profiles */
   /* in principle the second single division should be automatically incorporated by the profiles when the same sign combination is substracted */
-  // double rho1_2 = part2Histos->h_n1_phiEta->Integral() / (kTWOPI * (configuration->max_eta - configuration->min_eta));
+  /* we havo to compensate for the extra downscale by the profile mechanism and convert it to a density distribution */
   p_PrattBf_DetaDphi_shft->Reset();
   p_PrattBf_DetaDphi_shft->Add(p_n2_DetaDphi, 1.0);
+  p_PrattBf_DetaDphi_shft->Scale(downscaleMax(configuration->nBins_eta, configuration->nBins_phi) / (h_PrattBf_DetaDphi_shft->GetXaxis()->GetBinWidth(1) * h_PrattBf_DetaDphi_shft->GetYaxis()->GetBinWidth(1)));
 
   /* calculate Pratt's BF component from n2 and n1 histograms */
   double n1_2 = part2Histos->h_n1_phiEta->Integral();
@@ -390,16 +428,17 @@ void ParticlePairDerivedDiffHistos::calculateDerivedHistograms(ParticleHistos* p
 
     /* calculate Pratt's BF component from profiles */
     /* in principle the second single division should be automatically incorporated by the profiles when the same sign combination is substracted */
-    // double rho1_2 = part2Histos->h_n1_phiEta->Integral() / (kTWOPI * (configuration->max_eta - configuration->min_eta));
-    p_PrattBf_DetaDphi_shft->Reset();
-    p_PrattBf_DetaDphi_shft->Add(p_n2_DyDphi, 1.0);
+    /* we havo to compensate for the extra downscale by the profile mechanism and convert it to a density distribution */
+    p_PrattBf_DyDphi_shft->Reset();
+    p_PrattBf_DyDphi_shft->Add(p_n2_DyDphi, 1.0);
+    p_PrattBf_DyDphi_shft->Scale(downscaleMax(configuration->nBins_y, configuration->nBins_phi) / (h_PrattBf_DyDphi_shft->GetXaxis()->GetBinWidth(1) * h_PrattBf_DyDphi_shft->GetYaxis()->GetBinWidth(1)));
 
     /* calculate Pratt's BF component from histograms */
-    double rho1_2 = part2Histos->h_n1_phiY->Integral() / (kTWOPI * (configuration->max_y - configuration->min_y));
+    double n1_2 = part2Histos->h_n1_phiY->Integral();
     TH2* tbf = (TH2*)h_n2_DyDphi->Clone(TString::Format("%s_clone", h_PrattBf_DyDphi_shft->GetName()).Data());
     downscale(h_n2_DyDphi, tbf, configuration->nBins_y, configuration->nBins_phi);
     shiftY(*tbf, *h_PrattBf_DyDphi_shft, configuration->nBins_Dphi_shft);
-    h_PrattBf_DyDphi_shft->Scale(1.0 / rho1_2);
+    h_PrattBf_DyDphi_shft->Scale(1.0 / (n1_2 * h_PrattBf_DyDphi_shft->GetXaxis()->GetBinWidth(1) * h_PrattBf_DyDphi_shft->GetYaxis()->GetBinWidth(1)));
     delete tbf;
 
     delete h_n1n1_phiYPhiY;

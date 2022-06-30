@@ -33,8 +33,7 @@ class ParticlePairBalanceFunctionDiffHistos : public Histograms
   void calculate(ParticlePairDerivedDiffHistos*,
                  ParticlePairDerivedDiffHistos*,
                  ParticlePairDerivedDiffHistos*,
-                 ParticlePairDerivedDiffHistos*,
-                 float);
+                 ParticlePairDerivedDiffHistos*);
   // void calculateRR_Q3D(ClusterHistos * ch);
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////

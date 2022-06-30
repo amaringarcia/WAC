@@ -523,7 +523,7 @@ void TwoPartDiffCorrelationAnalyzerME::calculateDerivedHistograms()
     /* filters and actually do only what is needed         */
     for (uint i = 0; i < uint(partNames.size() / 2); ++i) {
       for (uint j = 0; j < uint(partNames.size() / 2); ++j) {
-        pairs_BFHistos[i][j]->calculate(pairs_Histos[2 * i][2 * j + 1], pairs_Histos[2 * i][2 * j], pairs_Histos[2 * i + 1][2 * j], pairs_Histos[2 * i + 1][2 * j + 1], eventsProcessed);
+        pairs_BFHistos[i][j]->calculate(pairs_Histos[2 * i][2 * j + 1], pairs_Histos[2 * i][2 * j], pairs_Histos[2 * i + 1][2 * j], pairs_Histos[2 * i + 1][2 * j + 1]);
       }
     }
   } else {
