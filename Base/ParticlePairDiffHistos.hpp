@@ -33,9 +33,9 @@ class ParticlePairDiffHistos : public Histograms
   virtual ~ParticlePairDiffHistos();
   void initialize();
   template <typename ParticleType1, typename ParticleType2>
-  int getGlobalDeltaEtaDeltaPhiIndex(ParticleType1& p1, ParticleType2& p2);
+  int getGlobalDeltaEtaDeltaPhiBin(ParticleType1& p1, ParticleType2& p2);
   template <typename ParticleType1, typename ParticleType2>
-  int getGlobalDeltaRapidityDeltaPhiIndex(ParticleType1& p1, ParticleType2& p2);
+  int getGlobalDeltaRapidityDeltaPhiBin(ParticleType1& p1, ParticleType2& p2);
   template <typename ParticleType1, typename ParticleType2>
   float getDeltaEta(ParticleType1& particle1, ParticleType2& particle2);
   template <typename ParticleType1, typename ParticleType2>
@@ -71,34 +71,29 @@ class ParticlePairDiffHistos : public Histograms
 template <typename ParticleType1, typename ParticleType2>
 inline float ParticlePairDiffHistos::getDeltaEta(ParticleType1& particle1, ParticleType2& particle2)
 {
-  return particle1.eta - particle2.eta;
+  return h_n2_DetaDphi->GetXaxis()->GetBinCenter(configuration->getDeltaEtaIndex(particle1, particle2) + 1);
 }
 
 template <typename ParticleType1, typename ParticleType2>
 inline float ParticlePairDiffHistos::getDeltaY(ParticleType1& particle1, ParticleType2& particle2)
 {
-  return particle1.y - particle2.y;
+  return h_n2_DyDphi->GetXaxis()->GetBinCenter(configuration->getDeltaRapidityIndex(particle1, particle2) + 1);
 }
 
 template <typename ParticleType1, typename ParticleType2>
 inline float ParticlePairDiffHistos::getDeltaPhi(ParticleType1& particle1, ParticleType2& particle2)
 {
-  float dphi = particle1.phi - particle2.phi;
-  while (dphi >= kTWOPI)
-    dphi -= kTWOPI;
-  while (dphi < 0)
-    dphi += kTWOPI;
-  return dphi;
+  return h_n2_DetaDphi->GetYaxis()->GetBinCenter(configuration->getDeltaPhiIndex(particle1, particle2) + 1);
 }
 
 template <typename ParticleType1, typename ParticleType2>
-inline int ParticlePairDiffHistos::getGlobalDeltaEtaDeltaPhiIndex(ParticleType1& p1, ParticleType2& p2)
+inline int ParticlePairDiffHistos::getGlobalDeltaEtaDeltaPhiBin(ParticleType1& p1, ParticleType2& p2)
 {
   return h_n2_DetaDphi->GetBin(configuration->getDeltaEtaIndex(p1, p2) + 1, configuration->getDeltaPhiIndex(p1, p2) + 1);
 }
 
 template <typename ParticleType1, typename ParticleType2>
-inline int ParticlePairDiffHistos::getGlobalDeltaRapidityDeltaPhiIndex(ParticleType1& p1, ParticleType2& p2)
+inline int ParticlePairDiffHistos::getGlobalDeltaRapidityDeltaPhiBin(ParticleType1& p1, ParticleType2& p2)
 {
   if (configuration->fillY) {
     return h_n2_DyDphi->GetBin(configuration->getDeltaRapidityIndex(p1, p2) + 1, configuration->getDeltaPhiIndex(p1, p2) + 1);
@@ -110,7 +105,7 @@ inline int ParticlePairDiffHistos::getGlobalDeltaRapidityDeltaPhiIndex(ParticleT
 template <typename ParticleType1, typename ParticleType2>
 void ParticlePairDiffHistos::fill(ParticleType1& particle1, ParticleType2& particle2, double weight1, double weight2, double pTavg1, double pTavg2)
 {
-  int globaletabinno = getGlobalDeltaEtaDeltaPhiIndex(particle1, particle2);
+  int globaletabinno = getGlobalDeltaEtaDeltaPhiBin(particle1, particle2);
   float deltaeta = getDeltaEta(particle1, particle2);
   float deltaphi = getDeltaPhi(particle1, particle2);
   h_n2_ptPt->Fill(particle1.pt, particle2.pt, weight1 * weight2);
@@ -123,7 +118,7 @@ void ParticlePairDiffHistos::fill(ParticleType1& particle1, ParticleType2& parti
   h_dptdpt_DetaDphi->SetEntries(h_n2_ptPt->GetEntries());
 
   if (configuration->fillY) {
-    int globalybinno = getGlobalDeltaRapidityDeltaPhiIndex(particle1, particle2);
+    int globalybinno = getGlobalDeltaRapidityDeltaPhiBin(particle1, particle2);
     float deltay = getDeltaY(particle1, particle2);
     h_n2_DyDphi->AddBinContent(globalybinno, weight1 * weight2);
     p_n2_DyDphi->Fill(deltay, deltaphi, weight1 * weight2);
