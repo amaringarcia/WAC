@@ -355,9 +355,9 @@ void ParticlePairDerivedDiffHistos::calculateDerivedHistograms(ParticleHistos* p
   /* calculate Pratt's BF component from profiles */
   /* in principle the second single division should be automatically incorporated by the profiles when the same sign combination is substracted */
   /* we havo to compensate for the extra downscale by the profile mechanism and convert it to a density distribution */
+  /* No, we don't! all the compensation should be taken care by the TProfile mechanism */
   p_PrattBf_DetaDphi_shft->Reset();
   p_PrattBf_DetaDphi_shft->Add(p_n2_DetaDphi, 1.0);
-  p_PrattBf_DetaDphi_shft->Scale(downscaleMax(configuration->nBins_eta, configuration->nBins_phi) / (h_PrattBf_DetaDphi_shft->GetXaxis()->GetBinWidth(1) * h_PrattBf_DetaDphi_shft->GetYaxis()->GetBinWidth(1)));
 
   /* calculate Pratt's BF component from n2 and n1 histograms */
   double n1_2 = part2Histos->h_n1_phiEta->Integral();
