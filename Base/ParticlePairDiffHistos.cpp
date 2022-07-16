@@ -182,13 +182,13 @@ void ParticlePairDiffHistos::loadHistograms(TFile* inputFile)
   ac.max_Dy = ac.max_y - ac.min_y;
 
   h_n2_DetaDphi = loadH2(inputFile, bn + TString("n2_DetaDphi"), true);
-  p_n2_DetaDphi = loadProfile2D(inputFile, bn + TString("p_n2_DetaDphi"), true);
+  p_n2_DetaDphi = loadProfile2D(inputFile, bn + TString("p_n2_DetaDphi"), false); /* don't downscale the profiles */
   h_ptpt_DetaDphi = loadH2(inputFile, bn + TString("ptpt_DetaDphi"), true);
   h_dptdpt_DetaDphi = loadH2(inputFile, bn + TString("dptdpt_DetaDphi"), true);
 
   if (ac.fillY) {
     h_n2_DyDphi = loadH2(inputFile, bn + TString("n2_DyDphi"), true);
-    p_n2_DyDphi = loadProfile2D(inputFile, bn + TString("p_n2_DyDphi"), true);
+    p_n2_DyDphi = loadProfile2D(inputFile, bn + TString("p_n2_DyDphi"), false); /* don't downscale the profiles */
     h_ptpt_DyDphi = loadH2(inputFile, bn + TString("ptpt_DyDphi"), true);
     h_dptdpt_DyDphi = loadH2(inputFile, bn + TString("dptdpt_DyDphi"), true);
   }
