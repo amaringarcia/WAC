@@ -31,6 +31,7 @@
 #define EVENTPOOLSIZE 10
 #define PARTICLESPEREVENT 2000
 
+template <AnalysisConfiguration::RapidityPseudoRapidity r>
 class TwoPartDiffCorrelationAnalyzerME : public Task
 {
  public:
@@ -41,7 +42,7 @@ class TwoPartDiffCorrelationAnalyzerME : public Task
                                    TaskConfiguration* configuration,
                                    Event* event,
                                    EventFilter* eventFilter,
-                                   std::vector<ParticleFilter*> particleFilters);
+                                   std::vector<ParticleFilter<r>*> particleFilters);
   virtual ~TwoPartDiffCorrelationAnalyzerME();
   virtual void execute();
   virtual void createHistograms();
@@ -58,7 +59,7 @@ class TwoPartDiffCorrelationAnalyzerME : public Task
 
   EventFilter* eventFilter;
   EventPool eventPool;
-  std::vector<ParticleFilter*> particleFilters;
+  std::vector<ParticleFilter<r>*> particleFilters;
 
   std::vector<TString> partNames;
   std::vector<int> nAccepted;

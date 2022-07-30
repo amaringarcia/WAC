@@ -17,13 +17,12 @@
 #include "ParticleAnalyzer.hpp"
 #include "AnalysisConfiguration.hpp"
 
-ClassImp(ParticleAnalyzer)
-
-  ParticleAnalyzer::ParticleAnalyzer(const TString& name,
-                                     TaskConfiguration* configuration,
-                                     Event* event, EventFilter* _eventFilter,
-                                     int _nParticleFilters,
-                                     ParticleFilter** _particleFilters)
+template <AnalysisConfiguration::RapidityPseudoRapidity r>
+ParticleAnalyzer<r>::ParticleAnalyzer(const TString& name,
+                                      TaskConfiguration* configuration,
+                                      Event* event, EventFilter* _eventFilter,
+                                      int _nParticleFilters,
+                                      ParticleFilter<r>** _particleFilters)
   : Task(name, configuration, event), nParticleFilters(_nParticleFilters), eventFilter(_eventFilter), particleFilters(_particleFilters), particleHistos(nullptr), partNames(nullptr)
 {
   cout << "ParticleAnalyzer::CTOR(...) Started." << endl;
@@ -70,7 +69,8 @@ ClassImp(ParticleAnalyzer)
 //////////////////////////////////////////////////////////////
 // DTOR
 //////////////////////////////////////////////////////////////
-ParticleAnalyzer::~ParticleAnalyzer()
+template <AnalysisConfiguration::RapidityPseudoRapidity r>
+ParticleAnalyzer<r>::~ParticleAnalyzer()
 {
   if (reportDebug())
     cout << "ParticleAnalyzer::DTOR(...) Started" << endl;
@@ -82,7 +82,8 @@ ParticleAnalyzer::~ParticleAnalyzer()
     cout << "ParticleAnalyzer::DTOR(...) Completed" << endl;
 }
 
-void ParticleAnalyzer::createHistograms()
+template <AnalysisConfiguration::RapidityPseudoRapidity r>
+void ParticleAnalyzer<r>::createHistograms()
 {
   if (reportDebug())
     cout << "ParticleAnalyzer::createHistograms(...) started" << endl;
@@ -102,7 +103,8 @@ void ParticleAnalyzer::createHistograms()
 //////////////////////////////////////////////////////////////
 // load histograms from given files
 //////////////////////////////////////////////////////////////
-void ParticleAnalyzer::loadHistograms(TFile* inputFile)
+template <AnalysisConfiguration::RapidityPseudoRapidity r>
+void ParticleAnalyzer<r>::loadHistograms(TFile* inputFile)
 {
   if (reportDebug())
     cout << "ParticleAnalyzer::loadHistograms(...) Starting." << endl;
@@ -124,7 +126,8 @@ void ParticleAnalyzer::loadHistograms(TFile* inputFile)
 //////////////////////////////////////////////////////////////
 // save histograms to given files
 //////////////////////////////////////////////////////////////
-void ParticleAnalyzer::saveHistograms(TFile* outputFile)
+template <AnalysisConfiguration::RapidityPseudoRapidity r>
+void ParticleAnalyzer<r>::saveHistograms(TFile* outputFile)
 {
   if (reportDebug())
     cout << "ParticleAnalyzer::saveHistograms(...) Saving Event histograms to file." << endl;
@@ -145,7 +148,8 @@ void ParticleAnalyzer::saveHistograms(TFile* outputFile)
     cout << "ParticleAnalyzer::saveHistograms(...) Completed." << endl;
 }
 
-void ParticleAnalyzer::execute()
+template <AnalysisConfiguration::RapidityPseudoRapidity r>
+void ParticleAnalyzer<r>::execute()
 {
   // if (reportDebug())  cout << "ParticleAnalyzer::execute(...) Starting" << endl;
   if (event != NULL) {
@@ -172,7 +176,7 @@ void ParticleAnalyzer::execute()
       accept = particleFilters[iFilter]->accept(particle);
       if (accept) {
         nAccepted[iFilter]++;
-        particleHistos[iFilter]->fill(particle, 1.0);
+        particleHistos[iFilter]->fill<r>(particle, 1.0);
       }
     }
   }
@@ -186,7 +190,8 @@ void ParticleAnalyzer::execute()
 // Scale all filled histograms by the given factor
 // Derived histograms are *NOT* scaled.
 // =========================================================
-void ParticleAnalyzer::scaleHistograms(double factor)
+template <AnalysisConfiguration::RapidityPseudoRapidity r>
+void ParticleAnalyzer<r>::scaleHistograms(double factor)
 {
   if (reportDebug())
     cout << "ParticleAnalyzer::scaleHistograms(..) Scale all primary histograms by " << factor << endl;
@@ -197,3 +202,8 @@ void ParticleAnalyzer::scaleHistograms(double factor)
   if (reportDebug())
     cout << "ParticleAnalyzer::scale(..) Completed" << endl;
 }
+
+template class ParticleAnalyzer<AnalysisConfiguration::kRapidity>;
+template class ParticleAnalyzer<AnalysisConfiguration::kPseudorapidity>;
+
+templateClassImp(ParticleAnalyzer)

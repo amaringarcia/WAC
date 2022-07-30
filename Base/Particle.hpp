@@ -38,7 +38,7 @@ class Particle
   long charge;
   double px, py, pz, e, pt, y, eta;
   float phi;
-  int ixEtaPhi, ixYPhi;
+  int ixYEtaPhi;
   int ixID; ///< the index of the filter which accepted the particle (kind of PID index)
 
   static int factorySize;

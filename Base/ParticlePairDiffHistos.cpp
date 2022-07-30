@@ -107,27 +107,29 @@ void ParticlePairDiffHistos::initialize()
   } else {
     h_n2_ptPt = createHistogram(bn + TString("n2_ptPt"), ac.nBins_pt, ac.min_pt, ac.max_pt, ac.nBins_pt, ac.min_pt, ac.max_pt, "p_{T,1}", "p_{T,2}", "N_{2}", scaled, saved, plotted, notPrinted);
   }
-  h_n2_DetaDphi = createHistogram(bn + TString("n2_DetaDphi"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta#eta", "#Delta#varphi", "n_{2}", scaled, saved, notPlotted, notPrinted, false);
-  p_n2_DetaDphi = createProfile(bn + TString("p_n2_DetaDphi"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta#eta", "#Delta#varphi", "n_{2}", notScaled, saved, notPlotted, notPrinted, false);
-  h_ptpt_DetaDphi = createHistogram(bn + TString("ptpt_DetaDphi"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta#eta", "#Delta#varphi", "p_{T}xp_{T}", scaled, saved, notPlotted, notPrinted, false);
-  h_dptdpt_DetaDphi = createHistogram(bn + TString("dptdpt_DetaDphi"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta#eta", "#Delta#varphi", "(p_{T}-<p_{T}>)x(p_{T}-<p_{T}>)", scaled, saved, notPlotted, notPrinted, false);
-  if (ac.fillY) {
+  if (ac.fillYorEta == ac.kPseudorapidity) {
+    h_n2_DetaDphi = createHistogram(bn + TString("n2_DetaDphi"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta#eta", "#Delta#varphi", "n_{2}", scaled, saved, notPlotted, notPrinted, false);
+    p_n2_DetaDphi = createProfile(bn + TString("p_n2_DetaDphi"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta#eta", "#Delta#varphi", "n_{2}", notScaled, saved, notPlotted, notPrinted, false);
+    h_ptpt_DetaDphi = createHistogram(bn + TString("ptpt_DetaDphi"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta#eta", "#Delta#varphi", "p_{T}xp_{T}", scaled, saved, notPlotted, notPrinted, false);
+    h_dptdpt_DetaDphi = createHistogram(bn + TString("dptdpt_DetaDphi"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta#eta", "#Delta#varphi", "(p_{T}-<p_{T}>)x(p_{T}-<p_{T}>)", scaled, saved, notPlotted, notPrinted, false);
+
+    /* big histograms are forced to be created without sumw2 structure for it will not be used */
+    h_n2_DetaDphi->SetBit(TH1::kIsNotW);
+    h_n2_DetaDphi->Sumw2(false);
+    p_n2_DetaDphi->SetBit(TH1::kIsNotW);
+    p_n2_DetaDphi->Sumw2(false);
+    h_ptpt_DetaDphi->SetBit(TH1::kIsNotW);
+    h_ptpt_DetaDphi->Sumw2(false);
+    h_dptdpt_DetaDphi->SetBit(TH1::kIsNotW);
+    h_dptdpt_DetaDphi->Sumw2(false);
+  }
+  if (ac.fillYorEta == ac.kRapidity) {
     h_n2_DyDphi = createHistogram(bn + TString("n2_DyDphi"), ac.nBins_Dy, ac.min_Dy, ac.max_Dy, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta y", "#Delta#varphi", "<n_{2}>", scaled, saved, notPlotted, notPrinted, false);
     p_n2_DyDphi = createProfile(bn + TString("p_n2_DyDphi"), ac.nBins_Dy, ac.min_Dy, ac.max_Dy, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta y", "#Delta#varphi", "<n_{2}>", notScaled, saved, notPlotted, notPrinted, false);
-    h_ptpt_DyDphi = createHistogram(bn + TString("dptdpt_DyDphi"), ac.nBins_Dy, ac.min_Dy, ac.max_Dy, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta y", "#Delta#varphi", "p_{T}xp_{T}", scaled, saved, notPlotted, notPrinted, false);
+    h_ptpt_DyDphi = createHistogram(bn + TString("ptpt_DyDphi"), ac.nBins_Dy, ac.min_Dy, ac.max_Dy, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta y", "#Delta#varphi", "p_{T}xp_{T}", scaled, saved, notPlotted, notPrinted, false);
     h_dptdpt_DyDphi = createHistogram(bn + TString("dptdpt_DyDphi"), ac.nBins_Dy, ac.min_Dy, ac.max_Dy, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta y", "#Delta#varphi", "p_{T}xp_{T}", scaled, saved, notPlotted, notPrinted, false);
-  }
 
-  /* big histograms are forced to be created without sumw2 structure for it will not be used */
-  h_n2_DetaDphi->SetBit(TH1::kIsNotW);
-  h_n2_DetaDphi->Sumw2(false);
-  p_n2_DetaDphi->SetBit(TH1::kIsNotW);
-  p_n2_DetaDphi->Sumw2(false);
-  h_ptpt_DetaDphi->SetBit(TH1::kIsNotW);
-  h_ptpt_DetaDphi->Sumw2(false);
-  h_dptdpt_DetaDphi->SetBit(TH1::kIsNotW);
-  h_dptdpt_DetaDphi->Sumw2(false);
-  if (ac.fillY) {
+    /* big histograms are forced to be created without sumw2 structure for it will not be used */
     h_n2_DyDphi->SetBit(TH1::kIsNotW);
     h_n2_DyDphi->Sumw2(false);
     p_n2_DyDphi->SetBit(TH1::kIsNotW);
@@ -181,12 +183,14 @@ void ParticlePairDiffHistos::loadHistograms(TFile* inputFile)
   ac.min_Dy = ac.min_y - ac.max_y;
   ac.max_Dy = ac.max_y - ac.min_y;
 
-  h_n2_DetaDphi = loadH2(inputFile, bn + TString("n2_DetaDphi"), true);
-  p_n2_DetaDphi = loadProfile2D(inputFile, bn + TString("p_n2_DetaDphi"), false); /* don't downscale the profiles */
-  h_ptpt_DetaDphi = loadH2(inputFile, bn + TString("ptpt_DetaDphi"), true);
-  h_dptdpt_DetaDphi = loadH2(inputFile, bn + TString("dptdpt_DetaDphi"), true);
+  if (ac.fillYorEta == ac.kPseudorapidity) {
+    h_n2_DetaDphi = loadH2(inputFile, bn + TString("n2_DetaDphi"), true);
+    p_n2_DetaDphi = loadProfile2D(inputFile, bn + TString("p_n2_DetaDphi"), false); /* don't downscale the profiles */
+    h_ptpt_DetaDphi = loadH2(inputFile, bn + TString("ptpt_DetaDphi"), true);
+    h_dptdpt_DetaDphi = loadH2(inputFile, bn + TString("dptdpt_DetaDphi"), true);
+  }
 
-  if (ac.fillY) {
+  if (ac.fillYorEta == ac.kRapidity) {
     h_n2_DyDphi = loadH2(inputFile, bn + TString("n2_DyDphi"), true);
     p_n2_DyDphi = loadProfile2D(inputFile, bn + TString("p_n2_DyDphi"), false); /* don't downscale the profiles */
     h_ptpt_DyDphi = loadH2(inputFile, bn + TString("ptpt_DyDphi"), true);

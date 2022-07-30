@@ -55,12 +55,11 @@ int main(int argc, char* argv[])
                                                     nOptions,
                                                     pythiaOptions);
   EventFilter* eventFilterGen = new EventFilter(EventFilter::MinBias, 0.0, 0.0);
-  ParticleFilter* particleFilterGen = new ParticleFilter(ParticleFilter::Hadron,
-                                                         ParticleFilter::Charged,
-                                                         0.2, 100.0,
-                                                         -6.0, 6.0,
-                                                         -10.0, 10.0);
-  PythiaEventGenerator* generator = new PythiaEventGenerator("PYTHIA", pc, event, eventFilterGen, particleFilterGen);
+  ParticleFilter<AnalysisConfiguration::kRapidity>* particleFilterGen = new ParticleFilter<AnalysisConfiguration::kRapidity>(ParticleFilter<AnalysisConfiguration::kRapidity>::Hadron,
+                                                                                                                             ParticleFilter<AnalysisConfiguration::kRapidity>::Charged,
+                                                                                                                             0.2, 100.0,
+                                                                                                                             -10.0, 10.0);
+  PythiaEventGenerator<AnalysisConfiguration::kRapidity>* generator = new PythiaEventGenerator("PYTHIA", pc, event, eventFilterGen, particleFilterGen);
 
   // ==========================
   // Analysis Section
@@ -86,7 +85,7 @@ int main(int argc, char* argv[])
   ac->nBins_eta = 20;
   ac->min_eta = -1;
   ac->max_eta = 1;
-  ac->nBins_y = 20;
+  ac->nBins_y = 40;
   ac->min_y = -2;
   ac->max_y = 2;
   ac->nBins_phi = 72;
@@ -97,7 +96,7 @@ int main(int argc, char* argv[])
   ac->fill3D = false;
   ac->fill6D = false;
   ac->fillQ3D = false;
-  ac->fillY = false;
+  ac->fillYorEta = AnalysisConfiguration::kRapidity;
 
   TString taskName;
   int nAnalysisTasks = 20;
@@ -105,12 +104,12 @@ int main(int argc, char* argv[])
 
   EventFilter* eventFilter = new EventFilter(EventFilter::MinBias, 0.0, 0.0);
   int nParticleFilters = 2;
-  ParticleFilter** particleFilters = new ParticleFilter*[nParticleFilters];
-  particleFilters[0] = new ParticleFilter(ParticleFilter::Proton, ParticleFilter::Positive, ac->min_pt + 0.001, ac->max_pt, ac->min_eta, ac->max_eta, ac->min_y, ac->max_y);
-  particleFilters[1] = new ParticleFilter(ParticleFilter::Proton, ParticleFilter::Negative, ac->min_pt + 0.001, ac->max_pt, ac->min_eta, ac->max_eta, ac->min_y, ac->max_y);
+  ParticleFilter<AnalysisConfiguration::kRapidity>** particleFilters = new ParticleFilter<AnalysisConfiguration::kRapidity>*[nParticleFilters];
+  particleFilters[0] = new ParticleFilter<AnalysisConfiguration::kRapidity>(ParticleFilter<AnalysisConfiguration::kRapidity>::Proton, ParticleFilter<AnalysisConfiguration::kRapidity>::Positive, ac->min_pt + 0.001, ac->max_pt, ac->min_y, ac->max_y);
+  particleFilters[1] = new ParticleFilter<AnalysisConfiguration::kRapidity>(ParticleFilter<AnalysisConfiguration::kRapidity>::Proton, ParticleFilter<AnalysisConfiguration::kRapidity>::Negative, ac->min_pt + 0.001, ac->max_pt, ac->min_y, ac->max_y);
 
   int iTask = 0;
-  analysisTasks[iTask++] = new TwoPartCorrelationAnalyzer("NarrowPPPM", ac, event, eventFilter, particleFilters[0], particleFilters[1]); // P+ vs P-
+  analysisTasks[iTask++] = new TwoPartCorrelationAnalyzer<AnalysisConfiguration::kRapidity>("NarrowPPPM", ac, event, eventFilter, particleFilters[0], particleFilters[1]); // P+ vs P-
   nAnalysisTasks = iTask;
 
   // ==========================

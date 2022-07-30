@@ -88,7 +88,7 @@ ClassImp(AnalysisConfiguration)
     fill3D(false),
     fill6D(false),
     fillQ3D(false),
-    fillY(true),
+    fillYorEta(kPseudorapidity),
     nuDynVsMult(true),
     nuDynVsCent(false),
     nBins_mult(20),
@@ -174,7 +174,7 @@ AnalysisConfiguration::AnalysisConfiguration(const AnalysisConfiguration& source
     fill3D(source.fill3D),
     fill6D(source.fill6D),
     fillQ3D(source.fillQ3D),
-    fillY(source.fillY),
+    fillYorEta(source.fillYorEta),
     nuDynVsMult(source.nuDynVsMult),
     nuDynVsCent(source.nuDynVsCent),
     nBins_mult(source.nBins_mult),
@@ -254,7 +254,7 @@ AnalysisConfiguration& AnalysisConfiguration::operator=(const AnalysisConfigurat
   fill3D = source.fill3D;
   fill6D = source.fill6D;
   fillQ3D = source.fillQ3D;
-  fillY = source.fillY;
+  fillYorEta = source.fillYorEta;
   nuDynVsMult = source.nuDynVsMult;
   nuDynVsCent = source.nuDynVsCent;
   nBins_mult = source.nBins_mult;
@@ -292,7 +292,7 @@ void AnalysisConfiguration::printConfiguration(ostream& os)
     << "                   fill3D: " << fill3D << endl
     << "                   fill6D: " << fill6D << endl
     << "                  fillQ3D: " << fillQ3D << endl
-    << "                    fillY: " << fillY << endl
+    << "             fillY or eta: " << ((fillYorEta == kRapidity) ? "Y" : "eta") << endl
     << "        +- bin correction: " << binCorrPM << endl
     << "        -+ bin correction: " << binCorrMP << endl
     << "        ++ bin correction: " << binCorrPP << endl

@@ -48,6 +48,8 @@ const char* corrfname[ncorrpart] = {"P2", "R2", "G2"};
 const int nbf = 8;
 const char* bfnames[nbf] = {"R2BF", "R2BFPratt1bar2", "R2BFPrattbar12", "N2PrattBF", "N2PrattBF1bar2", "N2PrattBFbar12", "PrattBF1bar2", "PrattBFbar12"};
 
+#define LONGITUDINAL AnalysisConfiguration::kRapidity
+
 std::vector<std::string> centfname = {
   "MB"};
 int ncent = centfname.size();
@@ -161,19 +163,19 @@ TList* extractSampleResults(Option_t* opt, AnalysisConfiguration* ac, int icent,
   Bool_t oldstatus = TH1::AddDirectoryStatus();
   TH1::AddDirectory(kFALSE);
 
-  std::vector<ParticleFilter*> particleFilters;
-  particleFilters.push_back(new ParticleFilter(ParticleFilter::Pion, ParticleFilter::Positive, ac->min_pt, ac->max_pt, ac->min_eta, ac->max_eta, ac->min_y, ac->max_y));
-  particleFilters.push_back(new ParticleFilter(ParticleFilter::Pion, ParticleFilter::Negative, ac->min_pt, ac->max_pt, ac->min_eta, ac->max_eta, ac->min_y, ac->max_y));
-  particleFilters.push_back(new ParticleFilter(ParticleFilter::Kaon, ParticleFilter::Positive, ac->min_pt, ac->max_pt, ac->min_eta, ac->max_eta, ac->min_y, ac->max_y));
-  particleFilters.push_back(new ParticleFilter(ParticleFilter::Kaon, ParticleFilter::Negative, ac->min_pt, ac->max_pt, ac->min_eta, ac->max_eta, ac->min_y, ac->max_y));
-  particleFilters.push_back(new ParticleFilter(ParticleFilter::Proton, ParticleFilter::Positive, ac->min_pt, ac->max_pt, ac->min_eta, ac->max_eta, ac->min_y, ac->max_y));
-  particleFilters.push_back(new ParticleFilter(ParticleFilter::Proton, ParticleFilter::Negative, ac->min_pt, ac->max_pt, ac->min_eta, ac->max_eta, ac->min_y, ac->max_y));
+  std::vector<ParticleFilter<LONGITUDINAL>*> particleFilters;
+  particleFilters.push_back(new ParticleFilter<LONGITUDINAL>(ParticleFilter<LONGITUDINAL>::Pion, ParticleFilter<LONGITUDINAL>::Positive, ac->min_pt, ac->max_pt, ac->min_y, ac->max_y));
+  particleFilters.push_back(new ParticleFilter<LONGITUDINAL>(ParticleFilter<LONGITUDINAL>::Pion, ParticleFilter<LONGITUDINAL>::Negative, ac->min_pt, ac->max_pt, ac->min_y, ac->max_y));
+  particleFilters.push_back(new ParticleFilter<LONGITUDINAL>(ParticleFilter<LONGITUDINAL>::Kaon, ParticleFilter<LONGITUDINAL>::Positive, ac->min_pt, ac->max_pt, ac->min_y, ac->max_y));
+  particleFilters.push_back(new ParticleFilter<LONGITUDINAL>(ParticleFilter<LONGITUDINAL>::Kaon, ParticleFilter<LONGITUDINAL>::Negative, ac->min_pt, ac->max_pt, ac->min_y, ac->max_y));
+  particleFilters.push_back(new ParticleFilter<LONGITUDINAL>(ParticleFilter<LONGITUDINAL>::Proton, ParticleFilter<LONGITUDINAL>::Positive, ac->min_pt, ac->max_pt, ac->min_y, ac->max_y));
+  particleFilters.push_back(new ParticleFilter<LONGITUDINAL>(ParticleFilter<LONGITUDINAL>::Proton, ParticleFilter<LONGITUDINAL>::Negative, ac->min_pt, ac->max_pt, ac->min_y, ac->max_y));
 
   EventFilter* eventFilter = new EventFilter(EventFilter::MinBias, 0, 0);
 
   Event *event = Event::getEvent();
 
-  TwoPartDiffCorrelationAnalyzer* eventanalyzer = new TwoPartDiffCorrelationAnalyzer("NarrowPiKaPrLa", ac, event, eventFilter, particleFilters);
+  TwoPartDiffCorrelationAnalyzer<LONGITUDINAL>* eventanalyzer = new TwoPartDiffCorrelationAnalyzer<LONGITUDINAL>("NarrowPiKaPrLa", ac, event, eventFilter, particleFilters);
 
   if (!TString(opt).Contains("verb"))
     eventanalyzer->setReportLevel(MessageLogger::Error);
@@ -350,11 +352,11 @@ int main(int argc, char* argv[])
     // =========================
     // Short configuration
     // =========================
-    float min_eta = -4;
-    float max_eta = 4;
+    float min_y = -4;
+    float max_y = 4;
     float min_pt = 0.0;
     float max_pt = 1e6;
-    int nBins_eta = int((max_eta - min_eta) / 0.1);
+    int nBins_y = int((max_y - min_y) / 0.1);
     int nBins_pt = int((max_pt - min_pt) / 0.1);
 
     ac->bin_edges_pt = {0.0,
@@ -365,12 +367,12 @@ int main(int argc, char* argv[])
     ac->nBins_pt = ac->bin_edges_pt.size() - 1;
     ac->min_pt = min_pt;
     ac->max_pt = max_pt;
-    ac->nBins_eta = nBins_eta;
-    ac->min_eta = min_eta;
-    ac->max_eta = max_eta;
-    ac->nBins_y = nBins_eta;
-    ac->min_y = min_eta;
-    ac->max_y = max_eta;
+    ac->nBins_eta = nBins_y;
+    ac->min_eta = min_y;
+    ac->max_eta = max_y;
+    ac->nBins_y = nBins_y;
+    ac->min_y = min_y;
+    ac->max_y = max_y;
     ac->nBins_phi = 72;
     ac->min_phi = 0.0;
     ac->max_phi = kTWOPI;
@@ -379,7 +381,7 @@ int main(int argc, char* argv[])
     ac->fill3D = false;
     ac->fill6D = false;
     ac->fillQ3D = false;
-    ac->fillY = false;
+    ac->fillYorEta = LONGITUDINAL;
 
     ac->scaleHistograms = true;
     ac->createHistograms = false;

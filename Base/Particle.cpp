@@ -28,8 +28,7 @@ Particle::Particle()
     y(0.0),
     eta(0.0),
     phi(0.0),
-    ixEtaPhi(-1),
-    ixYPhi(-1),
+    ixYEtaPhi(-1),
     ixID(-1)
 {
   // no op
@@ -57,8 +56,7 @@ Particle::Particle(const Particle& other)
     y = other.y;
     eta = other.eta;
     phi = other.phi;
-    ixEtaPhi = other.ixEtaPhi;
-    ixYPhi = other.ixYPhi;
+    ixYEtaPhi = other.ixYEtaPhi;
     ixID = other.ixID;
   }
 }
@@ -76,8 +74,7 @@ Particle& Particle::operator=(const Particle& other)
     y = other.y;
     eta = other.eta;
     phi = other.phi;
-    ixEtaPhi = other.ixEtaPhi;
-    ixYPhi = other.ixYPhi;
+    ixYEtaPhi = other.ixYEtaPhi;
     ixID = other.ixID;
   }
   return *this;
@@ -128,6 +125,8 @@ void Particle::setPxPyPzE(double p_x, double p_y, double p_z, double p_e)
     y = 1.0E50;
   else
     y = 0.5 * log(plus / minus);
+  ixYEtaPhi = -1;
+  ixID = -1;
 }
 
 void Particle::setPidPxPyPzE(long thePid, long theCharge, double p_x, double p_y, double p_z, double p_e)
@@ -152,6 +151,8 @@ void Particle::setPidPxPyPzE(long thePid, long theCharge, double p_x, double p_y
     y = 1.0E50;
   else
     y = 0.5 * log(plus / minus);
+  ixYEtaPhi = -1;
+  ixID = -1;
 }
 
 void Particle::setPidPtPhiYEta(long _id, long _ch, double _pT, double _phi, double _y, double _eta)
@@ -166,8 +167,7 @@ void Particle::setPidPtPhiYEta(long _id, long _ch, double _pT, double _phi, doub
   py = pt * sin(phi);
   pz = pt / TMath::Tan(2.0 * TMath::ATan(TMath::Exp(-eta)));
   e = 1.0 / TMath::TanH(_y);
-  ixEtaPhi = -1;
-  ixYPhi = -1;
+  ixYEtaPhi = -1;
   ixID = -1;
 }
 

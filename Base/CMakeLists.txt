@@ -84,13 +84,12 @@ root_generate_dictionary(G__Base ${HEADER_FILES} LINKDEF BaseLinkDef.h)
 add_compile_options(-Wall -Wextra -Wpedantic)
 add_library(Base SHARED ${HEADER_FILES} BaseLinkDef.h ${SOURCE_FILES} G__Base.cxx)
 
-
-target_link_libraries(Base ${WAC_ROOT_LIBRARIES} ${EXTRA_LIBS} )
-target_include_directories(Base  PUBLIC Base ${EXTRA_INCLUDES} ) 
-
 # optimization for big histogram access within the pair inner loop
 # WARNING: the sumw2 structure is not used -> estimate uncertainties using sub-samples
 add_definitions(-DOPTIMIZEADDBINCONTENT)
+
+target_link_libraries(Base ${WAC_ROOT_LIBRARIES} ${EXTRA_LIBS} )
+target_include_directories(Base  PUBLIC Base ${EXTRA_INCLUDES} ) 
 
 install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/libBase.rootmap" "${CMAKE_CURRENT_BINARY_DIR}/libBase_rdict.pcm" DESTINATION "$ENV{WAC_LIB}")
 install(TARGETS Base  LIBRARY DESTINATION "$ENV{WAC_LIB}")

@@ -13,8 +13,6 @@
 #include "TaskConfiguration.hpp"
 #include "Particle.hpp"
 #include "EventPool.hpp"
-#include "ParticleFilter.hpp"
-#include "ParticlePairFilter.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Configuration of a given analysis
@@ -30,14 +28,17 @@ class AnalysisConfiguration : public TaskConfiguration
 
   AnalysisConfiguration& operator=(const AnalysisConfiguration& source);
 
+  typedef enum {
+    kRapidity = 0,
+    kPseudorapidity = 1
+  } RapidityPseudoRapidity;
+
   void printConfiguration(ostream& os);
-  int getIxEtaPhi(float eta, float phi);
-  int getIxYPhi(float y, float phi);
+  template <RapidityPseudoRapidity r>
+  int getIxYEtaPhi(float eta, float phi);
   float getDphiShifted(float dphi);
-  template <typename ParticleType1, typename ParticleType2>
-  int getDeltaEtaIndex(ParticleType1& particle1, ParticleType2& particle2);
-  template <typename ParticleType1, typename ParticleType2>
-  int getDeltaRapidityIndex(ParticleType1& particle1, ParticleType2& particle2);
+  template <RapidityPseudoRapidity r, typename ParticleType1, typename ParticleType2>
+  int getDeltaYEtaIndex(ParticleType1& particle1, ParticleType2& particle2);
   template <typename ParticleType1, typename ParticleType2>
   int getDeltaPhiIndex(ParticleType1& particle1, ParticleType2& particle2);
 
@@ -120,7 +121,7 @@ class AnalysisConfiguration : public TaskConfiguration
   bool fill3D;
   bool fill6D;
   bool fillQ3D;
-  bool fillY;
+  RapidityPseudoRapidity fillYorEta;
 
   bool nuDynVsMult;
   bool nuDynVsCent;
@@ -134,32 +135,31 @@ class AnalysisConfiguration : public TaskConfiguration
   ClassDef(AnalysisConfiguration, 0)
 };
 
-inline int AnalysisConfiguration::getIxEtaPhi(float eta, float phi)
+template <AnalysisConfiguration::RapidityPseudoRapidity r>
+inline int AnalysisConfiguration::getIxYEtaPhi(float yoreta, float phi)
 {
 
-  if (!(eta < min_eta || eta > max_eta)) {
-    int iEta = int(float(nBins_eta) * (eta - min_eta) / range_eta);
-    int iPhi = int(float(nBins_phi) * (phi - min_phi) / range_phi);
+  if constexpr (r == AnalysisConfiguration::kRapidity) {
+    if (!(yoreta < min_y || yoreta > max_y)) {
+      int iY = int(float(nBins_y) * (yoreta - min_y) / range_y);
+      int iPhi = int(float(nBins_phi) * (phi - min_phi) / range_phi);
 
-    if (iEta >= 0 && iPhi >= 0 && iEta < nBins_eta && iPhi < nBins_phi) {
-      return nBins_phi * iEta + iPhi;
+      if (iY >= 0 && iPhi >= 0 && iY < nBins_y && iPhi < nBins_phi) {
+        return nBins_phi * iY + iPhi;
+      }
+      return -1;
     }
     return -1;
-  }
-  return -1;
-}
+  } else {
+    if (!(yoreta < min_eta || yoreta > max_eta)) {
+      int iEta = int(float(nBins_eta) * (yoreta - min_eta) / range_eta);
+      int iPhi = int(float(nBins_phi) * (phi - min_phi) / range_phi);
 
-inline int AnalysisConfiguration::getIxYPhi(float y, float phi)
-{
-
-  if (!(y < min_y || y > max_y)) {
-    int iY = int(float(nBins_y) * (y - min_y) / range_y);
-    int iPhi = int(float(nBins_phi) * (phi - min_phi) / range_phi);
-
-    if (iY >= 0 && iPhi >= 0 && iY < nBins_y && iPhi < nBins_phi) {
-      return nBins_phi * iY + iPhi;
+      if (iEta >= 0 && iPhi >= 0 && iEta < nBins_eta && iPhi < nBins_phi) {
+        return nBins_phi * iEta + iPhi;
+      }
+      return -1;
     }
-    return -1;
   }
   return -1;
 }
@@ -180,22 +180,20 @@ inline float AnalysisConfiguration::getDphiShifted(float dphi)
 /// of particles' eta and phi within the corresponding ranges so, it is suppossed
 /// the particles have been accepted and they are within that ranges
 /// IF THAT IS NOT THE CASE THE ROUTINE WILL PRODUCE NONSENSE RESULTS
-template <typename ParticleType1, typename ParticleType2>
-inline int AnalysisConfiguration::getDeltaEtaIndex(ParticleType1& particle1, ParticleType2& particle2)
+template <AnalysisConfiguration::RapidityPseudoRapidity r, typename ParticleType1, typename ParticleType2>
+inline int AnalysisConfiguration::getDeltaYEtaIndex(ParticleType1& particle1, ParticleType2& particle2)
 {
-  int ixEta1 = int(float(nBins_eta) * (particle1.eta - min_eta) / range_eta);
-  int ixEta2 = int(float(nBins_eta) * (particle2.eta - min_eta) / range_eta);
+  if constexpr (r == AnalysisConfiguration::kRapidity) {
+    int ixY1 = int(float(nBins_y) * (particle1.y - min_y) / range_y);
+    int ixY2 = int(float(nBins_y) * (particle2.y - min_y) / range_y);
 
-  return ixEta1 - ixEta2 + nBins_eta - 1;
-}
+    return ixY1 - ixY2 + nBins_y - 1;
+  } else {
+    int ixEta1 = int(float(nBins_eta) * (particle1.eta - min_eta) / range_eta);
+    int ixEta2 = int(float(nBins_eta) * (particle2.eta - min_eta) / range_eta);
 
-template <typename ParticleType1, typename ParticleType2>
-inline int AnalysisConfiguration::getDeltaRapidityIndex(ParticleType1& particle1, ParticleType2& particle2)
-{
-  int ixY1 = int(float(nBins_y) * (particle1.y - min_y) / range_y);
-  int ixY2 = int(float(nBins_y) * (particle2.y - min_y) / range_y);
-
-  return ixY1 - ixY2 + nBins_y - 1;
+    return ixEta1 - ixEta2 + nBins_eta - 1;
+  }
 }
 
 template <typename ParticleType1, typename ParticleType2>

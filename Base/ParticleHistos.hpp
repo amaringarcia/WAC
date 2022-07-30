@@ -11,6 +11,7 @@
 #define WAC_ParticleHistos
 #include "Histograms.hpp"
 #include "TLorentzVector.h"
+#include "AnalysisConfiguration.hpp"
 
 class ParticleHistos : public Histograms
 {
@@ -25,7 +26,9 @@ class ParticleHistos : public Histograms
   virtual ~ParticleHistos();
   void createHistograms();
   void loadHistograms(TFile* inputFile);
+  template <AnalysisConfiguration::RapidityPseudoRapidity r>
   void fill(Particle& particle, double weight);
+  template <AnalysisConfiguration::RapidityPseudoRapidity r>
   void fill(TLorentzVector& p, double weight);
   void completeFill();
   void fillMultiplicity(double nAccepted, double weight);
@@ -61,5 +64,65 @@ class ParticleHistos : public Histograms
 
   ClassDef(ParticleHistos, 3)
 };
+
+template <AnalysisConfiguration::RapidityPseudoRapidity r>
+void ParticleHistos::fill(Particle& particle, double weight)
+{
+  double pt = particle.pt;
+  double phi = particle.phi;
+  if (phi < 0)
+    phi += TMath::TwoPi();
+
+  h_n1_pid->Fill(TString::Format("%ld", particle.pid), 1);
+  h_n1_pt->Fill(pt, weight);
+  h_n1_ptXS->Fill(pt, weight / pt);
+  if constexpr (r == AnalysisConfiguration::kRapidity) {
+    double y = particle.y;
+    // delayed h_n1_y->Fill(y, weight);
+    h_n1_ptY->Fill(y, pt, weight);
+    h_n1_phiY->Fill(y, phi, weight);
+    // delatyed h_spt_y->Fill(y, pt * weight);
+    h_spt_phiY->Fill(y, phi, pt * weight);
+  } else {
+    double eta = particle.eta;
+    // delayed fill h_n1_eta    ->Fill(eta, weight);
+    // delayed fill h_n1_phi    ->Fill(phi, weight);
+    h_n1_ptEta->Fill(eta, pt, weight);
+    h_n1_phiEta->Fill(eta, phi, weight);
+    // delayed fill h_spt_phi    ->Fill(phi, pt*weight);
+    // delayed fill h_spt_eta    ->Fill(eta, pt*weight);
+    h_spt_phiEta->Fill(eta, phi, pt * weight);
+  }
+}
+
+template <AnalysisConfiguration::RapidityPseudoRapidity r>
+void ParticleHistos::fill(TLorentzVector& p, double weight)
+{
+  double pt = p.Pt();
+  double phi = p.Phi();
+  if (phi < 0)
+    phi += TMath::TwoPi();
+
+  h_n1_pt->Fill(pt, weight);
+  h_n1_ptXS->Fill(pt, weight / pt);
+
+  if constexpr (r == AnalysisConfiguration::kRapidity) {
+    double y = p.Rapidity();
+    // delayed fill h_n1_y      ->Fill(y, weight);
+    h_n1_ptY->Fill(y, pt, weight);
+    h_n1_phiY->Fill(y, phi, weight);
+    // delayed fill h_spt_y     ->Fill(y, pt*weight);
+    h_spt_phiY->Fill(y, phi, pt * weight);
+  } else {
+    double eta = p.Eta();
+    // delayed fill h_n1_eta     ->Fill(eta, weight);
+    // delayed fill h_n1_phi     ->Fill(phi, weight);
+    h_n1_ptEta->Fill(eta, pt, weight);
+    h_n1_phiEta->Fill(eta, phi, weight);
+    // delayed fill h_spt_phi    ->Fill(phi, pt*weight);
+    // delayed fill h_spt_eta    ->Fill(eta, pt*weight);
+    h_spt_phiEta->Fill(eta, phi, pt * weight);
+  }
+}
 
 #endif /* WAC_ParticleHistos  */

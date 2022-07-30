@@ -17,13 +17,14 @@
 #include "PythiaEventGenerator.hpp"
 #include "PythiaConfiguration.hpp"
 
-ClassImp(PythiaEventGenerator);
+templateClassImp(PythiaEventGenerator);
 
-PythiaEventGenerator::PythiaEventGenerator(const TString& name,
-                                           TaskConfiguration* configuration,
-                                           Event* event,
-                                           EventFilter* ef,
-                                           ParticleFilter* pf)
+template <AnalysisConfiguration::RapidityPseudoRapidity r>
+PythiaEventGenerator<r>::PythiaEventGenerator(const TString& name,
+                                              TaskConfiguration* configuration,
+                                              Event* event,
+                                              EventFilter* ef,
+                                              ParticleFilter<r>* pf)
   : Task(name, configuration, event),
     eventFilter(ef),
     particleFilter(pf)
@@ -32,7 +33,8 @@ PythiaEventGenerator::PythiaEventGenerator(const TString& name,
     cout << "PythiaEventGenerator::PythiaEventGenerator(...) No ops" << endl;
 }
 
-PythiaEventGenerator::~PythiaEventGenerator()
+template <AnalysisConfiguration::RapidityPseudoRapidity r>
+PythiaEventGenerator<r>::~PythiaEventGenerator()
 {
   if (reportDebug())
     cout << "PythiaEventGenerator::~PythiaEventGenerator(...) No ops" << endl;
@@ -41,7 +43,8 @@ PythiaEventGenerator::~PythiaEventGenerator()
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Initialize generator
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void PythiaEventGenerator::initialize()
+template <AnalysisConfiguration::RapidityPseudoRapidity r>
+void PythiaEventGenerator<r>::initialize()
 {
   if (reportDebug())
     cout << "PythiaEventGenerator::initialize() Started" << endl;
@@ -63,7 +66,8 @@ void PythiaEventGenerator::initialize()
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Reset and Initialize the generator
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void PythiaEventGenerator::reset()
+template <AnalysisConfiguration::RapidityPseudoRapidity r>
+void PythiaEventGenerator<r>::reset()
 {
   if (reportDebug())
     cout << "PythiaEventGenerator::reset() Started" << endl;
@@ -77,7 +81,8 @@ void PythiaEventGenerator::reset()
 // Read an ampt event from file
 // Copy the event into Event for convenience...
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void PythiaEventGenerator::execute()
+template <AnalysisConfiguration::RapidityPseudoRapidity r>
+void PythiaEventGenerator<r>::execute()
 {
   if (reportDebug())
     cout << "PythiaEventGenerator::execute() Started" << endl;
@@ -154,7 +159,8 @@ void PythiaEventGenerator::execute()
     cout << "PythiaEventGenerator::execute() event completed!" << endl;
 }
 
-void PythiaEventGenerator::finalize()
+template <AnalysisConfiguration::RapidityPseudoRapidity r>
+void PythiaEventGenerator<r>::finalize()
 {
   if (reportDebug())
     cout << "PythiaEventGenerator::finalize() started" << endl;
@@ -207,3 +213,8 @@ void PythiaEventGenerator::finalize()
 //// use a reproducible seed: always the same results for the tutorial.
 ////pythia8->ReadString("Random:setSeed = on");
 ////pythia8->ReadString("Random:seed = 42");
+
+template class PythiaEventGenerator<AnalysisConfiguration::kRapidity>;
+template class PythiaEventGenerator<AnalysisConfiguration::kPseudorapidity>;
+
+templateClassImp(PythiaEventGenerator);

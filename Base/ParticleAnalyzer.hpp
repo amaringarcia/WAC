@@ -19,6 +19,7 @@
 #include "ParticleFilter.hpp"
 #include "ParticleHistos.hpp"
 
+template <AnalysisConfiguration::RapidityPseudoRapidity r>
 class ParticleAnalyzer : public Task
 {
  public:
@@ -29,7 +30,7 @@ class ParticleAnalyzer : public Task
                    Event* event,
                    EventFilter* eventFilter,
                    int nParticleFilters,
-                   ParticleFilter** particleFilters);
+                   ParticleFilter<r>** particleFilters);
   virtual ~ParticleAnalyzer();
   virtual void execute();
   virtual void createHistograms();
@@ -39,7 +40,7 @@ class ParticleAnalyzer : public Task
 
   int nParticleFilters;
   EventFilter* eventFilter;
-  ParticleFilter** particleFilters;
+  ParticleFilter<r>** particleFilters;
   ParticleHistos** particleHistos;
   TString** partNames;
   double* nAccepted;

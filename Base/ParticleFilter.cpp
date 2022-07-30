@@ -9,16 +9,15 @@
 #include <TMath.h>
 #include "ParticleFilter.hpp"
 
-ClassImp(ParticleFilter)
-
-  //////////////////////////////////////////////////////////////////////////////////////////
-  // CTOR
-  //////////////////////////////////////////////////////////////////////////////////////////
-  ParticleFilter::ParticleFilter(ParticleFilter::SpeciesSelection pid,
-                                 ParticleFilter::ChargeSelection charge,
-                                 double minPt, double maxPt, double minEta,
-                                 double maxEta, double minY, double maxY)
-  : pidRequested(pid), chargeRequested(charge), min_pt(minPt), max_pt(maxPt), min_eta(minEta), max_eta(maxEta), min_y(minY), max_y(maxY)
+//////////////////////////////////////////////////////////////////////////////////////////
+// CTOR
+//////////////////////////////////////////////////////////////////////////////////////////
+template <AnalysisConfiguration::RapidityPseudoRapidity r>
+ParticleFilter<r>::ParticleFilter(ParticleFilter::SpeciesSelection pid,
+                                  ParticleFilter::ChargeSelection charge,
+                                  double minPt, double maxPt,
+                                  double minRapPseudo, double maxRapPseudo)
+  : pidRequested(pid), chargeRequested(charge), min_pt(minPt), max_pt(maxPt), min_rappseudo(minRapPseudo), max_rappseudo(maxRapPseudo)
 {
   // no ops
 }
@@ -26,12 +25,14 @@ ClassImp(ParticleFilter)
 //////////////////////////////////////////////////////////////////////////////////////////
 // DTOR
 //////////////////////////////////////////////////////////////////////////////////////////
-ParticleFilter::~ParticleFilter()
+template <AnalysisConfiguration::RapidityPseudoRapidity r>
+ParticleFilter<r>::~ParticleFilter()
 {
   // no ops
 }
 
-TString ParticleFilter::getName()
+template <AnalysisConfiguration::RapidityPseudoRapidity r>
+TString ParticleFilter<r>::getName()
 {
   TString name;
   switch (pidRequested) {
@@ -102,7 +103,8 @@ TString ParticleFilter::getName()
   return name;
 }
 
-TString ParticleFilter::getTitle()
+template <AnalysisConfiguration::RapidityPseudoRapidity r>
+TString ParticleFilter<r>::getTitle()
 {
   TString name;
   switch (pidRequested) {
@@ -166,3 +168,8 @@ TString ParticleFilter::getTitle()
   }
   return name;
 }
+
+template class ParticleFilter<AnalysisConfiguration::kRapidity>;
+template class ParticleFilter<AnalysisConfiguration::kPseudorapidity>;
+
+templateClassImp(ParticleFilter)

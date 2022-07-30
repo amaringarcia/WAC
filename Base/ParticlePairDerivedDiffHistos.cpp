@@ -109,22 +109,24 @@ void ParticlePairDerivedDiffHistos::createDerivedHistograms()
     h_n1n1_ptPt = createHistogram(bn + TString("n1n1_ptPt"), ac.nBins_pt, ac.min_pt, ac.max_pt, ac.nBins_pt, ac.min_pt, ac.max_pt, "p_{T,1}", "p_{T,2}", "<n_{1}><n_{2}>", notScaled, saved, plotted, notPrinted);
   }
 
-  h_n1n1_DetaDphi = createHistogram(bn + TString("n1n1_DetaDphi"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta#eta", "#Delta#varphi", "<n_{1}><n_{1}>", notScaled, saved, plotted, notPrinted);
-  h_pt1pt1_DetaDphi = createHistogram(bn + TString("pt1pt1_DetaDphi"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta#eta", "#Delta#varphi", "pt1pt1", notScaled, saved, plotted, notPrinted);
+  if (ac.fillYorEta == ac.kPseudorapidity) {
+    h_n1n1_DetaDphi = createHistogram(bn + TString("n1n1_DetaDphi"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta#eta", "#Delta#varphi", "<n_{1}><n_{1}>", notScaled, saved, plotted, notPrinted);
+    h_pt1pt1_DetaDphi = createHistogram(bn + TString("pt1pt1_DetaDphi"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta#eta", "#Delta#varphi", "pt1pt1", notScaled, saved, plotted, notPrinted);
 
-  h_R2_DetaDphi = createHistogram(bn + TString("R2_DetaDphi"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta#eta", "#Delta#varphi", "R_{2}", notScaled, saved, plotted, notPrinted);
-  h_P2_DetaDphi = createHistogram(bn + TString("P2_DetaDphi"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta#eta", "#Delta#varphi", "P_{2}", notScaled, saved, plotted, notPrinted);
-  h_G2_DetaDphi = createHistogram(bn + TString("G2_DetaDphi"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta#eta", "#Delta#varphi", "G_{2}", notScaled, saved, plotted, notPrinted);
+    h_R2_DetaDphi = createHistogram(bn + TString("R2_DetaDphi"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta#eta", "#Delta#varphi", "R_{2}", notScaled, saved, plotted, notPrinted);
+    h_P2_DetaDphi = createHistogram(bn + TString("P2_DetaDphi"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta#eta", "#Delta#varphi", "P_{2}", notScaled, saved, plotted, notPrinted);
+    h_G2_DetaDphi = createHistogram(bn + TString("G2_DetaDphi"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta#eta", "#Delta#varphi", "G_{2}", notScaled, saved, plotted, notPrinted);
 
-  h_R2_DetaDphi_shft = createHistogram(bn + TString("R2_DetaDphi_shft"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi_shft, ac.max_Dphi_shft, "#Delta#eta", "#Delta#varphi", "R_{2}", notScaled, saved, plotted, notPrinted);
-  h_P2_DetaDphi_shft = createHistogram(bn + TString("P2_DetaDphi_shft"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi_shft, ac.max_Dphi_shft, "#Delta#eta", "#Delta#varphi", "P_{2}", notScaled, saved, plotted, notPrinted);
-  h_G2_DetaDphi_shft = createHistogram(bn + TString("G2_DetaDphi_shft"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi_shft, ac.max_Dphi_shft, "#Delta#eta", "#Delta#varphi", "G_{2}", notScaled, saved, plotted, notPrinted);
+    h_R2_DetaDphi_shft = createHistogram(bn + TString("R2_DetaDphi_shft"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi_shft, ac.max_Dphi_shft, "#Delta#eta", "#Delta#varphi", "R_{2}", notScaled, saved, plotted, notPrinted);
+    h_P2_DetaDphi_shft = createHistogram(bn + TString("P2_DetaDphi_shft"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi_shft, ac.max_Dphi_shft, "#Delta#eta", "#Delta#varphi", "P_{2}", notScaled, saved, plotted, notPrinted);
+    h_G2_DetaDphi_shft = createHistogram(bn + TString("G2_DetaDphi_shft"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi_shft, ac.max_Dphi_shft, "#Delta#eta", "#Delta#varphi", "G_{2}", notScaled, saved, plotted, notPrinted);
 
-  h_R2bf12_DetaDphi_shft = createHistogram(bn + TString("R2bf12_DetaDphi_shft"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi_shft, ac.max_Dphi_shft, "#Delta#eta", "#Delta#varphi", "#rho_{1_{1}}R_{2}^{12}", notScaled, saved, plotted, notPrinted);
-  h_PrattBf_DetaDphi_shft = createHistogram(bn + TString("N2PratBf_DetaDphi_shft"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi_shft, ac.max_Dphi_shft, "#Delta#eta", "#Delta#varphi", "#rho_{2}^{12}/#rho_{1_{2}}", notScaled, saved, plotted, notPrinted);
-  p_PrattBf_DetaDphi_shft = createProfile(bn + TString("PrattBf_DetaDphi_shft"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta#eta", "#Delta#varphi", "#rho_{2}^{12}/#rho_{1_{2}}", notScaled, saved, plotted, notPrinted);
+    h_R2bf12_DetaDphi_shft = createHistogram(bn + TString("R2bf12_DetaDphi_shft"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi_shft, ac.max_Dphi_shft, "#Delta#eta", "#Delta#varphi", "#rho_{1_{1}}R_{2}^{12}", notScaled, saved, plotted, notPrinted);
+    h_PrattBf_DetaDphi_shft = createHistogram(bn + TString("N2PratBf_DetaDphi_shft"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi_shft, ac.max_Dphi_shft, "#Delta#eta", "#Delta#varphi", "#rho_{2}^{12}/#rho_{1_{2}}", notScaled, saved, plotted, notPrinted);
+    p_PrattBf_DetaDphi_shft = createProfile(bn + TString("PrattBf_DetaDphi_shft"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta#eta", "#Delta#varphi", "#rho_{2}^{12}/#rho_{1_{2}}", notScaled, saved, plotted, notPrinted);
+  }
 
-  if (ac.fillY) {
+  if (ac.fillYorEta == ac.kRapidity) {
     h_n1n1_DyDphi = createHistogram(bn + TString("n1n1_DyDphi"), ac.nBins_Dy, ac.min_Dy, ac.max_Dy, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta y", "#Delta#varphi", "<n_{1}><n_{1}>", notScaled, saved, plotted, notPrinted);
     h_pt1pt1_DyDphi = createHistogram(bn + TString("pt1pt1_DyDphi"), ac.nBins_Dy, ac.min_Dy, ac.max_Dy, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta y", "#Delta#varphi", "pt1pt1", notScaled, saved, notPlotted, notPrinted);
 
@@ -294,87 +296,89 @@ void ParticlePairDerivedDiffHistos::calculateDerivedHistograms(ParticleHistos* p
   if (reportDebug())
     cout << "ParticlePairDerivedDiffHistos::calculateDerivedHistograms() started." << endl;
 
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // R2 related histograms
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////
-  TH2F* h_n1n1_phiEtaPhiEta = new TH2F((getHistoBaseName() + TString("n1n1_phiEtaPhiEta")).Data(),
-                                       "<n_{1}><n_{1}>;#eta_{1} x #varphi_{1};#eta_{2} x #varphi_{2}",
-                                       configuration->nBins_phiEta, 0.0, configuration->nBins_phiEta,
-                                       configuration->nBins_phiEta, 0.0, configuration->nBins_phiEta);
-  TH2F* h_pt1pt1_phiEtaPhiEta = new TH2F((getHistoBaseName() + TString("pt1pt1_phiEtaPhiEta")).Data(),
-                                         "<pT_{1}><pT_{1}>;#eta_{1} x #varphi_{1};#eta_{2} x #varphi_{2}",
+  if (configuration->fillYorEta == configuration->kPseudorapidity) {
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // R2 related histograms
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////
+    TH2F* h_n1n1_phiEtaPhiEta = new TH2F((getHistoBaseName() + TString("n1n1_phiEtaPhiEta")).Data(),
+                                         "<n_{1}><n_{1}>;#eta_{1} x #varphi_{1};#eta_{2} x #varphi_{2}",
                                          configuration->nBins_phiEta, 0.0, configuration->nBins_phiEta,
                                          configuration->nBins_phiEta, 0.0, configuration->nBins_phiEta);
+    TH2F* h_pt1pt1_phiEtaPhiEta = new TH2F((getHistoBaseName() + TString("pt1pt1_phiEtaPhiEta")).Data(),
+                                           "<pT_{1}><pT_{1}>;#eta_{1} x #varphi_{1};#eta_{2} x #varphi_{2}",
+                                           configuration->nBins_phiEta, 0.0, configuration->nBins_phiEta,
+                                           configuration->nBins_phiEta, 0.0, configuration->nBins_phiEta);
 
-  calculateN1N1_H2H2H2(part1Histos->h_n1_phiEta, part2Histos->h_n1_phiEta, h_n1n1_phiEtaPhiEta, 1.0, 1.0);
-  calculateN1N1_H1H1H2(part1Histos->h_n1_pt, part2Histos->h_n1_pt, h_n1n1_ptPt, 1.0, 1.0);
+    calculateN1N1_H2H2H2(part1Histos->h_n1_phiEta, part2Histos->h_n1_phiEta, h_n1n1_phiEtaPhiEta, 1.0, 1.0);
+    calculateN1N1_H1H1H2(part1Histos->h_n1_pt, part2Histos->h_n1_pt, h_n1n1_ptPt, 1.0, 1.0);
 
-  calculateN1N1_H2H2H2(part1Histos->h_spt_phiEta, part2Histos->h_spt_phiEta, h_pt1pt1_phiEtaPhiEta, 1.0, 1.0);
+    calculateN1N1_H2H2H2(part1Histos->h_spt_phiEta, part2Histos->h_spt_phiEta, h_pt1pt1_phiEtaPhiEta, 1.0, 1.0);
 
-  reduce(h_n1n1_phiEtaPhiEta, h_n1n1_DetaDphi, configuration->nBins_eta, configuration->nBins_phi);
-  reduce(h_pt1pt1_phiEtaPhiEta, h_pt1pt1_DetaDphi, configuration->nBins_eta, configuration->nBins_phi);
+    reduce(h_n1n1_phiEtaPhiEta, h_n1n1_DetaDphi, configuration->nBins_eta, configuration->nBins_phi);
+    reduce(h_pt1pt1_phiEtaPhiEta, h_pt1pt1_DetaDphi, configuration->nBins_eta, configuration->nBins_phi);
 
-  TF2* minusone = new TF2("minusone", "-1",
-                          h_R2_DetaDphi->GetXaxis()->GetBinLowEdge(1),
-                          h_R2_DetaDphi->GetXaxis()->GetBinUpEdge(h_R2_DetaDphi->GetNbinsX()),
-                          h_R2_DetaDphi->GetYaxis()->GetBinLowEdge(1),
-                          h_R2_DetaDphi->GetYaxis()->GetBinUpEdge(h_R2_DetaDphi->GetNbinsY()));
-  double pt_1_average = part1Histos->h_pt_phiEta->Integral() / (configuration->nBins_eta * configuration->nBins_phi);
-  double pt_2_average = part2Histos->h_pt_phiEta->Integral() / (configuration->nBins_eta * configuration->nBins_phi);
-  if (reportInfo()) {
-    cout << "calculateDerivedDiffHistograms(...) avgPt1 eta = " << pt_1_average << endl;
-    cout << "calculateDerivedDiffHistograms(...) avgPt2 eta = " << pt_2_average << endl;
+    TF2* minusone = new TF2("minusone", "-1",
+                            h_R2_DetaDphi->GetXaxis()->GetBinLowEdge(1),
+                            h_R2_DetaDphi->GetXaxis()->GetBinUpEdge(h_R2_DetaDphi->GetNbinsX()),
+                            h_R2_DetaDphi->GetYaxis()->GetBinLowEdge(1),
+                            h_R2_DetaDphi->GetYaxis()->GetBinUpEdge(h_R2_DetaDphi->GetNbinsY()));
+    double pt_1_average = part1Histos->h_pt_phiEta->Integral() / (configuration->nBins_eta * configuration->nBins_phi);
+    double pt_2_average = part2Histos->h_pt_phiEta->Integral() / (configuration->nBins_eta * configuration->nBins_phi);
+    if (reportInfo()) {
+      cout << "calculateDerivedDiffHistograms(...) avgPt1 eta = " << pt_1_average << endl;
+      cout << "calculateDerivedDiffHistograms(...) avgPt2 eta = " << pt_2_average << endl;
+    }
+
+    /* calculate R2 */
+    h_R2_DetaDphi->Reset();
+    h_R2_DetaDphi->Add(h_n2_DetaDphi, bincorrection);
+    h_R2_DetaDphi->Divide(h_n1n1_DetaDphi);
+    h_R2_DetaDphi->Add(minusone);
+    shiftY(*h_R2_DetaDphi, *h_R2_DetaDphi_shft, configuration->nBins_Dphi_shft);
+
+    /* calculate G2 */
+    h_G2_DetaDphi->Reset();
+    h_G2_DetaDphi->Add(h_ptpt_DetaDphi, bincorrection);
+    h_G2_DetaDphi->Add(h_pt1pt1_DetaDphi, -1.0);
+    h_G2_DetaDphi->Divide(h_n1n1_DetaDphi);
+    h_G2_DetaDphi->Scale(1.0 / (pt_1_average * pt_2_average));
+    shiftY(*h_G2_DetaDphi, *h_G2_DetaDphi_shft, configuration->nBins_Dphi_shft);
+
+    /* calculate P2 */
+    h_P2_DetaDphi->Reset();
+    h_P2_DetaDphi->Add(h_dptdpt_DetaDphi, 1.0 / (pt_1_average * pt_2_average));
+    h_P2_DetaDphi->Divide(h_n2_DetaDphi);
+    shiftY(*h_P2_DetaDphi, *h_P2_DetaDphi_shft, configuration->nBins_Dphi_shft);
+
+    /* calculate BF component from R2 */
+    double rho1_1 = part1Histos->h_n1_phiEta->Integral() / (kTWOPI * (configuration->max_eta - configuration->min_eta));
+    TH2* tr2bf = (TH2*)h_R2_DetaDphi->Clone(TString::Format("%s_clone", h_R2bf12_DetaDphi_shft->GetName()).Data());
+    tr2bf->Add(minusone, -1.0); /* we recover rho2 over rho1rho1 */
+    tr2bf->Scale(rho1_1);
+    shiftY(*tr2bf, *h_R2bf12_DetaDphi_shft, configuration->nBins_Dphi_shft);
+    delete tr2bf;
+
+    /* calculate Pratt's BF component from profiles */
+    /* in principle the second single division should be automatically incorporated by the profiles when the same sign combination is substracted */
+    /* we havo to compensate for the extra downscale by the profile mechanism and convert it to a density distribution */
+    /* No, we don't! all the compensation should be taken care by the TProfile mechanism */
+    p_PrattBf_DetaDphi_shft->Reset();
+    p_PrattBf_DetaDphi_shft->Add(p_n2_DetaDphi, 1.0);
+
+    /* calculate Pratt's BF component from n2 and n1 histograms */
+    double n1_2 = part2Histos->h_n1_phiEta->Integral();
+    TH2* tbf = (TH2*)h_n2_DetaDphi->Clone(TString::Format("%s_clone", h_PrattBf_DetaDphi_shft->GetName()).Data());
+    downscale(h_n2_DetaDphi, tbf, configuration->nBins_eta, configuration->nBins_phi);
+    shiftY(*tbf, *h_PrattBf_DetaDphi_shft, configuration->nBins_Dphi_shft);
+    h_PrattBf_DetaDphi_shft->Scale(1.0 / (n1_2 * h_PrattBf_DetaDphi_shft->GetXaxis()->GetBinWidth(1) * h_PrattBf_DetaDphi_shft->GetYaxis()->GetBinWidth(1)));
+    delete tbf;
+
+    delete h_n1n1_phiEtaPhiEta;
+    delete h_pt1pt1_phiEtaPhiEta;
+    delete minusone;
   }
 
-  /* calculate R2 */
-  h_R2_DetaDphi->Reset();
-  h_R2_DetaDphi->Add(h_n2_DetaDphi, bincorrection);
-  h_R2_DetaDphi->Divide(h_n1n1_DetaDphi);
-  h_R2_DetaDphi->Add(minusone);
-  shiftY(*h_R2_DetaDphi, *h_R2_DetaDphi_shft, configuration->nBins_Dphi_shft);
-
-  /* calculate G2 */
-  h_G2_DetaDphi->Reset();
-  h_G2_DetaDphi->Add(h_ptpt_DetaDphi, bincorrection);
-  h_G2_DetaDphi->Add(h_pt1pt1_DetaDphi, -1.0);
-  h_G2_DetaDphi->Divide(h_n1n1_DetaDphi);
-  h_G2_DetaDphi->Scale(1.0 / (pt_1_average * pt_2_average));
-  shiftY(*h_G2_DetaDphi, *h_G2_DetaDphi_shft, configuration->nBins_Dphi_shft);
-
-  /* calculate P2 */
-  h_P2_DetaDphi->Reset();
-  h_P2_DetaDphi->Add(h_dptdpt_DetaDphi, 1.0 / (pt_1_average * pt_2_average));
-  h_P2_DetaDphi->Divide(h_n2_DetaDphi);
-  shiftY(*h_P2_DetaDphi, *h_P2_DetaDphi_shft, configuration->nBins_Dphi_shft);
-
-  /* calculate BF component from R2 */
-  double rho1_1 = part1Histos->h_n1_phiEta->Integral() / (kTWOPI * (configuration->max_eta - configuration->min_eta));
-  TH2* tr2bf = (TH2*)h_R2_DetaDphi->Clone(TString::Format("%s_clone", h_R2bf12_DetaDphi_shft->GetName()).Data());
-  tr2bf->Add(minusone, -1.0); /* we recover rho2 over rho1rho1 */
-  tr2bf->Scale(rho1_1);
-  shiftY(*tr2bf, *h_R2bf12_DetaDphi_shft, configuration->nBins_Dphi_shft);
-  delete tr2bf;
-
-  /* calculate Pratt's BF component from profiles */
-  /* in principle the second single division should be automatically incorporated by the profiles when the same sign combination is substracted */
-  /* we havo to compensate for the extra downscale by the profile mechanism and convert it to a density distribution */
-  /* No, we don't! all the compensation should be taken care by the TProfile mechanism */
-  p_PrattBf_DetaDphi_shft->Reset();
-  p_PrattBf_DetaDphi_shft->Add(p_n2_DetaDphi, 1.0);
-
-  /* calculate Pratt's BF component from n2 and n1 histograms */
-  double n1_2 = part2Histos->h_n1_phiEta->Integral();
-  TH2* tbf = (TH2*)h_n2_DetaDphi->Clone(TString::Format("%s_clone", h_PrattBf_DetaDphi_shft->GetName()).Data());
-  downscale(h_n2_DetaDphi, tbf, configuration->nBins_eta, configuration->nBins_phi);
-  shiftY(*tbf, *h_PrattBf_DetaDphi_shft, configuration->nBins_Dphi_shft);
-  h_PrattBf_DetaDphi_shft->Scale(1.0 / (n1_2 * h_PrattBf_DetaDphi_shft->GetXaxis()->GetBinWidth(1) * h_PrattBf_DetaDphi_shft->GetYaxis()->GetBinWidth(1)));
-  delete tbf;
-
-  delete h_n1n1_phiEtaPhiEta;
-  delete h_pt1pt1_phiEtaPhiEta;
-  delete minusone;
-
-  if (configuration->fillY) {
+  if (configuration->fillYorEta == configuration->kRapidity) {
     TH2F* h_n1n1_phiYPhiY = new TH2F((getHistoBaseName() + TString("n1n1_phiYPhiY")).Data(),
                                      "<n_{1}><n_{1}>;y_{1} x #varphi_{1};y_{2} x #varphi_{2}",
                                      configuration->nBins_phiY, 0.0, configuration->nBins_phiY,
@@ -385,6 +389,7 @@ void ParticlePairDerivedDiffHistos::calculateDerivedHistograms(ParticleHistos* p
                                        configuration->nBins_phiY, 0.0, configuration->nBins_phiY);
 
     calculateN1N1_H2H2H2(part1Histos->h_n1_phiY, part2Histos->h_n1_phiY, h_n1n1_phiYPhiY, 1.0, 1.0);
+    calculateN1N1_H1H1H2(part1Histos->h_n1_pt, part2Histos->h_n1_pt, h_n1n1_ptPt, 1.0, 1.0);
 
     calculateN1N1_H2H2H2(part1Histos->h_spt_phiY, part2Histos->h_spt_phiY, h_pt1pt1_phiYPhiY, 1.0, 1.0);
 

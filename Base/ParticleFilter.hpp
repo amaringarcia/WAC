@@ -11,6 +11,7 @@
 #define WAC_ParticleFilter
 #include "TString.h"
 #include "Particle.hpp"
+#include "AnalysisConfiguration.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Single Particle Filter
@@ -22,6 +23,7 @@
 // case  999:  accepts all
 //////////////////////////////////////////////////////////////////////////////////////////
 
+template <AnalysisConfiguration::RapidityPseudoRapidity r>
 class ParticleFilter
 {
  public:
@@ -47,10 +49,8 @@ class ParticleFilter
                  ChargeSelection chargeRequested,
                  double minPt,
                  double maxPt,
-                 double minEta,
-                 double maxEta,
-                 double minY,
-                 double maxY);
+                 double minRapPseudo,
+                 double maxRapPseudo);
   virtual ~ParticleFilter();
   bool accept(Particle& particle);
   TString getName();
@@ -66,18 +66,17 @@ class ParticleFilter
   ChargeSelection chargeRequested;
   double min_pt;
   double max_pt;
-  double min_eta;
-  double max_eta;
-  double min_y;
-  double max_y;
+  double min_rappseudo;
+  double max_rappseudo;
 
-  ClassDef(ParticleFilter, 1)
+  ClassDef(ParticleFilter, 2)
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // accept/reject the given particle based on filter parameter
 //////////////////////////////////////////////////////////////////////////////////////////
-inline bool ParticleFilter::accept(Particle& particle)
+template <AnalysisConfiguration::RapidityPseudoRapidity r>
+inline bool ParticleFilter<r>::accept(Particle& particle)
 {
   //  enum ChargeSelection   { AllCharges, Negative, Positive, Charged, Neutral };
   //  enum SpeciesSelection  { AllSpecies, Photon, Lepton, Electron, Muon, Hadron, Pion, Kaon, Baryon, Proton, Lambda };
@@ -148,16 +147,28 @@ inline bool ParticleFilter::accept(Particle& particle)
 
   double pt = particle.pt;
   double eta = particle.eta;
-  if (pt > min_pt &&
-      pt <= max_pt &&
-      eta >= min_eta &&
-      eta <= max_eta)
-    return true;
-  else
-    return false;
+  double y = particle.y;
+  if constexpr (r == AnalysisConfiguration::kRapidity) {
+    if (pt > min_pt &&
+        pt <= max_pt &&
+        y >= min_rappseudo &&
+        y <= max_rappseudo)
+      return true;
+    else
+      return false;
+  } else {
+    if (pt > min_pt &&
+        pt <= max_pt &&
+        eta >= min_rappseudo &&
+        eta <= max_rappseudo)
+      return true;
+    else
+      return false;
+  }
 }
 
-inline int ParticleFilter::getAcceptedIndex(std::vector<ParticleFilter*> filters, Particle& particle)
+template <AnalysisConfiguration::RapidityPseudoRapidity r>
+inline int ParticleFilter<r>::getAcceptedIndex(std::vector<ParticleFilter*> filters, Particle& particle)
 {
   for (uint i = 0; i < filters.size(); ++i) {
     if (filters[i]->accept(particle)) {

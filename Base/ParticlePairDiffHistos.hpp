@@ -32,17 +32,13 @@ class ParticlePairDiffHistos : public Histograms
                          LogLevel debugLevel);
   virtual ~ParticlePairDiffHistos();
   void initialize();
-  template <typename ParticleType1, typename ParticleType2>
-  int getGlobalDeltaEtaDeltaPhiBin(ParticleType1& p1, ParticleType2& p2);
-  template <typename ParticleType1, typename ParticleType2>
-  int getGlobalDeltaRapidityDeltaPhiBin(ParticleType1& p1, ParticleType2& p2);
-  template <typename ParticleType1, typename ParticleType2>
-  float getDeltaEta(ParticleType1& particle1, ParticleType2& particle2);
-  template <typename ParticleType1, typename ParticleType2>
-  float getDeltaY(ParticleType1& particle1, ParticleType2& particle2);
-  template <typename ParticleType1, typename ParticleType2>
+  template <AnalysisConfiguration::RapidityPseudoRapidity r, typename ParticleType1, typename ParticleType2>
+  int getGlobalDeltaYEtaDeltaPhiBin(ParticleType1& p1, ParticleType2& p2);
+  template <AnalysisConfiguration::RapidityPseudoRapidity r, typename ParticleType1, typename ParticleType2>
+  float getDeltaYEta(ParticleType1& particle1, ParticleType2& particle2);
+  template <AnalysisConfiguration::RapidityPseudoRapidity r, typename ParticleType1, typename ParticleType2>
   float getDeltaPhi(ParticleType1& particle1, ParticleType2& particle2);
-  template <typename ParticleType1, typename ParticleType2>
+  template <AnalysisConfiguration::RapidityPseudoRapidity r, typename ParticleType1, typename ParticleType2>
   void fill(ParticleType1& particle1, ParticleType2& particle2, double weight1, double weight2, double pTavg1 = 0.0, double pTavg2 = 0.0);
   void loadHistograms(TFile* inputFile);
 
@@ -68,65 +64,60 @@ class ParticlePairDiffHistos : public Histograms
 /// of particles' eta and phi within the corresponding ranges so, it is suppossed
 /// the particles have been accepted and they are within that ranges
 /// IF THAT IS NOT THE CASE THE ROUTINE WILL PRODUCE NONSENSE RESULTS
-template <typename ParticleType1, typename ParticleType2>
-inline float ParticlePairDiffHistos::getDeltaEta(ParticleType1& particle1, ParticleType2& particle2)
+template <AnalysisConfiguration::RapidityPseudoRapidity r, typename ParticleType1, typename ParticleType2>
+inline float ParticlePairDiffHistos::getDeltaYEta(ParticleType1& particle1, ParticleType2& particle2)
 {
-  return h_n2_DetaDphi->GetXaxis()->GetBinCenter(configuration->getDeltaEtaIndex(particle1, particle2) + 1);
-}
-
-template <typename ParticleType1, typename ParticleType2>
-inline float ParticlePairDiffHistos::getDeltaY(ParticleType1& particle1, ParticleType2& particle2)
-{
-  return h_n2_DyDphi->GetXaxis()->GetBinCenter(configuration->getDeltaRapidityIndex(particle1, particle2) + 1);
-}
-
-template <typename ParticleType1, typename ParticleType2>
-inline float ParticlePairDiffHistos::getDeltaPhi(ParticleType1& particle1, ParticleType2& particle2)
-{
-  return h_n2_DetaDphi->GetYaxis()->GetBinCenter(configuration->getDeltaPhiIndex(particle1, particle2) + 1);
-}
-
-template <typename ParticleType1, typename ParticleType2>
-inline int ParticlePairDiffHistos::getGlobalDeltaEtaDeltaPhiBin(ParticleType1& p1, ParticleType2& p2)
-{
-  return h_n2_DetaDphi->GetBin(configuration->getDeltaEtaIndex(p1, p2) + 1, configuration->getDeltaPhiIndex(p1, p2) + 1);
-}
-
-template <typename ParticleType1, typename ParticleType2>
-inline int ParticlePairDiffHistos::getGlobalDeltaRapidityDeltaPhiBin(ParticleType1& p1, ParticleType2& p2)
-{
-  if (configuration->fillY) {
-    return h_n2_DyDphi->GetBin(configuration->getDeltaRapidityIndex(p1, p2) + 1, configuration->getDeltaPhiIndex(p1, p2) + 1);
+  if constexpr (r == AnalysisConfiguration::kRapidity) {
+    return h_n2_DyDphi->GetXaxis()->GetBinCenter(configuration->getDeltaYEtaIndex<r>(particle1, particle2) + 1);
   } else {
-    return -1;
+    return h_n2_DetaDphi->GetXaxis()->GetBinCenter(configuration->getDeltaYEtaIndex<r>(particle1, particle2) + 1);
   }
 }
 
-template <typename ParticleType1, typename ParticleType2>
+template <AnalysisConfiguration::RapidityPseudoRapidity r, typename ParticleType1, typename ParticleType2>
+inline float ParticlePairDiffHistos::getDeltaPhi(ParticleType1& particle1, ParticleType2& particle2)
+{
+  if constexpr (r == AnalysisConfiguration::kRapidity) {
+    return h_n2_DyDphi->GetYaxis()->GetBinCenter(configuration->getDeltaPhiIndex(particle1, particle2) + 1);
+  } else {
+    return h_n2_DetaDphi->GetYaxis()->GetBinCenter(configuration->getDeltaPhiIndex(particle1, particle2) + 1);
+  }
+}
+
+template <AnalysisConfiguration::RapidityPseudoRapidity r, typename ParticleType1, typename ParticleType2>
+inline int ParticlePairDiffHistos::getGlobalDeltaYEtaDeltaPhiBin(ParticleType1& p1, ParticleType2& p2)
+{
+  if constexpr (r == AnalysisConfiguration::kRapidity) {
+    return h_n2_DyDphi->GetBin(configuration->getDeltaYEtaIndex<r>(p1, p2) + 1, configuration->getDeltaPhiIndex(p1, p2) + 1);
+  } else {
+    return h_n2_DetaDphi->GetBin(configuration->getDeltaYEtaIndex<r>(p1, p2) + 1, configuration->getDeltaPhiIndex(p1, p2) + 1);
+  }
+}
+
+template <AnalysisConfiguration::RapidityPseudoRapidity r, typename ParticleType1, typename ParticleType2>
 void ParticlePairDiffHistos::fill(ParticleType1& particle1, ParticleType2& particle2, double weight1, double weight2, double pTavg1, double pTavg2)
 {
-  int globaletabinno = getGlobalDeltaEtaDeltaPhiBin(particle1, particle2);
-  float deltaeta = getDeltaEta(particle1, particle2);
-  float deltaphi = getDeltaPhi(particle1, particle2);
-  h_n2_ptPt->Fill(particle1.pt, particle2.pt, weight1 * weight2);
-  p_n2_DetaDphi->Fill(deltaeta, deltaphi, weight1 * weight2);
-  h_n2_DetaDphi->AddBinContent(globaletabinno, weight1 * weight2);
-  h_ptpt_DetaDphi->AddBinContent(globaletabinno, weight1 * particle1.pt * weight2 * particle2.pt);
-  h_dptdpt_DetaDphi->AddBinContent(globaletabinno, (weight1 * particle1.pt - pTavg1) * (weight2 * particle2.pt - pTavg2));
-  h_n2_DetaDphi->SetEntries(h_n2_ptPt->GetEntries());
-  h_ptpt_DetaDphi->SetEntries(h_n2_ptPt->GetEntries());
-  h_dptdpt_DetaDphi->SetEntries(h_n2_ptPt->GetEntries());
+  int globalyetabinno = getGlobalDeltaYEtaDeltaPhiBin<r>(particle1, particle2);
+  float deltayeta = getDeltaYEta<r>(particle1, particle2);
+  float deltaphi = getDeltaPhi<r>(particle1, particle2);
 
-  if (configuration->fillY) {
-    int globalybinno = getGlobalDeltaRapidityDeltaPhiBin(particle1, particle2);
-    float deltay = getDeltaY(particle1, particle2);
-    h_n2_DyDphi->AddBinContent(globalybinno, weight1 * weight2);
-    p_n2_DyDphi->Fill(deltay, deltaphi, weight1 * weight2);
-    h_ptpt_DyDphi->AddBinContent(globalybinno, weight1 * particle1.pt * weight2 * particle2.pt);
-    h_dptdpt_DyDphi->AddBinContent(globalybinno, (weight1 * particle1.pt - pTavg1) * (weight2 * particle2.pt - pTavg2));
+  if constexpr (r == AnalysisConfiguration::kRapidity) {
+    h_n2_DyDphi->AddBinContent(globalyetabinno, weight1 * weight2);
+    p_n2_DyDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
+    h_ptpt_DyDphi->AddBinContent(globalyetabinno, weight1 * particle1.pt * weight2 * particle2.pt);
+    h_dptdpt_DyDphi->AddBinContent(globalyetabinno, (weight1 * particle1.pt - pTavg1) * (weight2 * particle2.pt - pTavg2));
     h_n2_DyDphi->SetEntries(h_n2_ptPt->GetEntries());
     h_ptpt_DyDphi->SetEntries(h_n2_ptPt->GetEntries());
     h_dptdpt_DyDphi->SetEntries(h_n2_ptPt->GetEntries());
+  } else {
+    h_n2_ptPt->Fill(particle1.pt, particle2.pt, weight1 * weight2);
+    p_n2_DetaDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
+    h_n2_DetaDphi->AddBinContent(globalyetabinno, weight1 * weight2);
+    h_ptpt_DetaDphi->AddBinContent(globalyetabinno, weight1 * particle1.pt * weight2 * particle2.pt);
+    h_dptdpt_DetaDphi->AddBinContent(globalyetabinno, (weight1 * particle1.pt - pTavg1) * (weight2 * particle2.pt - pTavg2));
+    h_n2_DetaDphi->SetEntries(h_n2_ptPt->GetEntries());
+    h_ptpt_DetaDphi->SetEntries(h_n2_ptPt->GetEntries());
+    h_dptdpt_DetaDphi->SetEntries(h_n2_ptPt->GetEntries());
   }
 }
 

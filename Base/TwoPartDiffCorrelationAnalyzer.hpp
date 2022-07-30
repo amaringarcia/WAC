@@ -18,6 +18,7 @@
 #include "Event.hpp"
 #include "EventFilter.hpp"
 #include "EventHistos.hpp"
+#include "AnalysisConfiguration.hpp"
 #include "ParticleFilter.hpp"
 #include "ParticlePairFilter.hpp"
 #include "ParticleHistos.hpp"
@@ -26,6 +27,7 @@
 #include "ParticlePairBalanceFunctionDiffHistos.hpp"
 #include "ParticlePairCombinedDiffHistos.hpp"
 
+template <AnalysisConfiguration::RapidityPseudoRapidity r>
 class TwoPartDiffCorrelationAnalyzer : public Task
 {
  public:
@@ -33,10 +35,10 @@ class TwoPartDiffCorrelationAnalyzer : public Task
   // CTOR
   //////////////////////////////////////////////////////////////
   TwoPartDiffCorrelationAnalyzer(const TString& name,
-                                 TaskConfiguration* configuration,
+                                 AnalysisConfiguration* configuration,
                                  Event* event,
                                  EventFilter* eventFilter,
-                                 std::vector<ParticleFilter*> particleFilters);
+                                 std::vector<ParticleFilter<r>*> particleFilters);
   virtual ~TwoPartDiffCorrelationAnalyzer();
   virtual void execute();
   virtual void createHistograms();
@@ -52,7 +54,7 @@ class TwoPartDiffCorrelationAnalyzer : public Task
   //////////////////////////////////////////////////////////////
 
   EventFilter* eventFilter;
-  std::vector<ParticleFilter*> particleFilters;
+  std::vector<ParticleFilter<r>*> particleFilters;
 
   std::vector<TString> partNames;
   std::vector<int> nAccepted;

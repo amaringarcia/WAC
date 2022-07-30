@@ -16,6 +16,7 @@
 #include "EventFilter.hpp"
 #include "ParticleFilter.hpp"
 
+template <AnalysisConfiguration::RapidityPseudoRapidity r>
 class PythiaEventGenerator : public Task
 {
  public:
@@ -23,12 +24,12 @@ class PythiaEventGenerator : public Task
                        TaskConfiguration* configuration,
                        Event* event,
                        EventFilter* ef,
-                       ParticleFilter* pf);
+                       ParticleFilter<r>* pf);
   virtual ~PythiaEventGenerator();
   virtual void initialize();
   virtual void finalize();
   virtual void reset();
-  void execute();
+  virtual void execute();
 
   int nMax;                //  = 10000;
   TClonesArray* particles; // = new TClonesArray("TParticle", nMax);
@@ -36,7 +37,7 @@ class PythiaEventGenerator : public Task
   TPythia8* pythia8; // = new TPythia8();
 
   EventFilter* eventFilter;
-  ParticleFilter* particleFilter;
+  ParticleFilter<r>* particleFilter;
 
   ClassDef(PythiaEventGenerator, 0)
 };

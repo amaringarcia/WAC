@@ -63,11 +63,12 @@ void ParticlePairCombinedDiffHistos::loadHistograms(TFile* inputFile)
 
   TString bn = getHistoBaseName();
 
-  h_R2_DetaDphi_shft = loadH2(inputFile, bn + TString("R2_DetaDphi_shft"));
-  h_P2_DetaDphi_shft = loadH2(inputFile, bn + TString("P2_DetaDphi_shft"));
-  h_G2_DetaDphi_shft = loadH2(inputFile, bn + TString("G2_DetaDphi_shft"));
-
-  if (configuration->fillY) {
+  if (configuration->fillYorEta == configuration->kPseudorapidity) {
+    h_R2_DetaDphi_shft = loadH2(inputFile, bn + TString("R2_DetaDphi_shft"));
+    h_P2_DetaDphi_shft = loadH2(inputFile, bn + TString("P2_DetaDphi_shft"));
+    h_G2_DetaDphi_shft = loadH2(inputFile, bn + TString("G2_DetaDphi_shft"));
+  }
+  if (configuration->fillYorEta == configuration->kRapidity) {
     h_R2_DyDphi_shft = loadH2(inputFile, bn + TString("R2_DyDphi_shft"));
     h_P2_DyDphi_shft = loadH2(inputFile, bn + TString("P2_DyDphi_shft"));
     h_G2_DyDphi_shft = loadH2(inputFile, bn + TString("G2_DyDphi_shft"));
@@ -90,11 +91,12 @@ void ParticlePairCombinedDiffHistos::createHistograms()
   AnalysisConfiguration& ac = *getConfiguration();
   TString bn = getHistoBaseName();
 
-  h_R2_DetaDphi_shft = createHistogram(bn + TString("R2_DetaDphi_shft"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi_shft, ac.max_Dphi_shft, "#Delta#eta", "#Delta#varphi", "R_{2}", scaled, saved, plotted, printed);
-  h_P2_DetaDphi_shft = createHistogram(bn + TString("P2_DetaDphi_shft"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi_shft, ac.max_Dphi_shft, "#Delta#eta", "#Delta#varphi", "P_{2}", scaled, saved, plotted, printed);
-  h_G2_DetaDphi_shft = createHistogram(bn + TString("G2_DetaDphi_shft"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi_shft, ac.max_Dphi_shft, "#Delta#eta", "#Delta#varphi", "G_{2}", scaled, saved, plotted, printed);
-
-  if (ac.fillY) {
+  if (ac.fillYorEta == ac.kPseudorapidity) {
+    h_R2_DetaDphi_shft = createHistogram(bn + TString("R2_DetaDphi_shft"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi_shft, ac.max_Dphi_shft, "#Delta#eta", "#Delta#varphi", "R_{2}", scaled, saved, plotted, printed);
+    h_P2_DetaDphi_shft = createHistogram(bn + TString("P2_DetaDphi_shft"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi_shft, ac.max_Dphi_shft, "#Delta#eta", "#Delta#varphi", "P_{2}", scaled, saved, plotted, printed);
+    h_G2_DetaDphi_shft = createHistogram(bn + TString("G2_DetaDphi_shft"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi_shft, ac.max_Dphi_shft, "#Delta#eta", "#Delta#varphi", "G_{2}", scaled, saved, plotted, printed);
+  }
+  if (ac.fillYorEta == ac.kRapidity) {
     h_R2_DyDphi_shft = createHistogram(bn + TString("R2_DyDphi_shft"), ac.nBins_Dy, ac.min_Dy, ac.max_Dy, ac.nBins_Dphi, ac.min_Dphi_shft, ac.max_Dphi_shft, "#Delta y", "#Delta#varphi", "R_{2}", scaled, saved, plotted, printed);
     h_P2_DyDphi_shft = createHistogram(bn + TString("P2_DyDphi_shft"), ac.nBins_Dy, ac.min_Dy, ac.max_Dy, ac.nBins_Dphi, ac.min_Dphi_shft, ac.max_Dphi_shft, "#Delta y", "#Delta#varphi", "P_{2}", scaled, saved, plotted, printed);
     h_G2_DyDphi_shft = createHistogram(bn + TString("G2_DyDphi_shft"), ac.nBins_Dy, ac.min_Dy, ac.max_Dy, ac.nBins_Dphi, ac.min_Dphi_shft, ac.max_Dphi_shft, "#Delta y", "#Delta#varphi", "G_{2}", scaled, saved, plotted, printed);
@@ -116,22 +118,23 @@ void ParticlePairCombinedDiffHistos::calculate(ParticlePairDerivedDiffHistos* pp
   if (reportDebug())
     cout << "ParticlePairCombinedDiffHistos::calculate() started" << endl;
 
-  h_R2_DetaDphi_shft->Reset();
-  h_R2_DetaDphi_shft->Add(pp->h_R2_DetaDphi_shft, mm->h_R2_DetaDphi_shft, app, amm);
-  h_R2_DetaDphi_shft->Add(pm->h_R2_DetaDphi_shft, apm);
-  h_R2_DetaDphi_shft->Add(mp->h_R2_DetaDphi_shft, amp);
+  if (configuration->fillYorEta == configuration->kPseudorapidity) {
+    h_R2_DetaDphi_shft->Reset();
+    h_R2_DetaDphi_shft->Add(pp->h_R2_DetaDphi_shft, mm->h_R2_DetaDphi_shft, app, amm);
+    h_R2_DetaDphi_shft->Add(pm->h_R2_DetaDphi_shft, apm);
+    h_R2_DetaDphi_shft->Add(mp->h_R2_DetaDphi_shft, amp);
 
-  h_P2_DetaDphi_shft->Reset();
-  h_P2_DetaDphi_shft->Add(pp->h_P2_DetaDphi_shft, mm->h_P2_DetaDphi_shft, app, amm);
-  h_P2_DetaDphi_shft->Add(pm->h_P2_DetaDphi_shft, apm);
-  h_P2_DetaDphi_shft->Add(mp->h_P2_DetaDphi_shft, amp);
+    h_P2_DetaDphi_shft->Reset();
+    h_P2_DetaDphi_shft->Add(pp->h_P2_DetaDphi_shft, mm->h_P2_DetaDphi_shft, app, amm);
+    h_P2_DetaDphi_shft->Add(pm->h_P2_DetaDphi_shft, apm);
+    h_P2_DetaDphi_shft->Add(mp->h_P2_DetaDphi_shft, amp);
 
-  h_G2_DetaDphi_shft->Reset();
-  h_G2_DetaDphi_shft->Add(pp->h_G2_DetaDphi_shft, mm->h_G2_DetaDphi_shft, app, amm);
-  h_G2_DetaDphi_shft->Add(pm->h_G2_DetaDphi_shft, apm);
-  h_G2_DetaDphi_shft->Add(mp->h_G2_DetaDphi_shft, amp);
-
-  if (configuration->fillY) {
+    h_G2_DetaDphi_shft->Reset();
+    h_G2_DetaDphi_shft->Add(pp->h_G2_DetaDphi_shft, mm->h_G2_DetaDphi_shft, app, amm);
+    h_G2_DetaDphi_shft->Add(pm->h_G2_DetaDphi_shft, apm);
+    h_G2_DetaDphi_shft->Add(mp->h_G2_DetaDphi_shft, amp);
+  }
+  if (configuration->fillYorEta == configuration->kRapidity) {
     h_R2_DetaDphi_shft->Reset();
     h_R2_DyDphi_shft->Add(pp->h_R2_DyDphi_shft, mm->h_R2_DyDphi_shft, app, amm);
     h_R2_DyDphi_shft->Add(pm->h_R2_DyDphi_shft, apm);

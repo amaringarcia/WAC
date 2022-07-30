@@ -21,8 +21,9 @@
 //////////////////////////////////////////////////////////////
 // CTOR
 //////////////////////////////////////////////////////////////
-TwoPartDiffCorrelationAnalyzer::TwoPartDiffCorrelationAnalyzer(const TString& name, TaskConfiguration* configuration, Event* event,
-                                                               EventFilter* ef, std::vector<ParticleFilter*> particleFilters)
+template <AnalysisConfiguration::RapidityPseudoRapidity r>
+TwoPartDiffCorrelationAnalyzer<r>::TwoPartDiffCorrelationAnalyzer(const TString& name, AnalysisConfiguration* configuration, Event* event,
+                                                                  EventFilter* ef, std::vector<ParticleFilter<r>*> particleFilters)
   : Task(name, configuration, event),
     eventFilter(ef),
     particleFilters(particleFilters),
@@ -71,7 +72,8 @@ TwoPartDiffCorrelationAnalyzer::TwoPartDiffCorrelationAnalyzer(const TString& na
 //////////////////////////////////////////////////////////////
 // DTOR
 //////////////////////////////////////////////////////////////
-TwoPartDiffCorrelationAnalyzer::~TwoPartDiffCorrelationAnalyzer()
+template <AnalysisConfiguration::RapidityPseudoRapidity r>
+TwoPartDiffCorrelationAnalyzer<r>::~TwoPartDiffCorrelationAnalyzer()
 {
   if (reportDebug())
     cout << "TwoPartDiffCorrelationAnalyzer::DTOR(...) Started" << endl;
@@ -104,7 +106,8 @@ TwoPartDiffCorrelationAnalyzer::~TwoPartDiffCorrelationAnalyzer()
     cout << "TwoPartDiffCorrelationAnalyzer::DTOR(...) Completed" << endl;
 }
 
-void TwoPartDiffCorrelationAnalyzer::createHistograms()
+template <AnalysisConfiguration::RapidityPseudoRapidity r>
+void TwoPartDiffCorrelationAnalyzer<r>::createHistograms()
 {
   if (reportDebug())
     cout << "TwoPartDiffCorrelationAnalyzer::initialize(...) started" << endl;
@@ -149,7 +152,8 @@ void TwoPartDiffCorrelationAnalyzer::createHistograms()
 //////////////////////////////////////////////////////////////
 // load histograms from given files
 //////////////////////////////////////////////////////////////
-void TwoPartDiffCorrelationAnalyzer::loadHistograms(TFile* inputFile)
+template <AnalysisConfiguration::RapidityPseudoRapidity r>
+void TwoPartDiffCorrelationAnalyzer<r>::loadHistograms(TFile* inputFile)
 {
   if (reportDebug())
     cout << "TwoPartDiffCorrelationAnalyzer::loadHistograms(...) Starting." << endl;
@@ -190,7 +194,8 @@ void TwoPartDiffCorrelationAnalyzer::loadHistograms(TFile* inputFile)
 //////////////////////////////////////////////////////////////
 // load the base histograms from given file
 //////////////////////////////////////////////////////////////
-void TwoPartDiffCorrelationAnalyzer::loadBaseHistograms(TFile* inputFile)
+template <AnalysisConfiguration::RapidityPseudoRapidity r>
+void TwoPartDiffCorrelationAnalyzer<r>::loadBaseHistograms(TFile* inputFile)
 {
   if (reportDebug())
     cout << "TwoPartDiffCorrelationAnalyzer::loadHistograms(...) Starting." << endl;
@@ -237,7 +242,8 @@ void TwoPartDiffCorrelationAnalyzer::loadBaseHistograms(TFile* inputFile)
 //////////////////////////////////////////////////////////////
 // save histograms to given files
 //////////////////////////////////////////////////////////////
-void TwoPartDiffCorrelationAnalyzer::saveHistograms(TFile* outputFile)
+template <AnalysisConfiguration::RapidityPseudoRapidity r>
+void TwoPartDiffCorrelationAnalyzer<r>::saveHistograms(TFile* outputFile)
 {
   if (reportDebug())
     cout << "TwoPartDiffCorrelationAnalyzer::saveHistograms(...) Saving Event histograms to file." << endl;
@@ -299,7 +305,8 @@ void TwoPartDiffCorrelationAnalyzer::saveHistograms(TFile* outputFile)
 //////////////////////////////////////////////////////////////
 // add histograms to an external list
 //////////////////////////////////////////////////////////////
-void TwoPartDiffCorrelationAnalyzer::addHistogramsToExtList(TList* list, bool all)
+template <AnalysisConfiguration::RapidityPseudoRapidity r>
+void TwoPartDiffCorrelationAnalyzer<r>::addHistogramsToExtList(TList* list, bool all)
 {
   if (reportDebug())
     cout << "TwoPartDiffCorrelationAnalyzer::addHistogramsToExtList(...) Saving Event histograms to file." << endl;
@@ -336,7 +343,8 @@ void TwoPartDiffCorrelationAnalyzer::addHistogramsToExtList(TList* list, bool al
     cout << "TwoPartDiffCorrelationAnalyzer::addHistogramsToExtList(...) Completed." << endl;
 }
 
-void TwoPartDiffCorrelationAnalyzer::execute()
+template <AnalysisConfiguration::RapidityPseudoRapidity r>
+void TwoPartDiffCorrelationAnalyzer<r>::execute()
 {
   if (reportDebug())
     cout << "TwoPartDiffCorrelationAnalyzer::analyze(...) Starting" << endl;
@@ -376,14 +384,14 @@ void TwoPartDiffCorrelationAnalyzer::execute()
     Particle* particle = event->getParticleAt(iParticle);
     if (reportDebug())
       particle->printProperties(cout);
-    int ixID = particle->ixID = ParticleFilter::getAcceptedIndex(particleFilters, *particle);
+    int ixID = particle->ixID = ParticleFilter<r>::getAcceptedIndex(particleFilters, *particle);
     if (ixID < 0) {
       if (reportDebug()) {
         cout << "  rejected! " << endl;
       }
       continue;
     }
-    particle_Histos[ixID]->fill(*particle, 1.0);
+    particle_Histos[ixID]->fill<r>(*particle, 1.0);
     nAccepted[ixID] += 1;
     if (reportDebug()) {
       cout << "  accepted as: " << particleFilters[particle->ixID]->getName() << endl;
@@ -408,7 +416,7 @@ void TwoPartDiffCorrelationAnalyzer::execute()
         if (ixID2 < 0)
           continue;
 
-        pairs_Histos[ixID1][ixID2]->fill(particle1, particle2, 1.0, 1.0);
+        pairs_Histos[ixID1][ixID2]->fill<r>(particle1, particle2, 1.0, 1.0);
       }
     }
   }
@@ -420,7 +428,8 @@ void TwoPartDiffCorrelationAnalyzer::execute()
 //////////////////////////////////////////////////////////////
 // calculate Derived Histograms
 //////////////////////////////////////////////////////////////
-void TwoPartDiffCorrelationAnalyzer::calculateDerivedHistograms()
+template <AnalysisConfiguration::RapidityPseudoRapidity r>
+void TwoPartDiffCorrelationAnalyzer<r>::calculateDerivedHistograms()
 {
   if (reportDebug())
     cout << "TwoPartDiffCorrelationAnalyzer::calculateDerivedHistograms() Starting" << endl;
@@ -467,7 +476,8 @@ void TwoPartDiffCorrelationAnalyzer::calculateDerivedHistograms()
 // Derived histograms are *NOT* scaled
 // They are not by construction
 //////////////////////////////////////////////////////////////
-void TwoPartDiffCorrelationAnalyzer::scaleHistograms(double factor)
+template <AnalysisConfiguration::RapidityPseudoRapidity r>
+void TwoPartDiffCorrelationAnalyzer<r>::scaleHistograms(double factor)
 {
   if (reportDebug())
     cout << "TwoPartDiffCorrelationAnalyzer::scaleHistograms(..) Scale all primary histograms by " << factor << endl;
@@ -486,4 +496,7 @@ void TwoPartDiffCorrelationAnalyzer::scaleHistograms(double factor)
     cout << "TwoPartDiffCorrelationAnalyzer::scale(..) Completed" << endl;
 }
 
-ClassImp(TwoPartDiffCorrelationAnalyzer)
+template class TwoPartDiffCorrelationAnalyzer<AnalysisConfiguration::kRapidity>;
+template class TwoPartDiffCorrelationAnalyzer<AnalysisConfiguration::kPseudorapidity>;
+
+templateClassImp(TwoPartDiffCorrelationAnalyzer)

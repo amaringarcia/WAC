@@ -24,6 +24,7 @@
 #include "ParticlePairDerivedHistos.hpp"
 #include "ParticlePairCombinedHistos.hpp"
 
+template <AnalysisConfiguration::RapidityPseudoRapidity r>
 class TwoPartCorrelationAnalyzer : public Task
 {
  public:
@@ -34,8 +35,8 @@ class TwoPartCorrelationAnalyzer : public Task
                              TaskConfiguration* configuration,
                              Event* event,
                              EventFilter* eventFilter,
-                             ParticleFilter* particleFilter1,
-                             ParticleFilter* particleFilter2);
+                             ParticleFilter<r>* particleFilter1,
+                             ParticleFilter<r>* particleFilter2);
   virtual ~TwoPartCorrelationAnalyzer();
   virtual void execute();
   virtual void createHistograms();
@@ -51,8 +52,8 @@ class TwoPartCorrelationAnalyzer : public Task
   //////////////////////////////////////////////////////////////
 
   EventFilter* eventFilter;
-  ParticleFilter* particleFilter1;
-  ParticleFilter* particleFilter2;
+  ParticleFilter<r>* particleFilter1;
+  ParticleFilter<r>* particleFilter2;
 
   TString partName1;
   TString partName2;

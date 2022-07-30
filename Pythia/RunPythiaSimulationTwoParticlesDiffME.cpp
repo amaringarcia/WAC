@@ -32,11 +32,11 @@ int main(int argc, char* argv[])
   // =========================
   // Short configuration
   // =========================
-  float min_eta = -1;
-  float max_eta = 1;
+  float min_y = -1;
+  float max_y = 1;
   float min_pt = 0.2;
   float max_pt = 2.5;
-  int nBins_eta = int((max_eta - min_eta) / 0.1);
+  int nBins_y = int((max_y - min_y) / 0.1);
   int nBins_pt = int((max_pt - min_pt) / 0.1);
 
   long nEventsRequested = 1000000;
@@ -82,12 +82,11 @@ int main(int argc, char* argv[])
                                                     nOptions,
                                                     pythiaOptions);
   EventFilter* eventFilterGen = new EventFilter(EventFilter::MinBias, 0.0, 0.0);
-  ParticleFilter* particleFilterGen = new ParticleFilter(ParticleFilter::AllSpecies,
-                                                         ParticleFilter::AllCharges,
-                                                         min_pt, max_pt,
-                                                         min_eta, max_eta,
-                                                         min_eta, max_eta);
-  PythiaEventGenerator* generator = new PythiaEventGenerator("PYTHIA", pc, event, eventFilterGen, particleFilterGen);
+  ParticleFilter<AnalysisConfiguration::kRapidity>* particleFilterGen = new ParticleFilter<AnalysisConfiguration::kRapidity>(ParticleFilter<AnalysisConfiguration::kRapidity>::AllSpecies,
+                                                                                                                             ParticleFilter<AnalysisConfiguration::kRapidity>::AllCharges,
+                                                                                                                             min_pt, max_pt,
+                                                                                                                             min_y, max_y);
+  PythiaEventGenerator<AnalysisConfiguration::kRapidity>* generator = new PythiaEventGenerator("PYTHIA", pc, event, eventFilterGen, particleFilterGen);
   generator->reportLevel = logLevel;
 
   // ==========================
@@ -111,12 +110,12 @@ int main(int argc, char* argv[])
   ac->nBins_pt = nBins_pt;
   ac->min_pt = min_pt;
   ac->max_pt = max_pt;
-  ac->nBins_eta = nBins_eta;
-  ac->min_eta = min_eta;
-  ac->max_eta = max_eta;
-  ac->nBins_y = nBins_eta;
-  ac->min_y = min_eta;
-  ac->max_y = max_eta;
+  ac->nBins_eta = nBins_y;
+  ac->min_eta = min_y;
+  ac->max_eta = max_y;
+  ac->nBins_y = nBins_y;
+  ac->min_y = min_y;
+  ac->max_y = max_y;
   ac->nBins_phi = 72;
   ac->min_phi = 0.0;
   ac->max_phi = kTWOPI;
@@ -125,27 +124,27 @@ int main(int argc, char* argv[])
   ac->fill3D = false;
   ac->fill6D = false;
   ac->fillQ3D = false;
-  ac->fillY = false;
+  ac->fillYorEta = AnalysisConfiguration::kRapidity;
 
   TString taskName;
   int nAnalysisTasks = 20;
   Task** analysisTasks = new Task*[nAnalysisTasks];
 
   EventFilter* eventFilter = new EventFilter(EventFilter::MinBias, 0.0, 0.0);
-  std::vector<ParticleFilter*> particleFilters;
-  particleFilters.push_back(new ParticleFilter(ParticleFilter::Pion, ParticleFilter::Positive, ac->min_pt, ac->max_pt, ac->min_eta, ac->max_eta, ac->min_y, ac->max_y));
-  particleFilters.push_back(new ParticleFilter(ParticleFilter::Pion, ParticleFilter::Negative, ac->min_pt, ac->max_pt, ac->min_eta, ac->max_eta, ac->min_y, ac->max_y));
-  particleFilters.push_back(new ParticleFilter(ParticleFilter::Kaon, ParticleFilter::Positive, ac->min_pt, ac->max_pt, ac->min_eta, ac->max_eta, ac->min_y, ac->max_y));
-  particleFilters.push_back(new ParticleFilter(ParticleFilter::Kaon, ParticleFilter::Negative, ac->min_pt, ac->max_pt, ac->min_eta, ac->max_eta, ac->min_y, ac->max_y));
-  particleFilters.push_back(new ParticleFilter(ParticleFilter::Proton, ParticleFilter::Positive, ac->min_pt, ac->max_pt, ac->min_eta, ac->max_eta, ac->min_y, ac->max_y));
-  particleFilters.push_back(new ParticleFilter(ParticleFilter::Proton, ParticleFilter::Negative, ac->min_pt, ac->max_pt, ac->min_eta, ac->max_eta, ac->min_y, ac->max_y));
+  std::vector<ParticleFilter<AnalysisConfiguration::kRapidity>*> particleFilters;
+  particleFilters.push_back(new ParticleFilter<AnalysisConfiguration::kRapidity>(ParticleFilter<AnalysisConfiguration::kRapidity>::Pion, ParticleFilter<AnalysisConfiguration::kRapidity>::Positive, ac->min_pt, ac->max_pt, ac->min_y, ac->max_y));
+  particleFilters.push_back(new ParticleFilter<AnalysisConfiguration::kRapidity>(ParticleFilter<AnalysisConfiguration::kRapidity>::Pion, ParticleFilter<AnalysisConfiguration::kRapidity>::Negative, ac->min_pt, ac->max_pt, ac->min_y, ac->max_y));
+  particleFilters.push_back(new ParticleFilter<AnalysisConfiguration::kRapidity>(ParticleFilter<AnalysisConfiguration::kRapidity>::Kaon, ParticleFilter<AnalysisConfiguration::kRapidity>::Positive, ac->min_pt, ac->max_pt, ac->min_y, ac->max_y));
+  particleFilters.push_back(new ParticleFilter<AnalysisConfiguration::kRapidity>(ParticleFilter<AnalysisConfiguration::kRapidity>::Kaon, ParticleFilter<AnalysisConfiguration::kRapidity>::Negative, ac->min_pt, ac->max_pt, ac->min_y, ac->max_y));
+  particleFilters.push_back(new ParticleFilter<AnalysisConfiguration::kRapidity>(ParticleFilter<AnalysisConfiguration::kRapidity>::Proton, ParticleFilter<AnalysisConfiguration::kRapidity>::Positive, ac->min_pt, ac->max_pt, ac->min_y, ac->max_y));
+  particleFilters.push_back(new ParticleFilter<AnalysisConfiguration::kRapidity>(ParticleFilter<AnalysisConfiguration::kRapidity>::Proton, ParticleFilter<AnalysisConfiguration::kRapidity>::Negative, ac->min_pt, ac->max_pt, ac->min_y, ac->max_y));
   // particleFilters.push_back(new ParticleFilter(ParticleFilter::Lambda, ParticleFilter::Neutral, ac->min_pt, ac->max_pt, ac->min_eta, ac->max_eta, ac->min_y, ac->max_y));
   // particleFilters.push_back(new ParticleFilter(ParticleFilter::ALambda, ParticleFilter::Neutral, ac->min_pt, ac->max_pt, ac->min_eta, ac->max_eta, ac->min_y, ac->max_y));
   // particleFilters.push_back(new ParticleFilter(ParticleFilter::Photon, ParticleFilter::Neutral, ac->min_pt, ac->max_pt, ac->min_eta, ac->max_eta, ac->min_y, ac->max_y));
 
   int iTask = 0;
   /* the two-particle analyzer */
-  analysisTasks[iTask++] = new TwoPartDiffCorrelationAnalyzerME("NarrowPiKaPrLa", ac, event, eventFilter, particleFilters);
+  analysisTasks[iTask++] = new TwoPartDiffCorrelationAnalyzerME<AnalysisConfiguration::kRapidity>("NarrowPiKaPrLa", ac, event, eventFilter, particleFilters);
   analysisTasks[iTask - 1]->reportLevel = logLevel;
 
   /* single particle analysis filters */
