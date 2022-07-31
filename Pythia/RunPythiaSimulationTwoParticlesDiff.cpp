@@ -31,14 +31,13 @@ int main(int argc, char* argv[])
   // =========================
   // Short configuration
   // =========================
-  float min_y = -4;
-  float max_y = 4;
+
+  std::vector<float> abs_y = {10.0, 5.0, 4.0, 3.0, 2.0, 1.0, 0.8};
   float min_pt = 0.0;
   float max_pt = 1e6;
-  int nBins_y = int((max_y - min_y) / 0.1);
   // int nBins_pt = int((max_pt - min_pt) / 0.1);
 
-  long nEventsRequested = 2000;
+  long nEventsRequested = 1000000;
   int nEventsReport = 10000;
   MessageLogger::LogLevel logLevel = MessageLogger::Info;
 
@@ -84,81 +83,89 @@ int main(int argc, char* argv[])
   ParticleFilter<AnalysisConfiguration::kRapidity>* particleFilterGen = new ParticleFilter<AnalysisConfiguration::kRapidity>(ParticleFilter<AnalysisConfiguration::kRapidity>::AllSpecies,
                                                                                                                              ParticleFilter<AnalysisConfiguration::kRapidity>::AllCharges,
                                                                                                                              min_pt, max_pt,
-                                                                                                                             min_y, max_y);
+                                                                                                                             -abs_y[0], abs_y[0]);
   PythiaEventGenerator<AnalysisConfiguration::kRapidity>* generator = new PythiaEventGenerator<AnalysisConfiguration::kRapidity>("PYTHIA", pc, event, eventFilterGen, particleFilterGen);
   generator->reportLevel = logLevel;
 
   // ==========================
   // Analysis Section
   // ==========================
-  AnalysisConfiguration* ac = new AnalysisConfiguration("PYTHIA", "PYTHIA", "1.0");
-  ac->loadHistograms = false;
-  ac->createHistograms = true;
-  ac->scaleHistograms = false;
-  ac->calculateDerivedHistograms = false;
-  ac->saveHistograms = true;
-  ac->resetHistograms = false;
-  ac->clearHistograms = false;
-  ac->forceHistogramsRewrite = true;
-  ac->inputPath = "Input/";
-  ac->rootInputFileName = "";
-  ac->outputPath = "Output/";
-  ac->rootOuputFileName = TString::Format("PYTHIA8_Pairs_%03d_", jobix).Data();
-  ac->histoBaseName = "TEST";
-
-  ac->bin_edges_pt = {0.0,
-                      0.10, 0.12, 0.14, 0.16, 0.18, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55,
-                      0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95, 1.0, 1.1, 1.2, 1.3, 1.4,
-                      1.5, 1.6, 1.7, 1.8, 1.9, 2.0, 2.2, 2.4, 2.6, 2.8, 3.0, 3.2, 3.4,
-                      3.6, 3.8, 4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 8.0, 10.0, 13.0, 20.0};
-  ac->nBins_pt = ac->bin_edges_pt.size() - 1;
-  ac->min_pt = min_pt;
-  ac->max_pt = max_pt;
-  ac->nBins_eta = nBins_y;
-  ac->min_eta = min_y;
-  ac->max_eta = max_y;
-  ac->nBins_y = nBins_y;
-  ac->min_y = min_y;
-  ac->max_y = max_y;
-  ac->nBins_phi = 72;
-  ac->min_phi = 0.0;
-  ac->max_phi = kTWOPI;
-
-  ac->fillPairs = true;
-  ac->fill3D = false;
-  ac->fill6D = false;
-  ac->fillQ3D = false;
-  ac->fillYorEta = AnalysisConfiguration::kRapidity;
-
-  TString taskName;
   int nAnalysisTasks = 20;
   Task** analysisTasks = new Task*[nAnalysisTasks];
-
-  /* for having the balance function correctly extracted the particle filters have to follow certain order */
-  /* - charged particle should come always first                                                           */
-  /* - particles of the same species, the positive has to come first and the negative immediately after    */
-  /* - after the charged particles the might come any number of neutral                                    */
-  /* - the balance function produced for neutrals will not have any sense                                  */
-  EventFilter* eventFilter = new EventFilter(EventFilter::MinBias, 0.0, 0.0);
-  std::vector<ParticleFilter<AnalysisConfiguration::kRapidity>*> particleFilters;
-  particleFilters.push_back(new ParticleFilter<AnalysisConfiguration::kRapidity>(ParticleFilter<AnalysisConfiguration::kRapidity>::Pion, ParticleFilter<AnalysisConfiguration::kRapidity>::Positive, ac->min_pt, ac->max_pt, ac->min_y, ac->max_y));
-  particleFilters.push_back(new ParticleFilter<AnalysisConfiguration::kRapidity>(ParticleFilter<AnalysisConfiguration::kRapidity>::Pion, ParticleFilter<AnalysisConfiguration::kRapidity>::Negative, ac->min_pt, ac->max_pt, ac->min_y, ac->max_y));
-  particleFilters.push_back(new ParticleFilter<AnalysisConfiguration::kRapidity>(ParticleFilter<AnalysisConfiguration::kRapidity>::Kaon, ParticleFilter<AnalysisConfiguration::kRapidity>::Positive, ac->min_pt, ac->max_pt, ac->min_y, ac->max_y));
-  particleFilters.push_back(new ParticleFilter<AnalysisConfiguration::kRapidity>(ParticleFilter<AnalysisConfiguration::kRapidity>::Kaon, ParticleFilter<AnalysisConfiguration::kRapidity>::Negative, ac->min_pt, ac->max_pt, ac->min_y, ac->max_y));
-  particleFilters.push_back(new ParticleFilter<AnalysisConfiguration::kRapidity>(ParticleFilter<AnalysisConfiguration::kRapidity>::Proton, ParticleFilter<AnalysisConfiguration::kRapidity>::Positive, ac->min_pt, ac->max_pt, ac->min_y, ac->max_y));
-  particleFilters.push_back(new ParticleFilter<AnalysisConfiguration::kRapidity>(ParticleFilter<AnalysisConfiguration::kRapidity>::Proton, ParticleFilter<AnalysisConfiguration::kRapidity>::Negative, ac->min_pt, ac->max_pt, ac->min_y, ac->max_y));
-
   int iTask = 0;
-  /* the two-particle analyzer */
-  analysisTasks[iTask++] = new TwoPartDiffCorrelationAnalyzer<AnalysisConfiguration::kRapidity>("NarrowPiKaPr", ac, event, eventFilter, particleFilters);
-  analysisTasks[iTask - 1]->reportLevel = logLevel;
 
-  /* single particle analysis filters */
-  /* int nParticleFilters = 1;
-  ParticleFilter** singleParticleFilters = new ParticleFilter*[nParticleFilters];
-  singleParticleFilters[0] = new ParticleFilter(ParticleFilter::AllSpecies, ParticleFilter::AllCharges, ac->min_pt, ac->max_pt, ac->min_eta, ac->max_eta, ac->min_y, ac->max_y);
-  analysisTasks[iTask++] = new ParticleAnalyzer("SinglesPythia", ac, event, eventFilter, nParticleFilters, singleParticleFilters);
-  analysisTasks[iTask - 1]->reportLevel = logLevel; */
+  for (float y : abs_y) {
+    double min_y = -y;
+    double max_y = y;
+    int nBins_y = int((max_y - min_y) / 0.1);
+
+    AnalysisConfiguration* ac = new AnalysisConfiguration("PYTHIA", "PYTHIA", "1.0");
+    ac->loadHistograms = false;
+    ac->createHistograms = true;
+    ac->scaleHistograms = false;
+    ac->calculateDerivedHistograms = false;
+    ac->saveHistograms = true;
+    ac->resetHistograms = false;
+    ac->clearHistograms = false;
+    ac->forceHistogramsRewrite = true;
+    ac->inputPath = "Input/";
+    ac->rootInputFileName = "";
+    ac->outputPath = "Output/";
+    ac->rootOuputFileName = TString::Format("PYTHIA8_Pairs_%03d_", jobix).Data();
+    ac->histoBaseName = "TEST";
+
+    ac->bin_edges_pt = {0.0,
+                        0.10, 0.12, 0.14, 0.16, 0.18, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55,
+                        0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95, 1.0, 1.1, 1.2, 1.3, 1.4,
+                        1.5, 1.6, 1.7, 1.8, 1.9, 2.0, 2.2, 2.4, 2.6, 2.8, 3.0, 3.2, 3.4,
+                        3.6, 3.8, 4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 8.0, 10.0, 13.0, 20.0};
+    ac->nBins_pt = ac->bin_edges_pt.size() - 1;
+    ac->min_pt = min_pt;
+    ac->max_pt = max_pt;
+    ac->nBins_eta = nBins_y;
+    ac->min_eta = min_y;
+    ac->max_eta = max_y;
+    ac->nBins_y = nBins_y;
+    ac->min_y = min_y;
+    ac->max_y = max_y;
+    ac->nBins_phi = 72;
+    ac->min_phi = 0.0;
+    ac->max_phi = kTWOPI;
+
+    ac->fillPairs = true;
+    ac->fill3D = false;
+    ac->fill6D = false;
+    ac->fillQ3D = false;
+    ac->fillYorEta = AnalysisConfiguration::kRapidity;
+
+    TString taskName = TString::Format("Rapidity%03dPiKaPr", int(y * 10));
+
+    /* for having the balance function correctly extracted the particle filters have to follow certain order */
+    /* - charged particle should come always first                                                           */
+    /* - particles of the same species, the positive has to come first and the negative immediately after    */
+    /* - after the charged particles the might come any number of neutral                                    */
+    /* - the balance function produced for neutrals will not have any sense                                  */
+    EventFilter* eventFilter = new EventFilter(EventFilter::MinBias, 0.0, 0.0);
+    std::vector<ParticleFilter<AnalysisConfiguration::kRapidity>*> particleFilters;
+    particleFilters.push_back(new ParticleFilter<AnalysisConfiguration::kRapidity>(ParticleFilter<AnalysisConfiguration::kRapidity>::Pion, ParticleFilter<AnalysisConfiguration::kRapidity>::Positive, ac->min_pt, ac->max_pt, ac->min_y, ac->max_y));
+    particleFilters.push_back(new ParticleFilter<AnalysisConfiguration::kRapidity>(ParticleFilter<AnalysisConfiguration::kRapidity>::Pion, ParticleFilter<AnalysisConfiguration::kRapidity>::Negative, ac->min_pt, ac->max_pt, ac->min_y, ac->max_y));
+    particleFilters.push_back(new ParticleFilter<AnalysisConfiguration::kRapidity>(ParticleFilter<AnalysisConfiguration::kRapidity>::Kaon, ParticleFilter<AnalysisConfiguration::kRapidity>::Positive, ac->min_pt, ac->max_pt, ac->min_y, ac->max_y));
+    particleFilters.push_back(new ParticleFilter<AnalysisConfiguration::kRapidity>(ParticleFilter<AnalysisConfiguration::kRapidity>::Kaon, ParticleFilter<AnalysisConfiguration::kRapidity>::Negative, ac->min_pt, ac->max_pt, ac->min_y, ac->max_y));
+    particleFilters.push_back(new ParticleFilter<AnalysisConfiguration::kRapidity>(ParticleFilter<AnalysisConfiguration::kRapidity>::Proton, ParticleFilter<AnalysisConfiguration::kRapidity>::Positive, ac->min_pt, ac->max_pt, ac->min_y, ac->max_y));
+    particleFilters.push_back(new ParticleFilter<AnalysisConfiguration::kRapidity>(ParticleFilter<AnalysisConfiguration::kRapidity>::Proton, ParticleFilter<AnalysisConfiguration::kRapidity>::Negative, ac->min_pt, ac->max_pt, ac->min_y, ac->max_y));
+
+    /* the two-particle analyzer */
+    analysisTasks[iTask++] = new TwoPartDiffCorrelationAnalyzer<AnalysisConfiguration::kRapidity>(taskName, ac, event, eventFilter, particleFilters);
+    analysisTasks[iTask - 1]->reportLevel = logLevel;
+
+    /* single particle analysis filters */
+    int nParticleFilters = 1;
+    TString singlesTtaskName = TString::Format("SinglesRapidity%03dAll", int(y * 10));
+    ParticleFilter<AnalysisConfiguration::kRapidity>** singleParticleFilters = new ParticleFilter<AnalysisConfiguration::kRapidity>*[nParticleFilters];
+    singleParticleFilters[0] = new ParticleFilter<AnalysisConfiguration::kRapidity>(ParticleFilter<AnalysisConfiguration::kRapidity>::AllSpecies, ParticleFilter<AnalysisConfiguration::kRapidity>::AllCharges, ac->min_pt, ac->max_pt, ac->min_y, ac->max_y);
+    analysisTasks[iTask++] = new ParticleAnalyzer<AnalysisConfiguration::kRapidity>(singlesTtaskName, ac, event, eventFilter, nParticleFilters, singleParticleFilters);
+    analysisTasks[iTask - 1]->reportLevel = logLevel;
+  }
 
   nAnalysisTasks = iTask;
 
