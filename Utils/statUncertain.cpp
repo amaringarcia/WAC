@@ -192,26 +192,22 @@ TList* extractSampleResults(Option_t* opt, AnalysisConfiguration* ac, int icent,
   list->SetOwner(kFALSE);
 
   /* the pair single histos */
+  bool doeta = TString(opt).Contains("eta");
   for (int ipart = 0; ipart < npart; ++ipart) {   /* first component of the pair */
     for (int jpart = 0; jpart < npart; ++jpart) { /* second component of the pair */
       TList* plist = new TList();                 /* a list per pair */
       plist->SetOwner(kTRUE);
-      for (int icf = 0; icf < ncorrpart; ++icf) { /* the individual pair cf */
-        TH2* h2 = NULL;
-        switch (icf) {
-          case 0: /* P2 */
-            h2 = eventanalyzer->pairs_Histos[ipart][jpart]->h_P2_DetaDphi_shft;
-            break;
-          case 1: /* R2 */
-            h2 = eventanalyzer->pairs_Histos[ipart][jpart]->h_R2_DetaDphi_shft;
-            break;
-          case 2: /* G2 */
-            h2 = eventanalyzer->pairs_Histos[ipart][jpart]->h_G2_DetaDphi_shft;
-            break;
-          default:
-            Fatal("extractSampleResults", "Wrong correlator index");
-        }
-        plist->Add(h2->Clone(TString::Format("%s%s_Sub%02d", h2->GetName(), centfname[icent].c_str(), isample)));
+      auto addToList = [plist, icent, isample](auto h) {
+        plist->Add(h->Clone(TString::Format("%s%s_Sub%02d", h->GetName(), centfname[icent].c_str(), isample)));
+      };
+      if (doeta) {
+        addToList(eventanalyzer->pairs_Histos[ipart][jpart]->h_P2_DetaDphi_shft);
+        addToList(eventanalyzer->pairs_Histos[ipart][jpart]->h_R2_DetaDphi_shft);
+        addToList(eventanalyzer->pairs_Histos[ipart][jpart]->h_G2_DetaDphi_shft);
+      } else {
+        addToList(eventanalyzer->pairs_Histos[ipart][jpart]->h_P2_DyDphi_shft);
+        addToList(eventanalyzer->pairs_Histos[ipart][jpart]->h_R2_DyDphi_shft);
+        addToList(eventanalyzer->pairs_Histos[ipart][jpart]->h_G2_DyDphi_shft);
       }
       list->Add(plist);
     }
@@ -255,14 +251,25 @@ TList* extractSampleResults(Option_t* opt, AnalysisConfiguration* ac, int icent,
       auto addToList = [plist, icent, isample](auto h) {
         plist->Add(h->Clone(TString::Format("%s%s_Sub%02d", h->GetName(), centfname[icent].c_str(), isample)));
       };
-      addToList(eventanalyzer->pairs_BFHistos[ipart][jpart]->h_R2BF_DetaDphi_shft);
-      addToList(eventanalyzer->pairs_BFHistos[ipart][jpart]->h_R2BF_Pratt_1bar2_DetaDphi_shft);
-      addToList(eventanalyzer->pairs_BFHistos[ipart][jpart]->h_R2BF_Pratt_bar12_DetaDphi_shft);
-      addToList(eventanalyzer->pairs_BFHistos[ipart][jpart]->h_PrattBF_DetaDphi_shft);
-      addToList(eventanalyzer->pairs_BFHistos[ipart][jpart]->h_PrattBF_1bar2_DetaDphi_shft);
-      addToList(eventanalyzer->pairs_BFHistos[ipart][jpart]->h_PrattBF_bar12_DetaDphi_shft);
-      addToList(eventanalyzer->pairs_BFHistos[ipart][jpart]->p_PrattBF_1bar2_DetaDphi_shft);
-      addToList(eventanalyzer->pairs_BFHistos[ipart][jpart]->p_PrattBF_bar12_DetaDphi_shft);
+      if (doeta) {
+        addToList(eventanalyzer->pairs_BFHistos[ipart][jpart]->h_R2BF_DetaDphi_shft);
+        addToList(eventanalyzer->pairs_BFHistos[ipart][jpart]->h_R2BF_Pratt_1bar2_DetaDphi_shft);
+        addToList(eventanalyzer->pairs_BFHistos[ipart][jpart]->h_R2BF_Pratt_bar12_DetaDphi_shft);
+        addToList(eventanalyzer->pairs_BFHistos[ipart][jpart]->h_PrattBF_DetaDphi_shft);
+        addToList(eventanalyzer->pairs_BFHistos[ipart][jpart]->h_PrattBF_1bar2_DetaDphi_shft);
+        addToList(eventanalyzer->pairs_BFHistos[ipart][jpart]->h_PrattBF_bar12_DetaDphi_shft);
+        addToList(eventanalyzer->pairs_BFHistos[ipart][jpart]->p_PrattBF_1bar2_DetaDphi_shft);
+        addToList(eventanalyzer->pairs_BFHistos[ipart][jpart]->p_PrattBF_bar12_DetaDphi_shft);
+      } else {
+        addToList(eventanalyzer->pairs_BFHistos[ipart][jpart]->h_R2BF_DyDphi_shft);
+        addToList(eventanalyzer->pairs_BFHistos[ipart][jpart]->h_R2BF_Pratt_1bar2_DyDphi_shft);
+        addToList(eventanalyzer->pairs_BFHistos[ipart][jpart]->h_R2BF_Pratt_bar12_DyDphi_shft);
+        addToList(eventanalyzer->pairs_BFHistos[ipart][jpart]->h_PrattBF_DyDphi_shft);
+        addToList(eventanalyzer->pairs_BFHistos[ipart][jpart]->h_PrattBF_1bar2_DyDphi_shft);
+        addToList(eventanalyzer->pairs_BFHistos[ipart][jpart]->h_PrattBF_bar12_DyDphi_shft);
+        addToList(eventanalyzer->pairs_BFHistos[ipart][jpart]->p_PrattBF_1bar2_DyDphi_shft);
+        addToList(eventanalyzer->pairs_BFHistos[ipart][jpart]->p_PrattBF_bar12_DyDphi_shft);
+      }
       list->Add(plist);
     }
   }
@@ -272,27 +279,22 @@ TList* extractSampleResults(Option_t* opt, AnalysisConfiguration* ac, int icent,
     for (int jpart = 0; jpart < npart - (ipart + 1); ++jpart) { /* second component of the pair */
       TList* plist = new TList();                               /* a list per pair */
       plist->SetOwner(kTRUE);
-      for (int icf = 0; icf < ncorrpart; ++icf) { /* the individual pair cf */
-        TH2* h2ci = nullptr;
-        TH2* h2cd = nullptr;
-        switch (icf) {
-          case 0: /* P2 */
-            h2ci = eventanalyzer->pairs_CIHistos[ipart][jpart]->h_P2_DetaDphi_shft;
-            h2cd = eventanalyzer->pairs_CDHistos[ipart][jpart]->h_P2_DetaDphi_shft;
-            break;
-          case 1: /* R2 */
-            h2ci = eventanalyzer->pairs_CIHistos[ipart][jpart]->h_R2_DetaDphi_shft;
-            h2cd = eventanalyzer->pairs_CDHistos[ipart][jpart]->h_R2_DetaDphi_shft;
-            break;
-          case 2: /* G2 */
-            h2ci = eventanalyzer->pairs_CIHistos[ipart][jpart]->h_G2_DetaDphi_shft;
-            h2cd = eventanalyzer->pairs_CDHistos[ipart][jpart]->h_G2_DetaDphi_shft;
-            break;
-          default:
-            Fatal("extractSampleResults", "Wrong correlator index");
-        }
-        plist->Add(h2ci->Clone(TString::Format("%s%s_Sub%02d", h2ci->GetName(), centfname[icent].c_str(), isample)));
-        plist->Add(h2cd->Clone(TString::Format("%s%s_Sub%02d", h2cd->GetName(), centfname[icent].c_str(), isample)));
+      auto addToList = [plist, icent, isample](auto h) {
+        plist->Add(h->Clone(TString::Format("%s%s_Sub%02d", h->GetName(), centfname[icent].c_str(), isample)));
+      };
+      if (doeta) {
+        addToList(eventanalyzer->pairs_CIHistos[ipart][jpart]->h_P2_DetaDphi_shft);
+        addToList(eventanalyzer->pairs_CDHistos[ipart][jpart]->h_P2_DetaDphi_shft);
+        addToList(eventanalyzer->pairs_CIHistos[ipart][jpart]->h_R2_DetaDphi_shft);
+        addToList(eventanalyzer->pairs_CDHistos[ipart][jpart]->h_R2_DetaDphi_shft);
+        addToList(eventanalyzer->pairs_CIHistos[ipart][jpart]->h_G2_DetaDphi_shft);
+        addToList(eventanalyzer->pairs_CDHistos[ipart][jpart]->h_G2_DetaDphi_shft);
+      } else {
+        addToList(eventanalyzer->pairs_CIHistos[ipart][jpart]->h_P2_DyDphi_shft);
+        addToList(eventanalyzer->pairs_CDHistos[ipart][jpart]->h_P2_DyDphi_shft);
+        addToList(eventanalyzer->pairs_CIHistos[ipart][jpart]->h_R2_DyDphi_shft);
+        addToList(eventanalyzer->pairs_CIHistos[ipart][jpart]->h_G2_DyDphi_shft);
+        addToList(eventanalyzer->pairs_CDHistos[ipart][jpart]->h_G2_DyDphi_shft);
       }
       list->Add(plist);
     }
@@ -418,11 +420,12 @@ int main(int argc, char* argv[])
     Bool_t oldstatus = TH1::AddDirectoryStatus();
     TH1::AddDirectory(kFALSE);
 
+    const char* raporeta = TString(opt).Contains("eta") ? "eta" : "y";
     outputfile->cd();
     for (int ipart = 0; ipart < npart; ++ipart) {
       for (int jpart = 0; jpart < npart; ++jpart) {
         int ilst = ipart * npart + jpart;
-        TString pattern = TString::Format("Pythia8_%s%s%%s_DetaDphi_shft_%s", partname[ipart], partname[jpart], centfname[icent].c_str());
+        TString pattern = TString::Format("Pythia8_%s%s%%s_D%sDphi_shft_%s", partname[ipart], partname[jpart], raporeta, centfname[icent].c_str());
         TList* meanhlist = extractMeanAndStDevFromSubSets(pairslists[ilst], pattern, corrfname);
         for (int ixh = 0; ixh < meanhlist->GetEntries(); ixh++) {
           meanhlist->At(ixh)->Write();
@@ -434,7 +437,7 @@ int main(int argc, char* argv[])
       int ilst = npart * npart;
       for (int ipart = 0; ipart < npart; ++ipart) {
         for (int jpart = 0; jpart < npart; ++jpart) {
-          TString pattern = TString::Format("Pythia8_%s%s%%s_DetaDphi_shft_me_%s", partname[ipart], partname[jpart], centfname[icent].c_str());
+          TString pattern = TString::Format("Pythia8_%s%s%%s_D%sDphi_shft_me_%s", partname[ipart], partname[jpart], raporeta, centfname[icent].c_str());
           TList* meanhlist = extractMeanAndStDevFromSubSets(pairslists[ilst++], pattern, corrfname);
           for (int ixh = 0; ixh < meanhlist->GetEntries(); ixh++) {
             meanhlist->At(ixh)->Write();
@@ -451,7 +454,7 @@ int main(int argc, char* argv[])
     }
     for (int ipart = 0; ipart < int(npart / 2); ++ipart) {
       for (int jpart = 0; jpart < int(npart / 2); ++jpart) {
-        TString pattern = TString::Format("Pythia8_%.2s%.2s%%s_DetaDphi_shft_%s", partname[ipart * 2], partname[jpart * 2], centfname[icent].c_str());
+        TString pattern = TString::Format("Pythia8_%.2s%.2s%%s_D%sDphi_shft_%s", partname[ipart * 2], partname[jpart * 2], raporeta, centfname[icent].c_str());
         TList* meanhlist = extractMeanAndStDevFromSubSets(pairslists[ilst++], pattern, bfnames);
         for (int ixh = 0; ixh < meanhlist->GetEntries(); ixh++) {
           meanhlist->At(ixh)->Write();
@@ -472,7 +475,7 @@ int main(int argc, char* argv[])
     /* we keep tracking with the previous ilst content */
     for (int ipart = 0; ipart < npart; ++ipart) {
       for (int jpart = 0; jpart < npart - (ipart + 1); ++jpart) {
-        TString pattern = TString::Format("Pythia8_%s%s%%s_DetaDphi_shft_%s", partname[ipart], partname[ipart + 1 + jpart], centfname[icent].c_str());
+        TString pattern = TString::Format("Pythia8_%s%s%%s_D%sDphi_shft_%s", partname[ipart], partname[ipart + 1 + jpart], raporeta, centfname[icent].c_str());
         TList* meanhlist = extractMeanAndStDevFromSubSets(pairslists[ilst++], pattern, cfnamecomb);
         for (int ixh = 0; ixh < meanhlist->GetEntries(); ixh++) {
           meanhlist->At(ixh)->Write();
