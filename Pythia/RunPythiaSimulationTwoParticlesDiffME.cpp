@@ -86,7 +86,7 @@ int main(int argc, char* argv[])
                                                                                                                              ParticleFilter<AnalysisConfiguration::kRapidity>::AllCharges,
                                                                                                                              min_pt, max_pt,
                                                                                                                              min_y, max_y);
-  PythiaEventGenerator<AnalysisConfiguration::kRapidity>* generator = new PythiaEventGenerator("PYTHIA", pc, event, eventFilterGen, particleFilterGen);
+  PythiaEventGenerator<AnalysisConfiguration::kRapidity>* generator = new PythiaEventGenerator<AnalysisConfiguration::kRapidity>("PYTHIA", pc, event, eventFilterGen, particleFilterGen);
   generator->reportLevel = logLevel;
 
   // ==========================

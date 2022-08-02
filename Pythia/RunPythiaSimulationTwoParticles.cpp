@@ -59,7 +59,7 @@ int main(int argc, char* argv[])
                                                                                                                              ParticleFilter<AnalysisConfiguration::kRapidity>::Charged,
                                                                                                                              0.2, 100.0,
                                                                                                                              -10.0, 10.0);
-  PythiaEventGenerator<AnalysisConfiguration::kRapidity>* generator = new PythiaEventGenerator("PYTHIA", pc, event, eventFilterGen, particleFilterGen);
+  PythiaEventGenerator<AnalysisConfiguration::kRapidity>* generator = new PythiaEventGenerator<AnalysisConfiguration::kRapidity>("PYTHIA", pc, event, eventFilterGen, particleFilterGen);
 
   // ==========================
   // Analysis Section

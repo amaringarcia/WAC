@@ -114,7 +114,7 @@ void ParticlePairHistos::fill(Particle& particle1, Particle& particle2, double w
   bool wrongix = iPhiYEta1 < 0 || iPhiYEta2 < 0;
 
   if (!wrongix) {
-    if constexpr (r == ac.kPseudorapidity) {
+    if constexpr (r == AnalysisConfiguration::kPseudorapidity) {
       double eta1 = particle1.eta;
       double eta2 = particle2.eta;
       double deta = eta1 - eta2;
@@ -146,7 +146,7 @@ void ParticlePairHistos::fill(Particle& particle1, Particle& particle2, double w
     }
   }
 
-  if constexpr (r == ac.kRapidity) {
+  if constexpr (r == AnalysisConfiguration::kRapidity) {
 
     // delayed fill h_n2_yY  ->Fill(y1, y2, weight);
     // delayed fill h_ptn_yY ->Fill(y1, y2, weight*pt1);

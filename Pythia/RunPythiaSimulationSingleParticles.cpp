@@ -55,7 +55,7 @@ int main()
                                                                                                                              ParticleFilter<AnalysisConfiguration::kRapidity>::Charged,
                                                                                                                              0.2, 100.0,
                                                                                                                              -10.0, 10.0);
-  Task* generator = new PythiaEventGenerator("PYTHIA", pc, event, eventFilterGen, particleFilterGen);
+  Task* generator = new PythiaEventGenerator<AnalysisConfiguration::kRapidity>("PYTHIA", pc, event, eventFilterGen, particleFilterGen);
 
   // ==========================
   // Analysis Section
@@ -115,7 +115,7 @@ int main()
   particleFilters[9] = new ParticleFilter<AnalysisConfiguration::kRapidity>(ParticleFilter<AnalysisConfiguration::kRapidity>::Proton, ParticleFilter<AnalysisConfiguration::kRapidity>::Charged, ac->min_pt + 0.001, ac->max_pt, ac->min_y, ac->max_y);
   particleFilters[10] = new ParticleFilter<AnalysisConfiguration::kRapidity>(ParticleFilter<AnalysisConfiguration::kRapidity>::Proton, ParticleFilter<AnalysisConfiguration::kRapidity>::Positive, ac->min_pt + 0.001, ac->max_pt, ac->min_y, ac->max_y);
   particleFilters[11] = new ParticleFilter<AnalysisConfiguration::kRapidity>(ParticleFilter<AnalysisConfiguration::kRapidity>::Proton, ParticleFilter<AnalysisConfiguration::kRapidity>::Negative, ac->min_pt + 0.001, ac->max_pt, ac->min_y, ac->max_y);
-  analysisTasks[0] = new ParticleAnalyzer("Narrow", ac, event, eventFilter, nParticleFilters, particleFilters);
+  analysisTasks[0] = new ParticleAnalyzer<AnalysisConfiguration::kRapidity>("Narrow", ac, event, eventFilter, nParticleFilters, particleFilters);
 
   ParticleFilter<AnalysisConfiguration::kRapidity>** particleFiltersWide = new ParticleFilter<AnalysisConfiguration::kRapidity>*[nParticleFilters];
   particleFiltersWide[0] = new ParticleFilter<AnalysisConfiguration::kRapidity>(ParticleFilter<AnalysisConfiguration::kRapidity>::Hadron, ParticleFilter<AnalysisConfiguration::kRapidity>::Charged, acWide->min_pt + 0.001, acWide->max_pt, acWide->min_y, acWide->max_y);
@@ -130,7 +130,7 @@ int main()
   particleFiltersWide[9] = new ParticleFilter<AnalysisConfiguration::kRapidity>(ParticleFilter<AnalysisConfiguration::kRapidity>::Proton, ParticleFilter<AnalysisConfiguration::kRapidity>::Charged, acWide->min_pt + 0.001, acWide->max_pt, acWide->min_y, acWide->max_y);
   particleFiltersWide[10] = new ParticleFilter<AnalysisConfiguration::kRapidity>(ParticleFilter<AnalysisConfiguration::kRapidity>::Proton, ParticleFilter<AnalysisConfiguration::kRapidity>::Positive, acWide->min_pt + 0.001, acWide->max_pt, acWide->min_y, acWide->max_y);
   particleFiltersWide[11] = new ParticleFilter<AnalysisConfiguration::kRapidity>(ParticleFilter<AnalysisConfiguration::kRapidity>::Proton, ParticleFilter<AnalysisConfiguration::kRapidity>::Negative, acWide->min_pt + 0.001, acWide->max_pt, acWide->min_y, acWide->max_y);
-  analysisTasks[1] = new ParticleAnalyzer("Wide", acWide, event, eventFilter, nParticleFilters, particleFiltersWide);
+  analysisTasks[1] = new ParticleAnalyzer<AnalysisConfiguration::kRapidity>("Wide", acWide, event, eventFilter, nParticleFilters, particleFiltersWide);
 
   // ==========================
   // Event Loop
