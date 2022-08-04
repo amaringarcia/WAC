@@ -28,7 +28,22 @@ ParticlePairDiffHistos::ParticlePairDiffHistos(const TString& name,
     h_n2_DyDphi(nullptr),
     p_n2_DyDphi(nullptr),
     h_ptpt_DyDphi(nullptr),
-    h_dptdpt_DyDphi(nullptr)
+    h_dptdpt_DyDphi(nullptr),
+    h_n2_QinvKt(nullptr),
+    h_n2_QlongKt(nullptr),
+    h_n2_QsideKt(nullptr),
+    h_n2_QoutKt(nullptr),
+    h_n2_QlongQsideQout(nullptr),
+    h_ptpt_QinvKt(nullptr),
+    h_ptpt_QlongKt(nullptr),
+    h_ptpt_QsideKt(nullptr),
+    h_ptpt_QoutKt(nullptr),
+    h_ptpt_QlongQsideQout(nullptr),
+    h_dptdpt_QinvKt(nullptr),
+    h_dptdpt_QlongKt(nullptr),
+    h_dptdpt_QsideKt(nullptr),
+    h_dptdpt_QoutKt(nullptr),
+    h_dptdpt_QlongQsideQout(nullptr)
 {
   if (reportDebug())
     cout << "ParticlePairDiffHistos::CTOR() Started." << endl;
@@ -50,7 +65,22 @@ ParticlePairDiffHistos::ParticlePairDiffHistos(TFile* inputFile,
     h_n2_DyDphi(nullptr),
     p_n2_DyDphi(nullptr),
     h_ptpt_DyDphi(nullptr),
-    h_dptdpt_DyDphi(nullptr)
+    h_dptdpt_DyDphi(nullptr),
+    h_n2_QinvKt(nullptr),
+    h_n2_QlongKt(nullptr),
+    h_n2_QsideKt(nullptr),
+    h_n2_QoutKt(nullptr),
+    h_n2_QlongQsideQout(nullptr),
+    h_ptpt_QinvKt(nullptr),
+    h_ptpt_QlongKt(nullptr),
+    h_ptpt_QsideKt(nullptr),
+    h_ptpt_QoutKt(nullptr),
+    h_ptpt_QlongQsideQout(nullptr),
+    h_dptdpt_QinvKt(nullptr),
+    h_dptdpt_QlongKt(nullptr),
+    h_dptdpt_QsideKt(nullptr),
+    h_dptdpt_QoutKt(nullptr),
+    h_dptdpt_QlongQsideQout(nullptr)
 {
   if (reportDebug())
     cout << "ParticlePairDiffHistos::CTOR() Started." << endl;
@@ -108,10 +138,10 @@ void ParticlePairDiffHistos::initialize()
     h_n2_ptPt = createHistogram(bn + TString("n2_ptPt"), ac.nBins_pt, ac.min_pt, ac.max_pt, ac.nBins_pt, ac.min_pt, ac.max_pt, "p_{T,1}", "p_{T,2}", "N_{2}", scaled, saved, plotted, notPrinted);
   }
   if (ac.fillYorEta == ac.kPseudorapidity) {
-    h_n2_DetaDphi = createHistogram(bn + TString("n2_DetaDphi"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta#eta", "#Delta#varphi", "n_{2}", scaled, saved, notPlotted, notPrinted, false);
-    p_n2_DetaDphi = createProfile(bn + TString("p_n2_DetaDphi"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta#eta", "#Delta#varphi", "n_{2}", notScaled, saved, notPlotted, notPrinted, false);
-    h_ptpt_DetaDphi = createHistogram(bn + TString("ptpt_DetaDphi"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta#eta", "#Delta#varphi", "p_{T}xp_{T}", scaled, saved, notPlotted, notPrinted, false);
-    h_dptdpt_DetaDphi = createHistogram(bn + TString("dptdpt_DetaDphi"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta#eta", "#Delta#varphi", "(p_{T}-<p_{T}>)x(p_{T}-<p_{T}>)", scaled, saved, notPlotted, notPrinted, false);
+    h_n2_DetaDphi = createHistogram(bn + TString("n2_DetaDphi"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta#eta", "#Delta#varphi", "<n_{2}>", scaled, saved, notPlotted, notPrinted, false);
+    p_n2_DetaDphi = createProfile(bn + TString("p_n2_DetaDphi"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta#eta", "#Delta#varphi", "<n_{2}>", notScaled, saved, notPlotted, notPrinted, false);
+    h_ptpt_DetaDphi = createHistogram(bn + TString("ptpt_DetaDphi"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta#eta", "#Delta#varphi", "<p_{T}xp_{T}>", scaled, saved, notPlotted, notPrinted, false);
+    h_dptdpt_DetaDphi = createHistogram(bn + TString("dptdpt_DetaDphi"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta#eta", "#Delta#varphi", "<(p_{T}-<p_{T}>)x(p_{T}-<p_{T}>)>", scaled, saved, notPlotted, notPrinted, false);
 
     /* big histograms are forced to be created without sumw2 structure for it will not be used */
     h_n2_DetaDphi->SetBit(TH1::kIsNotW);
@@ -126,8 +156,8 @@ void ParticlePairDiffHistos::initialize()
   if (ac.fillYorEta == ac.kRapidity) {
     h_n2_DyDphi = createHistogram(bn + TString("n2_DyDphi"), ac.nBins_Dy, ac.min_Dy, ac.max_Dy, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta y", "#Delta#varphi", "<n_{2}>", scaled, saved, notPlotted, notPrinted, false);
     p_n2_DyDphi = createProfile(bn + TString("p_n2_DyDphi"), ac.nBins_Dy, ac.min_Dy, ac.max_Dy, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta y", "#Delta#varphi", "<n_{2}>", notScaled, saved, notPlotted, notPrinted, false);
-    h_ptpt_DyDphi = createHistogram(bn + TString("ptpt_DyDphi"), ac.nBins_Dy, ac.min_Dy, ac.max_Dy, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta y", "#Delta#varphi", "p_{T}xp_{T}", scaled, saved, notPlotted, notPrinted, false);
-    h_dptdpt_DyDphi = createHistogram(bn + TString("dptdpt_DyDphi"), ac.nBins_Dy, ac.min_Dy, ac.max_Dy, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta y", "#Delta#varphi", "p_{T}xp_{T}", scaled, saved, notPlotted, notPrinted, false);
+    h_ptpt_DyDphi = createHistogram(bn + TString("ptpt_DyDphi"), ac.nBins_Dy, ac.min_Dy, ac.max_Dy, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta y", "#Delta#varphi", "<p_{T}xp_{T}>", scaled, saved, notPlotted, notPrinted, false);
+    h_dptdpt_DyDphi = createHistogram(bn + TString("dptdpt_DyDphi"), ac.nBins_Dy, ac.min_Dy, ac.max_Dy, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta y", "#Delta#varphi", "<(p_{T}-<p_{T}>)x(p_{T}-<p_{T}>)>", scaled, saved, notPlotted, notPrinted, false);
 
     /* big histograms are forced to be created without sumw2 structure for it will not be used */
     h_n2_DyDphi->SetBit(TH1::kIsNotW);
@@ -138,6 +168,45 @@ void ParticlePairDiffHistos::initialize()
     h_ptpt_DyDphi->Sumw2(false);
     h_dptdpt_DyDphi->SetBit(TH1::kIsNotW);
     h_dptdpt_DyDphi->Sumw2(false);
+  }
+  if (ac.fillPratt) {
+    h_n2_QinvKt = createHistogram(bn + TString("n2_QinvKt"), ac.nBins_kT, ac.min_kT, ac.max_kT, ac.nBins_Qinv, ac.min_Qinv, ac.max_Qinv, "#it{k}_{T}", "#it{Q}_{inv}", "<n_{2}>", scaled, saved, notPlotted, notPrinted, false);
+    h_n2_QlongKt = createHistogram(bn + TString("n2_QlongKt"), ac.nBins_kT, ac.min_kT, ac.max_kT, ac.nBins_Qlong, ac.min_Qlong, ac.max_Qlong, "#it{k}_{T}", "#it{Q}_{long}", "<n_{2}>", scaled, saved, notPlotted, notPrinted, false);
+    h_n2_QsideKt = createHistogram(bn + TString("n2_QsideKt"), ac.nBins_kT, ac.min_kT, ac.max_kT, ac.nBins_Qside, ac.min_Qside, ac.max_Qside, "#it{k}_{T}", "#it{Q}_{side}", "<n_{2}>", scaled, saved, notPlotted, notPrinted, false);
+    h_n2_QoutKt = createHistogram(bn + TString("n2_QoutKt"), ac.nBins_kT, ac.min_kT, ac.max_kT, ac.nBins_Qout, ac.min_Qout, ac.max_Qout, "#it{k}_{T}", "#it{Q}_{out}", "<n_{2}>", scaled, saved, notPlotted, notPrinted, false);
+    h_n2_QlongQsideQout = createHistogram(bn + TString("n2_QlongQsideQout"), ac.nBins_Qout, ac.min_Qout, ac.max_Qout, ac.nBins_Qside, ac.min_Qside, ac.max_Qside, ac.nBins_Qlong, ac.min_Qlong, ac.max_Qlong, "#it{Q}_{out}", "#it{Q}_{side}", "#it{Q}_{long}", "<n_{2}>", scaled, saved, notPlotted, notPrinted, false);
+    h_ptpt_QinvKt = createHistogram(bn + TString("ptpt_QinvKt"), ac.nBins_kT, ac.min_kT, ac.max_kT, ac.nBins_Qinv, ac.min_Qinv, ac.max_Qinv, "#it{k}_{T}", "#it{Q}_{inv}", "<p_{T}xp_{T}>", scaled, saved, notPlotted, notPrinted, false);
+    h_ptpt_QlongKt = createHistogram(bn + TString("ptpt_QlongKt"), ac.nBins_kT, ac.min_kT, ac.max_kT, ac.nBins_Qlong, ac.min_Qlong, ac.max_Qlong, "#it{k}_{T}", "#it{Q}_{long}", "<p_{T}xp_{T}>", scaled, saved, notPlotted, notPrinted, false);
+    h_ptpt_QsideKt = createHistogram(bn + TString("ptpt_QsideKt"), ac.nBins_kT, ac.min_kT, ac.max_kT, ac.nBins_Qside, ac.min_Qside, ac.max_Qside, "#it{k}_{T}", "#it{Q}_{side}", "<p_{T}xp_{T}>", scaled, saved, notPlotted, notPrinted, false);
+    h_ptpt_QoutKt = createHistogram(bn + TString("ptpt_QoutKt"), ac.nBins_kT, ac.min_kT, ac.max_kT, ac.nBins_Qout, ac.min_Qout, ac.max_Qout, "#it{k}_{T}", "#it{Q}_{out}", "<p_{T}xp_{T}>", scaled, saved, notPlotted, notPrinted, false);
+    h_ptpt_QlongQsideQout = createHistogram(bn + TString("ptpt_QlongQsideQout"), ac.nBins_Qout, ac.min_Qout, ac.max_Qout, ac.nBins_Qside, ac.min_Qside, ac.max_Qside, ac.nBins_Qlong, ac.min_Qlong, ac.max_Qlong, "#it{Q}_{out}", "#it{Q}_{side}", "#it{Q}_{long}", "<p_{T}xp_{T}>", scaled, saved, notPlotted, notPrinted, false);
+    h_dptdpt_QinvKt = createHistogram(bn + TString("dptdpt_QinvKt"), ac.nBins_kT, ac.min_kT, ac.max_kT, ac.nBins_Qinv, ac.min_Qinv, ac.max_Qinv, "#it{k}_{T}", "#it{Q}_{inv}", "<(p_{T}-<p_{T}>)x(p_{T}-<p_{T}>)>", scaled, saved, notPlotted, notPrinted, false);
+    h_dptdpt_QlongKt = createHistogram(bn + TString("dptdpt_QlongKt"), ac.nBins_kT, ac.min_kT, ac.max_kT, ac.nBins_Qlong, ac.min_Qlong, ac.max_Qlong, "#it{k}_{T}", "#it{Q}_{long}", "<(p_{T}-<p_{T}>)x(p_{T}-<p_{T}>)>", scaled, saved, notPlotted, notPrinted, false);
+    h_dptdpt_QsideKt = createHistogram(bn + TString("dptdpt_QsideKt"), ac.nBins_kT, ac.min_kT, ac.max_kT, ac.nBins_Qside, ac.min_Qside, ac.max_Qside, "#it{k}_{T}", "#it{Q}_{side}", "<(p_{T}-<p_{T}>)x(p_{T}-<p_{T}>)>", saved, notPlotted, notPrinted, false);
+    h_dptdpt_QoutKt = createHistogram(bn + TString("dptdpt_QoutKt"), ac.nBins_kT, ac.min_kT, ac.max_kT, ac.nBins_Qout, ac.min_Qout, ac.max_Qout, "#it{k}_{T}", "#it{Q}_{out}", "<(p_{T}-<p_{T}>)x(p_{T}-<p_{T}>)>", scaled, saved, notPlotted, notPrinted, false);
+    h_dptdpt_QlongQsideQout = createHistogram(bn + TString("dptdpt_QlongQsideQout"), ac.nBins_Qout, ac.min_Qout, ac.max_Qout, ac.nBins_Qside, ac.min_Qside, ac.max_Qside, ac.nBins_Qlong, ac.min_Qlong, ac.max_Qlong, "#it{Q}_{out}", "#it{Q}_{side}", "#it{Q}_{long}", "<(p_{T}-<p_{T}>)x(p_{T}-<p_{T}>)>", scaled, saved, notPlotted, notPrinted, false);
+
+    auto noSumW2 = [](auto h) {
+      h->SetBit(TH1::kIsNotW);
+      h->Sumw2(false);
+    };
+
+    /* big histograms are forced to be created without sumw2 structure for it will not be used */
+    noSumW2(h_n2_QinvKt);
+    noSumW2(h_n2_QlongKt);
+    noSumW2(h_n2_QsideKt);
+    noSumW2(h_n2_QoutKt);
+    noSumW2(h_n2_QlongQsideQout);
+    noSumW2(h_ptpt_QinvKt);
+    noSumW2(h_ptpt_QlongKt);
+    noSumW2(h_ptpt_QsideKt);
+    noSumW2(h_ptpt_QoutKt);
+    noSumW2(h_ptpt_QlongQsideQout);
+    noSumW2(h_dptdpt_QinvKt);
+    noSumW2(h_dptdpt_QlongKt);
+    noSumW2(h_dptdpt_QsideKt);
+    noSumW2(h_dptdpt_QoutKt);
+    noSumW2(h_dptdpt_QlongQsideQout);
   }
 
   /* back to default behavior */
@@ -195,6 +264,24 @@ void ParticlePairDiffHistos::loadHistograms(TFile* inputFile)
     p_n2_DyDphi = loadProfile2D(inputFile, bn + TString("p_n2_DyDphi"), false); /* don't downscale the profiles */
     h_ptpt_DyDphi = loadH2(inputFile, bn + TString("ptpt_DyDphi"), true);
     h_dptdpt_DyDphi = loadH2(inputFile, bn + TString("dptdpt_DyDphi"), true);
+  }
+
+  if (ac.fillPratt) {
+    h_n2_QinvKt = loadH2(inputFile, bn + TString("n2_QinvKt"), true);
+    h_n2_QlongKt = loadH2(inputFile, bn + TString("n2_QlongKt"), true);
+    h_n2_QsideKt = loadH2(inputFile, bn + TString("n2_QsideKt"), true);
+    h_n2_QoutKt = loadH2(inputFile, bn + TString("n2_QsideKt"), true);
+    h_n2_QlongQsideQout = loadH3(inputFile, bn + TString("n2_QlongQsideQout"), true);
+    h_ptpt_QinvKt = loadH2(inputFile, bn + TString("ptpt_QinvKt"), true);
+    h_ptpt_QlongKt = loadH2(inputFile, bn + TString("ptpt_QlongKt"), true);
+    h_ptpt_QsideKt = loadH2(inputFile, bn + TString("ptpt_QsideKt"), true);
+    h_ptpt_QoutKt = loadH2(inputFile, bn + TString("ptpt_QsideKt"), true);
+    h_ptpt_QlongQsideQout = loadH3(inputFile, bn + TString("ptpt_QlongQsideQout"), true);
+    h_dptdpt_QinvKt = loadH2(inputFile, bn + TString("dptdpt_QinvKt"), true);
+    h_dptdpt_QlongKt = loadH2(inputFile, bn + TString("dptdpt_QlongKt"), true);
+    h_dptdpt_QsideKt = loadH2(inputFile, bn + TString("dptdpt_QsideKt"), true);
+    h_dptdpt_QoutKt = loadH2(inputFile, bn + TString("dptdpt_QsideKt"), true);
+    h_dptdpt_QlongQsideQout = loadH3(inputFile, bn + TString("dptdpt_QlongQsideQout"), true);
   }
   /* the histograms are not owned */
   bOwnTheHistograms = false;

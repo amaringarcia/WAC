@@ -87,19 +87,22 @@ class AnalysisConfiguration : public TaskConfiguration
   float binCorrMM;
   float binCorrPP;
 
-  // pairs q3d
-  int nBins_DeltaPlong;
-  double min_DeltaPlong;
-  double max_DeltaPlong;
-  double range_DeltaPlong;
-  int nBins_DeltaPside;
-  double min_DeltaPside;
-  double max_DeltaPside;
-  double range_DeltaPside;
-  int nBins_DeltaPout;
-  double min_DeltaPout;
-  double max_DeltaPout;
-  double range_DeltaPout;
+  // Pratt's Qinv, Qlong, Qside, Qout, additionally in kt
+  int nBins_Qinv;
+  double min_Qinv;
+  double max_Qinv;
+  int nBins_Qlong;
+  double min_Qlong;
+  double max_Qlong;
+  int nBins_Qside;
+  double min_Qside;
+  double max_Qside;
+  int nBins_Qout;
+  double min_Qout;
+  double max_Qout;
+  int nBins_kT;
+  double min_kT;
+  double max_kT;
 
   int nBins_Dphi;
   float min_Dphi;
@@ -118,9 +121,8 @@ class AnalysisConfiguration : public TaskConfiguration
   float width_Dy;
 
   bool fillPairs;
+  bool fillPratt;
   bool fill3D;
-  bool fill6D;
-  bool fillQ3D;
   RapidityPseudoRapidity fillYorEta;
 
   bool nuDynVsMult;

@@ -31,6 +31,18 @@ class Particle
   void boost(double ax, double ay, double az);
   void boostRapidity(double boost);
 
+  double getPx() { return px; }
+  double getPy() { return py; }
+  double getPz() { return pz; }
+  double getE() { return e; }
+  void getEPxPyPz(double* st)
+  {
+    st[0] = e;
+    st[1] = px;
+    st[2] = py;
+    st[3] = pz;
+  }
+
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Data Members
   ////////////////////////////////////////////////////////////////////////////////////////////////////////

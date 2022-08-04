@@ -128,13 +128,6 @@ void ParticlePairHistos::initialize()
     h_npt_etaEta = createHistogram(bn + TString("npt_etaEta"), ac.nBins_eta, ac.min_eta, ac.max_eta, ac.nBins_eta, ac.min_eta, ac.max_eta, "#eta_{1}", "#eta_{2}", "n x p_{T}", scaled, saved, notPlotted, notPrinted);
     h_ptn_etaEta = createHistogram(bn + TString("ptn_etaEta"), ac.nBins_eta, ac.min_eta, ac.max_eta, ac.nBins_eta, ac.min_eta, ac.max_eta, "#eta_{1}", "#eta_{2}", "p_{T} x n", scaled, saved, notPlotted, notPrinted);
     h_ptpt_etaEta = createHistogram(bn + TString("ptpt_etaEta"), ac.nBins_eta, ac.min_eta, ac.max_eta, ac.nBins_eta, ac.min_eta, ac.max_eta, "#eta_{1}", "#eta_{2}", "p_{T}xp_{T}", scaled, saved, plotted, notPrinted);
-    if (ac.fillQ3D) {
-      h_n2_Q3D = createHistogram(bn + TString("n2_Q3D"), ac.nBins_DeltaPlong, ac.min_DeltaPlong, ac.max_DeltaPlong,
-                                 ac.nBins_DeltaPside, ac.min_DeltaPside, ac.max_DeltaPside, ac.nBins_DeltaPout, ac.min_DeltaPout, ac.max_DeltaPout,
-                                 "Q_{long} (GeV/c)", "Q_{side}  (GeV/c)", "Q_{out}  (GeV/c)", "Yield", scaled, saved, notPlotted, notPrinted);
-      h_mInv_Lab = createHistogram(bn + TString("n2_mInvLab"), 100, static_cast<double>(0.0), 1.0, "m_{inv} (GeV/c^{2})", "yield", scaled, saved, plotted, notPrinted);
-      h_beta = createHistogram(bn + TString("n2_beta"), 100, static_cast<double>(0.0), 1.0, "#beta", "yield", scaled, saved, plotted, notPrinted);
-    }
   }
   if (ac.fillYorEta == ac.kRapidity) {
     h_n2_yY = createHistogram(bn + TString("n2_yY"), ac.nBins_y, ac.min_y, ac.max_y, ac.nBins_y, ac.min_y, ac.max_y, "y_{1}", "y_{2}", "N_{2}", scaled, saved, notPlotted, notPrinted);

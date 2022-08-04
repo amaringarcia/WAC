@@ -57,18 +57,21 @@ ClassImp(AnalysisConfiguration)
     binCorrMP(1.0),
     binCorrMM(1.0),
     binCorrPP(1.0),
-    nBins_DeltaPlong(10),
-    min_DeltaPlong(-1.0),
-    max_DeltaPlong(1.0),
-    range_DeltaPlong(2.0),
-    nBins_DeltaPside(10),
-    min_DeltaPside(-1.0),
-    max_DeltaPside(1.0),
-    range_DeltaPside(2.0),
-    nBins_DeltaPout(10),
-    min_DeltaPout(-1.0),
-    max_DeltaPout(1.0),
-    range_DeltaPout(2.0),
+    nBins_Qinv(40),
+    min_Qinv(0.0),
+    max_Qinv(2.0),
+    nBins_Qlong(20),
+    min_Qlong(-2.0),
+    max_Qlong(2.0),
+    nBins_Qside(20),
+    min_Qside(-2.0),
+    max_Qside(2.0),
+    nBins_Qout(20),
+    min_Qout(-2.0),
+    max_Qout(2.0),
+    nBins_kT(20),
+    min_kT(0.0),
+    max_kT(2.0),
     nBins_Dphi(36),
     min_Dphi(0.0),
     max_Dphi(0.0),
@@ -85,9 +88,8 @@ ClassImp(AnalysisConfiguration)
     max_Dy(2.0),
     width_Dy(4.0 / 39.0),
     fillPairs(true),
+    fillPratt(false),
     fill3D(false),
-    fill6D(false),
-    fillQ3D(false),
     fillYorEta(kPseudorapidity),
     nuDynVsMult(true),
     nuDynVsCent(false),
@@ -143,18 +145,21 @@ AnalysisConfiguration::AnalysisConfiguration(const AnalysisConfiguration& source
     binCorrMP(source.binCorrMP),
     binCorrMM(source.binCorrMM),
     binCorrPP(source.binCorrPP),
-    nBins_DeltaPlong(source.nBins_DeltaPlong),
-    min_DeltaPlong(source.min_DeltaPlong),
-    max_DeltaPlong(source.max_DeltaPlong),
-    range_DeltaPlong(source.range_DeltaPlong),
-    nBins_DeltaPside(source.nBins_DeltaPside),
-    min_DeltaPside(source.min_DeltaPside),
-    max_DeltaPside(source.max_DeltaPside),
-    range_DeltaPside(source.range_DeltaPside),
-    nBins_DeltaPout(source.nBins_DeltaPout),
-    min_DeltaPout(source.min_DeltaPout),
-    max_DeltaPout(source.max_DeltaPout),
-    range_DeltaPout(source.range_DeltaPout),
+    nBins_Qinv(source.nBins_Qinv),
+    min_Qinv(source.min_Qinv),
+    max_Qinv(source.max_Qinv),
+    nBins_Qlong(source.nBins_Qlong),
+    min_Qlong(source.min_Qlong),
+    max_Qlong(source.max_Qlong),
+    nBins_Qside(source.nBins_Qside),
+    min_Qside(source.min_Qside),
+    max_Qside(source.max_Qside),
+    nBins_Qout(source.nBins_Qout),
+    min_Qout(source.min_Qout),
+    max_Qout(source.max_Qout),
+    nBins_kT(source.nBins_kT),
+    min_kT(source.min_kT),
+    max_kT(source.max_kT),
     nBins_Dphi(source.nBins_Dphi),
     min_Dphi(source.min_Dphi),
     max_Dphi(source.max_Dphi),
@@ -171,9 +176,8 @@ AnalysisConfiguration::AnalysisConfiguration(const AnalysisConfiguration& source
     max_Dy(source.max_Dy),
     width_Dy(source.width_Dy),
     fillPairs(source.fillPairs),
+    fillPratt(source.fillPratt),
     fill3D(source.fill3D),
-    fill6D(source.fill6D),
-    fillQ3D(source.fillQ3D),
     fillYorEta(source.fillYorEta),
     nuDynVsMult(source.nuDynVsMult),
     nuDynVsCent(source.nuDynVsCent),
@@ -223,18 +227,21 @@ AnalysisConfiguration& AnalysisConfiguration::operator=(const AnalysisConfigurat
   binCorrPM = source.binCorrPM;
   binCorrMM = source.binCorrMM;
   binCorrPP = source.binCorrPP;
-  nBins_DeltaPlong = source.nBins_DeltaPlong;
-  min_DeltaPlong = source.min_DeltaPlong;
-  max_DeltaPlong = source.max_DeltaPlong;
-  range_DeltaPlong = source.range_DeltaPlong;
-  nBins_DeltaPside = source.nBins_DeltaPside;
-  min_DeltaPside = source.min_DeltaPside;
-  max_DeltaPside = source.max_DeltaPside;
-  range_DeltaPside = source.range_DeltaPside;
-  nBins_DeltaPout = source.nBins_DeltaPout;
-  min_DeltaPout = source.min_DeltaPout;
-  max_DeltaPout = source.max_DeltaPout;
-  range_DeltaPout = source.range_DeltaPout;
+  nBins_Qinv = source.nBins_Qinv;
+  min_Qinv = source.min_Qinv;
+  max_Qinv = source.max_Qinv;
+  nBins_Qlong = source.nBins_Qlong;
+  min_Qlong = source.min_Qlong;
+  max_Qlong = source.max_Qlong;
+  nBins_Qside = source.nBins_Qside;
+  min_Qside = source.min_Qside;
+  max_Qside = source.max_Qside;
+  nBins_Qout = source.nBins_Qout;
+  min_Qout = source.min_Qout;
+  max_Qout = source.max_Qout;
+  nBins_kT = source.nBins_kT;
+  min_kT = source.min_kT;
+  max_kT = source.max_kT;
   nBins_Dphi = source.nBins_Dphi;
   min_Dphi = source.min_Dphi;
   max_Dphi = source.max_Dphi;
@@ -251,9 +258,8 @@ AnalysisConfiguration& AnalysisConfiguration::operator=(const AnalysisConfigurat
   max_Dy = source.max_Dy;
   width_Dy = source.width_Dy;
   fillPairs = source.fillPairs;
+  fillPratt = source.fillPratt;
   fill3D = source.fill3D;
-  fill6D = source.fill6D;
-  fillQ3D = source.fillQ3D;
   fillYorEta = source.fillYorEta;
   nuDynVsMult = source.nuDynVsMult;
   nuDynVsCent = source.nuDynVsCent;
@@ -283,15 +289,15 @@ void AnalysisConfiguration::printConfiguration(ostream& os)
     << "                 nBinsEta: " << nBins_eta << endl
     << "                   minEta: " << min_eta << endl
     << "                   maxEta: " << max_eta << endl
+    << "                   nBinsY: " << nBins_y << endl
     << "                     minY: " << min_y << endl
     << "                     maxY: " << max_y << endl
     << "                 nBinsPhi: " << nBins_phi << endl
     << "                   minPhi: " << min_phi << endl
     << "                   maxPhi: " << max_phi << endl
     << "                fillPairs: " << fillPairs << endl
+    << "                fillPratt: " << fillPratt << endl
     << "                   fill3D: " << fill3D << endl
-    << "                   fill6D: " << fill6D << endl
-    << "                  fillQ3D: " << fillQ3D << endl
     << "             fillY or eta: " << ((fillYorEta == kRapidity) ? "Y" : "eta") << endl
     << "        +- bin correction: " << binCorrPM << endl
     << "        -+ bin correction: " << binCorrMP << endl

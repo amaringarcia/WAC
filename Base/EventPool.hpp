@@ -12,6 +12,7 @@
 #define EventPool_hpp
 
 #include <TError.h>
+#include <TMath.h>
 #include "Particle.hpp"
 
 using namespace std;
@@ -74,6 +75,18 @@ class MiniParticle
     output << "     eta: " << eta << endl;
     output << "     phi: " << phi << endl;
     output << "    ixID: " << ixID << endl;
+  }
+
+  double getPx() { return pt * cos(phi); }
+  double getPy() { return pt * sin(phi); }
+  double getPz() { return pt / TMath::Tan(2.0 * TMath::ATan(TMath::Exp(-eta))); }
+  double getE() { return 1.0 / TMath::TanH(y); }
+  void getEPxPyPz(double* st)
+  {
+    st[0] = getE();
+    st[1] = getPx();
+    st[2] = getPy();
+    st[3] = getPz();
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
