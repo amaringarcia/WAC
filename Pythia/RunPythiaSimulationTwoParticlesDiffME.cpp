@@ -121,9 +121,8 @@ int main(int argc, char* argv[])
   ac->max_phi = kTWOPI;
 
   ac->fillPairs = true;
+  ac->fillPratt = false;
   ac->fill3D = false;
-  ac->fill6D = false;
-  ac->fillQ3D = false;
   ac->fillYorEta = AnalysisConfiguration::kRapidity;
 
   TString taskName;

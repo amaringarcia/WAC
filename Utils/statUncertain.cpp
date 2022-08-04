@@ -382,8 +382,7 @@ int main(int argc, char* argv[])
 
     ac->fillPairs = true;
     ac->fill3D = false;
-    ac->fill6D = false;
-    ac->fillQ3D = false;
+    ac->fillPratt = false;
     ac->fillYorEta = LONGITUDINAL;
 
     ac->scaleHistograms = true;
