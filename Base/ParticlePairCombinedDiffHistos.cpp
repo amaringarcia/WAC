@@ -135,17 +135,17 @@ void ParticlePairCombinedDiffHistos::calculate(ParticlePairDerivedDiffHistos* pp
     h_G2_DetaDphi_shft->Add(mp->h_G2_DetaDphi_shft, amp);
   }
   if (configuration->fillYorEta == configuration->kRapidity) {
-    h_R2_DetaDphi_shft->Reset();
+    h_R2_DyDphi_shft->Reset();
     h_R2_DyDphi_shft->Add(pp->h_R2_DyDphi_shft, mm->h_R2_DyDphi_shft, app, amm);
     h_R2_DyDphi_shft->Add(pm->h_R2_DyDphi_shft, apm);
     h_R2_DyDphi_shft->Add(mp->h_R2_DyDphi_shft, amp);
 
-    h_P2_DetaDphi_shft->Reset();
+    h_P2_DyDphi_shft->Reset();
     h_P2_DyDphi_shft->Add(pp->h_P2_DyDphi_shft, mm->h_P2_DyDphi_shft, app, amm);
     h_P2_DyDphi_shft->Add(pm->h_P2_DyDphi_shft, apm);
     h_P2_DyDphi_shft->Add(mp->h_P2_DyDphi_shft, amp);
 
-    h_G2_DetaDphi_shft->Reset();
+    h_G2_DyDphi_shft->Reset();
     h_G2_DyDphi_shft->Add(pp->h_G2_DyDphi_shft, mm->h_G2_DyDphi_shft, app, amm);
     h_G2_DyDphi_shft->Add(pm->h_G2_DyDphi_shft, apm);
     h_G2_DyDphi_shft->Add(mp->h_G2_DyDphi_shft, amp);

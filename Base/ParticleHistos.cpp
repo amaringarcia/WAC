@@ -125,7 +125,7 @@ void ParticleHistos::loadHistograms(TFile* inputFile)
     }
   }
   if (ac.fillYorEta == ac.kRapidity) {
-    h_n1_y = loadH1(inputFile, bn + TString("n1_Y"), true);
+    h_n1_y = loadH1(inputFile, bn + TString("n1_y"), true);
     h_n1_ptY = loadH2(inputFile, bn + TString("n1_ptY"), true);
     h_n1_phiY = loadH2(inputFile, bn + TString("n1_phiY"), true);
     h_spt_phiY = loadH2(inputFile, bn + TString("sumpt1_phiY"), true);

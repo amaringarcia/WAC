@@ -293,6 +293,7 @@ TList* extractSampleResults(Option_t* opt, AnalysisConfiguration* ac, int icent,
         addToList(eventanalyzer->pairs_CIHistos[ipart][jpart]->h_P2_DyDphi_shft);
         addToList(eventanalyzer->pairs_CDHistos[ipart][jpart]->h_P2_DyDphi_shft);
         addToList(eventanalyzer->pairs_CIHistos[ipart][jpart]->h_R2_DyDphi_shft);
+        addToList(eventanalyzer->pairs_CDHistos[ipart][jpart]->h_R2_DyDphi_shft);
         addToList(eventanalyzer->pairs_CIHistos[ipart][jpart]->h_G2_DyDphi_shft);
         addToList(eventanalyzer->pairs_CDHistos[ipart][jpart]->h_G2_DyDphi_shft);
       }

@@ -181,7 +181,7 @@ void ParticlePairBalanceFunctionDiffHistos::calculate(ParticlePairDerivedDiffHis
     p_PrattBF_bar12_DetaDphi_shft->Add(bfmp->p_PrattBf_DetaDphi_shft, bfpp->p_PrattBf_DetaDphi_shft, 1.0, -1.0);
   }
   if (configuration->fillYorEta == configuration->kRapidity) {
-    h_R2BF_DetaDphi_shft->Reset();
+    h_R2BF_DyDphi_shft->Reset();
     h_R2BF_DyDphi_shft->Add(bfpp->h_R2bf12_DyDphi_shft, bfmm->h_R2bf12_DyDphi_shft, -0.5, -0.5);
     h_R2BF_DyDphi_shft->Add(bfpm->h_R2bf12_DyDphi_shft, 0.5);
     h_R2BF_DyDphi_shft->Add(bfmp->h_R2bf12_DyDphi_shft, 0.5);
