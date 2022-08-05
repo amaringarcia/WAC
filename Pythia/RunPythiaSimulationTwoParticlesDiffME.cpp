@@ -32,12 +32,12 @@ int main(int argc, char* argv[])
   // =========================
   // Short configuration
   // =========================
-  float min_y = -1;
-  float max_y = 1;
-  float min_pt = 0.2;
-  float max_pt = 2.5;
+  float min_y = -2;
+  float max_y = 2;
+  float min_pt = 0.0;
+  float max_pt = 1e6;
   int nBins_y = int((max_y - min_y) / 0.1);
-  int nBins_pt = int((max_pt - min_pt) / 0.1);
+  // int nBins_pt = int((max_pt - min_pt) / 0.1);
 
   long nEventsRequested = 1000000;
   int nEventsReport = 10000;
@@ -107,7 +107,12 @@ int main(int argc, char* argv[])
   ac->rootOuputFileName = TString::Format("PYTHIA8_Pairs_%03d_", jobix).Data();
   ac->histoBaseName = "TEST";
 
-  ac->nBins_pt = nBins_pt;
+  ac->bin_edges_pt = {0.0,
+                      0.10, 0.12, 0.14, 0.16, 0.18, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55,
+                      0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95, 1.0, 1.1, 1.2, 1.3, 1.4,
+                      1.5, 1.6, 1.7, 1.8, 1.9, 2.0, 2.2, 2.4, 2.6, 2.8, 3.0, 3.2, 3.4,
+                      3.6, 3.8, 4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 8.0, 10.0, 13.0, 20.0};
+  ac->nBins_pt = ac->bin_edges_pt.size() - 1;
   ac->min_pt = min_pt;
   ac->max_pt = max_pt;
   ac->nBins_eta = nBins_y;
