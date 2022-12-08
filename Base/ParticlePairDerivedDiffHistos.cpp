@@ -352,11 +352,9 @@ void ParticlePairDerivedDiffHistos::calculateDerivedHistograms(ParticleHistos* p
 
     /* calculate BF component from R2 */
     double rho1_1 = part1Histos->h_n1_phiEta->Integral() / (kTWOPI * (configuration->max_eta - configuration->min_eta));
-    TH2* tr2bf = (TH2*)h_R2_DetaDphi->Clone(TString::Format("%s_clone", h_R2bf12_DetaDphi_shft->GetName()).Data());
-    tr2bf->Add(minusone, -1.0); /* we recover rho2 over rho1rho1 */
-    tr2bf->Scale(rho1_1);
-    shiftY(*tr2bf, *h_R2bf12_DetaDphi_shft, configuration->nBins_Dphi_shft);
-    delete tr2bf;
+    double volume = kTWOPI * (configuration->max_eta - configuration->min_eta);
+    h_R2bf12_DetaDphi_shft->Reset();
+    h_R2bf12_DetaDphi_shft->Add(h_R2_DetaDphi_shft, rho1_1 / volume);
 
     /* calculate Pratt's BF component from profiles */
     /* in principle the second single division should be automatically incorporated by the profiles when the same sign combination is substracted */
@@ -368,7 +366,8 @@ void ParticlePairDerivedDiffHistos::calculateDerivedHistograms(ParticleHistos* p
     /* calculate Pratt's BF component from n2 and n1 histograms */
     double n1_2 = part2Histos->h_n1_phiEta->Integral();
     TH2* tbf = (TH2*)h_n2_DetaDphi->Clone(TString::Format("%s_clone", h_PrattBf_DetaDphi_shft->GetName()).Data());
-    downscale(h_n2_DetaDphi, tbf, configuration->nBins_eta, configuration->nBins_phi);
+    tbf->Reset();
+    tbf->Add(h_n2_DetaDphi, h_n1n1_DetaDphi, 1.0, -1.0);
     shiftY(*tbf, *h_PrattBf_DetaDphi_shft, configuration->nBins_Dphi_shft);
     h_PrattBf_DetaDphi_shft->Scale(1.0 / (n1_2 * h_PrattBf_DetaDphi_shft->GetXaxis()->GetBinWidth(1) * h_PrattBf_DetaDphi_shft->GetYaxis()->GetBinWidth(1)));
     delete tbf;
@@ -431,11 +430,9 @@ void ParticlePairDerivedDiffHistos::calculateDerivedHistograms(ParticleHistos* p
 
     /* calculate BF from R2 */
     double rho1_1 = part1Histos->h_n1_phiY->Integral() / (kTWOPI * (configuration->max_y - configuration->min_y));
-    TH2* tr2bf = (TH2*)h_R2_DyDphi->Clone(TString::Format("%s_clone", h_R2bf12_DyDphi_shft->GetName()).Data());
-    tr2bf->Add(minusone, -1.0); /* we recover rho2 over rho1rho1 */
-    tr2bf->Scale(rho1_1);
-    shiftY(*tr2bf, *h_R2bf12_DyDphi_shft, configuration->nBins_Dphi_shft);
-    delete tr2bf;
+    double volume = kTWOPI * (configuration->max_y - configuration->min_y);
+    h_R2bf12_DyDphi_shft->Reset();
+    h_R2bf12_DyDphi_shft->Add(h_R2_DyDphi_shft, rho1_1 / volume);
 
     /* calculate Pratt's BF component from profiles */
     /* in principle the second single division should be automatically incorporated by the profiles when the same sign combination is substracted */
@@ -447,7 +444,8 @@ void ParticlePairDerivedDiffHistos::calculateDerivedHistograms(ParticleHistos* p
     /* calculate Pratt's BF component from n2 and n1 histograms */
     double n1_2 = part2Histos->h_n1_phiY->Integral();
     TH2* tbf = (TH2*)h_n2_DyDphi->Clone(TString::Format("%s_clone", h_PrattBf_DyDphi_shft->GetName()).Data());
-    downscale(h_n2_DyDphi, tbf, configuration->nBins_y, configuration->nBins_phi);
+    tbf->Reset();
+    tbf->Add(h_n2_DyDphi, h_n1n1_DyDphi, 1.0, -1.0);
     shiftY(*tbf, *h_PrattBf_DyDphi_shft, configuration->nBins_Dphi_shft);
     h_PrattBf_DyDphi_shft->Scale(1.0 / (n1_2 * h_PrattBf_DyDphi_shft->GetXaxis()->GetBinWidth(1) * h_PrattBf_DyDphi_shft->GetYaxis()->GetBinWidth(1)));
     delete tbf;
