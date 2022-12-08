@@ -71,7 +71,7 @@ int nsamples = samplesfnames.size();
 TFile *getSampleFile(int icent,int isample) {
   TFile *f = nullptr;
 
-  std::string filename = TString::Format(samplesfnames[isample].c_str(),centfname[icent].c_str(),centfname[icent].c_str()).Data();
+  std::string filename = TString::Format(samplesfnames[isample].c_str(), centfname[icent].c_str()).Data();
   f = new TFile(filename.c_str());
   if (f == nullptr or not f->IsOpen()) {
     Error("statUncertain::getSampleFile","File %s not found. ABORTING!!!", filename.c_str());
