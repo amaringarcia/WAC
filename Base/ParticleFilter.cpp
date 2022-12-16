@@ -63,6 +63,9 @@ TString ParticleFilter<r>::getName()
     case Kaon:
       name = "Ka";
       break;
+    case KaonL:
+      name = "KaL";
+      break;
     case Baryon:
       name = "B";
       break;
@@ -131,6 +134,9 @@ TString ParticleFilter<r>::getTitle()
       break;
     case Kaon:
       name = "Kaon";
+      break;
+    case KaonL:
+      name = "KaonL";
       break;
     case Baryon:
       name = "Baryon";

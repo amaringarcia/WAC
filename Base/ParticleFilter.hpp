@@ -40,6 +40,7 @@ class ParticleFilter
                           Hadron,
                           Pion,
                           Kaon,
+                          KaonL,
                           Baryon,
                           Proton,
                           Lambda,
@@ -126,7 +127,10 @@ inline bool ParticleFilter<r>::accept(Particle& particle)
       accepting = (pid == 111) || (pid == 211);
       break;
     case Kaon:
-      accepting = (pid == 321) || (pid == 311) || (pid == 310) || (pid == 130);
+      accepting = (pid == 321) || (pid == 311) || (pid == 310);
+      break;
+    case KaonL:
+      accepting = (pid == 130);
       break;
     case Baryon:
       accepting = (pid == 2212) || (pid == 2112) || (pid == 3122);
