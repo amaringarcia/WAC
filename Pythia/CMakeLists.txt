@@ -26,7 +26,7 @@ target_include_directories(WacPythia  PUBLIC Base Pythia ${EXTRA_INCLUDES})
 
 add_executable(TestPythiaAnalysisConfiguration TestPythiaAnalysisConfiguration.cpp)
 target_include_directories(TestPythiaAnalysisConfiguration PUBLIC WacPythia ${EXTRA_INCLUDES})
-target_link_libraries(TestPythiaAnalysisConfiguration WacPythia ${ROOT_LIBRARIES} ${EXTRA_LIBS} ${CMAKE_DL_LIBS})
+target_link_libraries(TestPythiaAnalysisConfiguration Base WacPythia EG ${ROOT_LIBRARIES} ${EXTRA_LIBS} ${CMAKE_DL_LIBS})
 
 add_executable(RunPythiaSimulationSingleParticles RunPythiaSimulationSingleParticles.cpp)
 target_include_directories(RunPythiaSimulationSingleParticles PUBLIC Base WacPythia ${EXTRA_INCLUDES})
@@ -46,7 +46,7 @@ target_link_libraries(RunPythiaSimulationTwoParticlesDiffME Base WacPythia Base 
 
 add_executable(statUncertainPythia statUncertainPythia.cpp)
 target_include_directories(statUncertainPythia PUBLIC Base WacPythia ${EXTRA_INCLUDES})
-target_link_libraries(statUncertainPythia Base WacPythia ${WAC_ROOT_LIBRARIES} ${EXTRA_LIBS} ${CMAKE_DL_LIBS})
+target_link_libraries(statUncertainPythia Base WacPythia EG ${WAC_ROOT_LIBRARIES} ${EXTRA_LIBS} ${CMAKE_DL_LIBS})
 
 install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/libPythia.rootmap" "${CMAKE_CURRENT_BINARY_DIR}/libPythia_rdict.pcm" DESTINATION "$ENV{WAC_LIB}")
 install(TARGETS WacPythia  LIBRARY DESTINATION "$ENV{WAC_LIB}") 
