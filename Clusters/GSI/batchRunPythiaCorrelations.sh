@@ -25,7 +25,7 @@ mkdir $BASEDIRECTORY/$PRODUCTIONDIRECTORY
 echo Production $PRODUCTIONDIRECTORY
 
 # let's preserve the configuration
-cp /lustre/alice/users/vgonzale/CLUSTERMODELWAC/Pythia/RunPythiaSimulationTwoParticlesDiff.cpp $BASEDIRECTORY/$PRODUCTIONDIRECTORY
+cp /lustre/alice/users/$USER/CLUSTERMODELWAC/Pythia/RunPythiaSimulationTwoParticlesDiff.cpp $BASEDIRECTORY/$PRODUCTIONDIRECTORY
 
 for ijob in $(seq 1 $NMAINJOBS)
 do
@@ -33,7 +33,7 @@ do
   WORKINGDIRECTORY=$BASEDIRECTORY/$PRODUCTIONDIRECTORY/$(printf "BUNCH%02d" $ijob)
   mkdir -p $WORKINGDIRECTORY/Output
 
-  sbatch -J batch__PythiaCorr --array=1-$NSUBJOBS --chdir=$WORKINGDIRECTORY --time=03:00:00 -o $WORKINGDIRECTORY/Job_%A_%a.out -e $WORKINGDIRECTORY/Job_%A_%a.err -- /lustre/alice/users/vgonzale/CLUSTERMODELWAC/Clusters/GSI/runPythiaCorrelations.sh
+  sbatch -J batch__PythiaCorr --array=1-$NSUBJOBS --chdir=$WORKINGDIRECTORY --time=03:00:00 -o $WORKINGDIRECTORY/Job_%A_%a.out -e $WORKINGDIRECTORY/Job_%A_%a.err -- /lustre/alice/users/$USER/CLUSTERMODELWAC/Clusters/GSI/runPythiaCorrelations.sh
 
   sleep 2s
 done

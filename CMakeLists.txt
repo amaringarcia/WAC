@@ -31,7 +31,7 @@ find_library(PYTHIA8 pythia8 PATHS $ENV{PYTHIA8}/lib)
 add_compile_options(-pthread -std=c++17 -m64)
 
 #---Define useful ROOT functions and macros (e.g. ROOT_GENERATE_DICTIONARY)
-include_directories(${CMAKE_SOURCE_DIR} ${ROOT_INCLUDE_DIRS} $ENV{MYHOME} "Base" "Pythia" "Urqmd" $ENV{PYTHIA8}/include)
+include_directories(${CMAKE_SOURCE_DIR} ${ROOT_INCLUDE_DIRS} $ENV{MYHOME} $ENV{ATGSI} "Base" "Pythia" "Urqmd" $ENV{PYTHIA8}/include)
 set(WAC_ROOT_LIBRARIES ROOT::Core ROOT::MathCore ROOT::Hist ROOT::Tree ROOT::Graf ROOT::Physics ROOT::Gpad)
 
 add_library(EG SHARED IMPORTED)
@@ -40,7 +40,7 @@ add_library(PYTHIA8 SHARED IMPORTED)
 add_definitions(-DPYTHIA8XMLPATH="$ENV{PYTHIA8}/share/Pythia8/xmldoc")
 
 
-if (NOT DEFINED ENV{MYHOME})
+if (NOT DEFINED ENV{MYHOME} AND NOT DEFINED ENV{ATGSI})
 find_library(EGPythia8 EGPythia8)
 add_library(EGPythia8 SHARED IMPORTED)
 set_target_properties(EGPythia8 PROPERTIES IMPORTED_LOCATION ${EGPythia8})
@@ -52,6 +52,9 @@ set_target_properties(PYTHIA8 PROPERTIES IMPORTED_LOCATION ${PYTHIA8})
 
 if (DEFINED ENV{MYHOME})
 add_subdirectory(Home)
+endif()
+if (DEFINED ENV{ATGSI})
+add_subdirectory(GSI)
 endif()
 add_subdirectory(Base)
 add_subdirectory(Pythia)
