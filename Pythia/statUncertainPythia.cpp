@@ -55,31 +55,19 @@ std::vector<std::string> centfname = {
   "MB"};
 int ncent = centfname.size();
 
-std::vector<std::string> samplesfnames = {
-  "BUNCH01/Output/PYTHIA8_PiKaPr_%s.root",
-  "BUNCH02/Output/PYTHIA8_PiKaPr_%s.root",
-  "BUNCH03/Output/PYTHIA8_PiKaPr_%s.root",
-  "BUNCH04/Output/PYTHIA8_PiKaPr_%s.root",
-  "BUNCH05/Output/PYTHIA8_PiKaPr_%s.root",
-  "BUNCH06/Output/PYTHIA8_PiKaPr_%s.root",
-  "BUNCH07/Output/PYTHIA8_PiKaPr_%s.root",
-  "BUNCH08/Output/PYTHIA8_PiKaPr_%s.root",
-  "BUNCH09/Output/PYTHIA8_PiKaPr_%s.root",
-  "BUNCH10/Output/PYTHIA8_PiKaPr_%s.root",
-};
-int nsamples = samplesfnames.size();
+int nsamples = 10;
 
-TFile *getSampleFile(int icent,int isample) {
+TFile* getSampleFile(PythiaAnalysisConfiguration* conf, int irap, int icent, int isample)
+{
   TFile *f = nullptr;
 
-  std::string filename = TString::Format(samplesfnames[isample].c_str(), centfname[icent].c_str()).Data();
+  std::string filename = TString::Format("BUNCH%02d/Output/%s", isample + 1, TString::Format(conf->outputfname.c_str(), int(conf->abs_y[irap]), centfname[icent].c_str()).Data()).Data();
   f = new TFile(filename.c_str());
   if (f == nullptr or not f->IsOpen()) {
     Error("statUncertain::getSampleFile","File %s not found. ABORTING!!!", filename.c_str());
   }
   return f;
 }
-
 
 TH2 *extractHistoMeanAndStDevFromSubSets(const TObjArray &listsarray, Int_t ih, const TString &name) {
 
@@ -198,7 +186,7 @@ TList* extractSampleResults(Option_t* opt, PythiaAnalysisConfiguration* conf, in
   else
     eventanalyzer->setReportLevel(MessageLogger::Info);
 
-  TFile* myfile = getSampleFile(icent, isample);
+  TFile* myfile = getSampleFile(conf, irap, icent, isample);
   if (myfile == nullptr) return nullptr;
 
   eventanalyzer->loadBaseHistograms(myfile);
