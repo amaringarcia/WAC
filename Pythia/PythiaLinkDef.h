@@ -8,5 +8,6 @@
 #pragma link C++ class PythiaEventReader + ;
 #pragma link C++ class PythiaEventGenerator < AnalysisConfiguration::kRapidity> + ;
 #pragma link C++ class PythiaEventGenerator < AnalysisConfiguration::kPseudorapidity> + ;
+#pragma link C++ class PythiaAnalysisConfiguration + ;
 
 #endif
