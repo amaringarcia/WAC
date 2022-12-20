@@ -42,10 +42,10 @@ class PythiaAnalysisConfiguration : public TObject
   std::string gparticlefilter = "All";
   std::string gchargefilter = "All";
   bool inrapidity = true;
-  std::string outputfname = "PYTHIA8_Pairs_%%03d_";
-  std::string taskname = "Rapidity%%03dAll";
+  std::string outputfname = "PYTHIA8";
+  std::string taskname = "%s_Rapidity%03dAll";
   std::string teventfilter = "MB";
-  std::vector<std::string> tpairs = {"AllP", "AllM"};
+  std::vector<std::string> tpairs = {"AllP", "AllM", "La", "ALa", "Gam"};
   std::vector<std::string> tsingles = {"AllA"};
 
   template <AnalysisConfiguration::RapidityPseudoRapidity r>
@@ -67,6 +67,12 @@ class PythiaAnalysisConfiguration : public TObject
       return new ParticleFilter<r>(ParticleFilter<r>::Proton, ParticleFilter<r>::Positive, ac->min_pt, ac->max_pt, ac->min_y, ac->max_y);
     } else if (str == "PrM") {
       return new ParticleFilter<r>(ParticleFilter<r>::Proton, ParticleFilter<r>::Negative, ac->min_pt, ac->max_pt, ac->min_y, ac->max_y);
+    } else if (str == "Gam") {
+      return new ParticleFilter<r>(ParticleFilter<r>::Photon, ParticleFilter<r>::Neutral, ac->min_pt, ac->max_pt, ac->min_y, ac->max_y);
+    } else if (str == "La") {
+      return new ParticleFilter<r>(ParticleFilter<r>::Lambda, ParticleFilter<r>::Neutral, ac->min_pt, ac->max_pt, ac->min_y, ac->max_y);
+    } else if (str == "ALa") {
+      return new ParticleFilter<r>(ParticleFilter<r>::ALambda, ParticleFilter<r>::Neutral, ac->min_pt, ac->max_pt, ac->min_y, ac->max_y);
     } else if (str == "AllP") {
       return new ParticleFilter<r>(ParticleFilter<r>::AllSpecies, ParticleFilter<r>::Positive, ac->min_pt, ac->max_pt, ac->min_y, ac->max_y);
     } else if (str == "AllM") {

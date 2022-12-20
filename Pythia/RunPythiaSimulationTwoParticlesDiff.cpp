@@ -147,7 +147,7 @@ int main(int argc, char* argv[])
     ac->inputPath = "Input/";
     ac->rootInputFileName = "";
     ac->outputPath = "Output/";
-    ac->rootOuputFileName = TString::Format(conf->outputfname.c_str(), jobix).Data();
+    ac->rootOuputFileName = TString::Format("%s_%03d_", conf->outputfname.c_str(), jobix).Data();
     ac->histoBaseName = "TEST";
 
     ac->bin_edges_pt = conf->ptbins;
@@ -174,7 +174,8 @@ int main(int argc, char* argv[])
       return 0;
     }
 
-    TString taskName = TString::Format(conf->taskname.c_str(), int(y * 10));
+    /* the pairs taskname */
+    TString taskName = TString::Format(conf->taskname.c_str(), "Pairs", int(y * 10));
 
     /* event selection at the analysis task level */
     EventFilter::EventSelection eventSelection = EventFilter::MinBias;
@@ -218,7 +219,7 @@ int main(int argc, char* argv[])
     if (conf->tsingles.size() > 0) {
       int nParticleFilters = 0;
       if (conf->inrapidity) {
-        TString singlesTtaskName = TString::Format("Singles%s", TString::Format(conf->taskname.c_str(), int(y * 10)).Data());
+        TString singlesTtaskName = TString::Format(conf->taskname.c_str(), "Singles", int(y * 10)).Data();
         ParticleFilter<AnalysisConfiguration::kRapidity>** singleParticleFilters = new ParticleFilter<AnalysisConfiguration::kRapidity>*[50];
         for (auto part : conf->tsingles) {
           auto filter = PythiaAnalysisConfiguration::particleFilter<AnalysisConfiguration::kRapidity>(part, ac);

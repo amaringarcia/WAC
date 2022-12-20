@@ -61,7 +61,14 @@ TFile* getSampleFile(PythiaAnalysisConfiguration* conf, int irap, int icent, int
 {
   TFile *f = nullptr;
 
-  std::string filename = TString::Format("BUNCH%02d/Output/%s", isample + 1, TString::Format(conf->outputfname.c_str(), int(conf->abs_y[irap]), centfname[icent].c_str()).Data()).Data();
+  std::string filename = TString::Format("BUNCH%02d/Output/%s",
+                                         isample + 1,
+                                         TString::Format("%s_Pairs_%s_%s",
+                                                         conf->outputfname.c_str(),
+                                                         TString::Format(conf->taskname.c_str(), "Pairs", int(conf->abs_y[irap] * 10)).Data(),
+                                                         centfname[icent].c_str())
+                                           .Data())
+                           .Data();
   f = new TFile(filename.c_str());
   if (f == nullptr or not f->IsOpen()) {
     Error("statUncertain::getSampleFile","File %s not found. ABORTING!!!", filename.c_str());
