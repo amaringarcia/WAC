@@ -63,7 +63,7 @@ TFile* getSampleFile(PythiaAnalysisConfiguration* conf, int irap, int icent, int
 
   std::string filename = TString::Format("BUNCH%02d/Output/%s",
                                          isample + 1,
-                                         TString::Format("%s_Pairs_%s_%s",
+                                         TString::Format("%s_%s_%s.root",
                                                          conf->outputfname.c_str(),
                                                          TString::Format(conf->taskname.c_str(), "Pairs", int(conf->abs_y[irap] * 10)).Data(),
                                                          centfname[icent].c_str())
@@ -186,7 +186,9 @@ TList* extractSampleResults(Option_t* opt, PythiaAnalysisConfiguration* conf, in
 
   Event* event = Event::getEvent();
 
-  TwoPartDiffCorrelationAnalyzer<LONGITUDINAL>* eventanalyzer = new TwoPartDiffCorrelationAnalyzer<LONGITUDINAL>(TString::Format(conf->taskname.c_str(), int(conf->abs_y[irap] * 10)).Data(), ac, event, eventFilter, particleFilters);
+  /* the pairs taskname */
+  TString taskName = TString::Format(conf->taskname.c_str(), "Pairs", int(conf->abs_y[irap] * 10));
+  TwoPartDiffCorrelationAnalyzer<LONGITUDINAL>* eventanalyzer = new TwoPartDiffCorrelationAnalyzer<LONGITUDINAL>(taskName.Data(), ac, event, eventFilter, particleFilters);
 
   if (!TString(opt).Contains("verb"))
     eventanalyzer->setReportLevel(MessageLogger::Error);

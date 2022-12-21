@@ -55,7 +55,7 @@ void recursiveResultFilesMerge(const char *filename, const char *inputfilename, 
   /// \param inputfilename the basename of the input files names
   /// \param nmerge        number of files to merge per level
 
-  TString inputFiles = gSystem->GetFromPipe(TString::Format("find . -name \"%s_*.root\" -type f",inputfilename).Data());
+  TString inputFiles = gSystem->GetFromPipe(TString::Format("find . -name \"%s*.root\" -type f", inputfilename).Data());
 
   TObjArray *arr=inputFiles.Tokenize("\n");
 
