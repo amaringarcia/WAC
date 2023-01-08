@@ -14,6 +14,7 @@ BASEDIRECTORY=$1
 NMAINJOBS=$2
 NSUBJOBS=$3
 PRODUCTIONDIRECTORY=OUT`date +%Y%m%d%H%M`
+ALICESWREVISION="PENDING"
 
 if [ -d $BASEDIRECTORY/$PRODUCTIONDIRECTORY ]
 then
@@ -24,19 +25,88 @@ fi
 mkdir $BASEDIRECTORY/$PRODUCTIONDIRECTORY
 echo Production $PRODUCTIONDIRECTORY
 
+mkdir $BASEDIRECTORY/$PRODUCTIONDIRECTORY/log
+mkdir $BASEDIRECTORY/$PRODUCTIONDIRECTORY/log/merge
+
 # let's preserve the configuration
 CONFIGURATIONFILE=/lustre/alice/users/$USER/CLUSTERMODELWAC/Clusters/GSI/configuration.json
 cp $CONFIGURATIONFILE $BASEDIRECTORY/$PRODUCTIONDIRECTORY
 
+# and extract needed information
+OUTFNAME=`sed -n '/"outputfname"\s*:\s*"\(.*\)",/p' ${CONFIGURATIONFILE} | sed 's/\s*"outputfname"\s*:\s*"\(.*\)",/\1/'`
+TASKNAME=`sed -n '/"taskname"\s*:\s*"\(.*\)",/p' ${CONFIGURATIONFILE} | sed 's/\s*"taskname"\s*:\s*"\(.*\)",/\1/'`
+RAPIDITIES=`sed -n '/"abs\_y"\s*:\s*\[\(.*\)\],/p' configuration.json | sed 's/\s*"abs\_y"\s*:\s*\[\(.*\)\],/\1/' | tr ',' ' '`
+CRAPIDITIES=`sed -n '/"abs\_y"\s*:\s*\[\(.*\)\],/p' configuration.json | sed 's/\s*"abs\_y"\s*:\s*\[\(.*\)\],/\1/' | sed 's/,/0/g' | sed 's/0\.//g'`
+EVENTFILTERS=`sed -n '/"teventfilter"\s*:\s*"\(.*\)",/p' configuration.json | sed 's/\s*"teventfilter"\s*:\s*"\(.*\)",/\1/'`
+RAPIDITIESLIST=($CRAPIDITIES)
+NRAPIDITIES=${#RAPIDITIESLIST[@]}
+ARRAYLAST=$(( NRAPIDITIES-1 ))
+
+MERGEJOBSIDS=
+
+# submit the main jobs
 for ijob in $(seq 1 $NMAINJOBS)
 do
   # launching the main generation jobs
   WORKINGDIRECTORY=$BASEDIRECTORY/$PRODUCTIONDIRECTORY/$(printf "BUNCH%02d" $ijob)
   mkdir -p $WORKINGDIRECTORY/Output
+  mkdir -p $WORKINGDIRECTORY/log
+  mkdir -p $WORKINGDIRECTORY/log/merge
+
   cp $CONFIGURATIONFILE $WORKINGDIRECTORY/
 
-  sbatch -J batch__PythiaCorr --array=1-$NSUBJOBS --chdir=$WORKINGDIRECTORY --time=03:00:00 -o $WORKINGDIRECTORY/Job_%A_%a.out -e $WORKINGDIRECTORY/Job_%A_%a.err -- /lustre/alice/users/$USER/CLUSTERMODELWAC/Clusters/GSI/runPythiaCorrelations.sh
+  # submit the job array
+  cmd="sbatch -J batch__PythiaCorr --array=1-${NSUBJOBS} --chdir=${WORKINGDIRECTORY} --time=03:00:00 -o ${WORKINGDIRECTORY}/log/Job_%A_%a.out -e ${WORKINGDIRECTORY}/log/Job_%A_%a.err -- /lustre/alice/users/${USER}/CLUSTERMODELWAC/Clusters/GSI/runPythiaCorrelations.sh"
+  ARRAYJOBID=($(eval $cmd | tee /dev/tty | awk '{print $4}'))
+  echo $cmd >> ${BASEDIRECTORY}/${PRODUCTIONDIRECTORY}/log/submit.log
+  echo "" >> ${BASEDIRECTORY}/${PRODUCTIONDIRECTORY}/log/submit.log
 
+  # submit the merging of the job array results per rapidity
+  for crap in ${CRAPIDITIES}
+  do
+    PAIRSFNAMEPATERN=`printf %s_???_${TASKNAME}_%s ${OUTFNAME} "Pairs" ${crap} ${EVENTFILTERS}`
+    SINGLESFNAMEPATERN=`printf %s_???_${TASKNAME}_%s ${OUTFNAME} "Singles" ${crap} ${EVENTFILTERS}`
+    PAIRSMERGEDFNAME=`printf %s_${TASKNAME}_%s ${OUTFNAME} "Pairs" ${crap} ${EVENTFILTERS}`
+    SINGLESMERGEDFNAME=`printf %s_${TASKNAME}_%s ${OUTFNAME} "Singles" ${crap} ${EVENTFILTERS}`
+
+    # merge the pairs results
+    mergeJOBNAME="waitMergePairs_$(printf "BUNCH%02d_Rap%03d" $ijob ${crap})"
+    cmd="sbatch -J $mergeJOBNAME --workdir=${WORKINGDIRECTORY}/Output --mem-per-cpu=8000 --time=03:00:00 -d afterany:$ARRAYJOBID -o ${WORKINGDIRECTORY}/log/merge/Job_%A.out -e ${WORKINGDIRECTORY}/log/merge/Job_%A.err -- /lustre/alice/users/${USER}/CLUSTERMODELWAC/Clusters/GSI/runMergePythiaResults.sh ${PAIRSMERGEDFNAME} ${PAIRSFNAMEPATERN}"
+    PAIRSMERGEJOBID=($(eval $cmd | tee /dev/tty | awk '{print $4}'))
+    echo $cmd >> ${BASEDIRECTORY}/${PRODUCTIONDIRECTORY}/log/submit.log
+
+    # merge the singles results
+    mergeJOBNAME="waitMergeSingles_$(printf "BUNCH%02d_Rap%03d" $ijob ${crap})"
+    cmd="sbatch -J $mergeJOBNAME --workdir=${WORKINGDIRECTORY}/Output --mem-per-cpu=8000 --time=03:00:00 -d afterany:$ARRAYJOBID -o ${WORKINGDIRECTORY}/log/merge/Job_%A.out -e ${WORKINGDIRECTORY}/log/merge/Job_%A.err -- /lustre/alice/users/${USER}/CLUSTERMODELWAC/Clusters/GSI/runMergePythiaResults.sh ${SINGLESMERGEDFNAME} ${SINGLESFNAMEPATERN}"
+    SINGLESMERGEJOBID=($(eval $cmd | tee /dev/tty | awk '{print $4}'))
+    echo $cmd >> ${BASEDIRECTORY}/${PRODUCTIONDIRECTORY}/log/submit.log
+
+    echo "" >> ${BASEDIRECTORY}/${PRODUCTIONDIRECTORY}/log/submit.log
+    MERGEJOBSIDS=${MERGEJOBSIDS}:${PAIRSMERGEJOBID}:${SINGLESMERGEJOBID}
+  done
   sleep 2s
 done
+
+# submit the final merging for both pairs and singles results
+for crap in ${CRAPIDITIES}
+do
+  PAIRSMERGEDFNAME=`printf %s_${TASKNAME}_%s ${OUTFNAME} "Pairs" ${crap} ${EVENTFILTERS}`
+  SINGLESMERGEDFNAME=`printf %s_${TASKNAME}_%s ${OUTFNAME} "Singles" ${crap} ${EVENTFILTERS}`
+
+  cmd="sbatch -J waitSinglesFinalMerge --workdir=${BASEDIRECTORY}/${PRODUCTIONDIRECTORY} --mem-per-cpu=8000 --time=03:00:00 -d afterany${MERGEJOBSIDS} -o ${BASEDIRECTORY}/${PRODUCTIONDIRECTORY}/log/merge/SinglesMergeJob_%A.out -e ${BASEDIRECTORY}/${PRODUCTIONDIRECTORY}/log/merge/SinglesMergeJob_%A.err -- /lustre/alice/users/${USER}/CLUSTERMODELWAC/Clusters/GSI/runMergePythiaSubsamples.sh ${SINGLESMERGEDFNAME}"
+  JOBID=($(eval $cmd | tee /dev/tty | awk '{print $4}'))
+  echo $cmd >> ${BASEDIRECTORY}/${PRODUCTIONDIRECTORY}/log/submit.log
+  cmd="sbatch -J waitPairsFinalMerge --workdir=${BASEDIRECTORY}/${PRODUCTIONDIRECTORY} --mem-per-cpu=8000 --time=03:00:00 -d afterany${MERGEJOBSIDS} -o ${BASEDIRECTORY}/${PRODUCTIONDIRECTORY}/log/merge/PairsMergeJob_%A.out -e ${BASEDIRECTORY}/${PRODUCTIONDIRECTORY}/log/merge/PairsMergeJob_%A.err -- /lustre/alice/users/${USER}/CLUSTERMODELWAC/Clusters/GSI/runMergePythiaSubsamples.sh ${PAIRSMERGEDFNAME}"
+  JOBID=($(eval $cmd | tee /dev/tty | awk '{print $4}'))
+  echo $cmd >> ${BASEDIRECTORY}/${PRODUCTIONDIRECTORY}/log/submit.log
+
+  echo "" >> ${BASEDIRECTORY}/${PRODUCTIONDIRECTORY}/log/submit.log
+  sleep 2s
+done
+
+# submit the extraction of results with statistical uncertainties
+cmd="sbatch -J waitStatsUncertain --array=0-${ARRAYLAST} --workdir=${BASEDIRECTORY}/${PRODUCTIONDIRECTORY} --mem-per-cpu=8000 --time=03:00:00 -d afterany${MERGEJOBSIDS} -o ${BASEDIRECTORY}/${PRODUCTIONDIRECTORY}/log/merge/WaitStatsUncertainJob_%A_%a.out -e ${BASEDIRECTORY}/${PRODUCTIONDIRECTORY}/log/merge/WaitStatsUncertainJob_%A_%a.err -- /lustre/alice/users/${USER}/CLUSTERMODELWAC/Clusters/GSI/runStatsUncertain.sh "
+JOBID=($(eval $cmd | tee /dev/tty | awk '{print $4}'))
+echo $cmd >> ${BASEDIRECTORY}/${PRODUCTIONDIRECTORY}/log/submit.log
+
 

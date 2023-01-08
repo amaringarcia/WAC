@@ -1,0 +1,26 @@
+#!/bin/bash
+
+if [ $# -gt 2 ]; then
+  echo "usage: runMergePythiaResults mergedfname filepattern"
+  exit 1
+fi
+
+if [ $# -lt 2 ]; then
+  echo "usage: runMergePythiaResults mergedfname filepattern"
+  exit 1
+fi
+
+MERGEDFNAME=$1
+PATTERNNAME=$2
+
+# setting the root and pythia scenario
+export ALIEN_SITE=GSI
+source /cvmfs/alice.cern.ch/etc/login.sh
+LATEST="VO_ALICE@ROOT::v6-26-04-patches-alice2-22"
+export ALIPHYSICS_VERSION=$LATEST
+
+eval $(alienv printenv $LATEST) 
+echo $LATEST
+
+# Execute application code
+root -l -b -q "/lustre/alice/users/vgonzale/CLUSTERMODELWAC/TOOLS/recursiveResultFilesMerge.C(\"${MERGEDFNAME}\",\"${PATTERNNAME}\")"

@@ -1,12 +1,14 @@
 #!/bin/bash
 
+# wait a certain amount of time for the results naming
+sleep $((SLURM_ARRAY_TASK_ID*10)) 
+
 # setting the root and pythia scenario
 export ALIEN_SITE=GSI
 source /cvmfs/alice.cern.ch/etc/login.sh
-LATEST="VO_ALICE@AliGenerators::v20221125-1"
+LATEST="VO_ALICE@ROOT::v6-26-04-patches-alice2-22"
 export ALIPHYSICS_VERSION=$LATEST
 
-eval $(alienv printenv VO_ALICE@Python::v3.9.12-10)
 eval $(alienv printenv $LATEST)
 echo $LATEST
 
@@ -25,9 +27,6 @@ export DYLD_LIBRARY_PATH="$WAC_LIB:$PYTHIA8/lib:$DYLD_LIBRARY_PATH"
 export LD_LIBRARY_PATH="$WAC_LIB:$PYTHIA8/lib:$LD_LIBRARY_PATH"
 
 TASKIX=$SLURM_ARRAY_TASK_ID
-SEED=$(( (SLURM_ARRAY_TASK_ID + SLURM_ARRAY_JOB_ID*1000) % 900000000 ))
-echo "The seed is $SEED"
-
 # Execute application code
-RunPythiaSimulationTwoParticlesDiff $TASKIX $SEED
 
+statUncertainPythia $TASKIX ""
