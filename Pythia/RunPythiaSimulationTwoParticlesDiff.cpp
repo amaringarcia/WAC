@@ -118,6 +118,9 @@ int main(int argc, char* argv[])
       Error("main", "Generator in pseudorapidity still not supported by the analysis. Please, fix it!!");
       return 0;
     }
+  } else {
+    Error("main", "Launcher still not prepared for configuring different particles generation. Please, fix it!!");
+    return 0;
   }
 
   // ==========================
