@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# no more core files
+ulimit -c 0
+echo ulimit `ulimit -c`
+
 # wait a certain amount of time for the results naming
 sleep $((SLURM_ARRAY_TASK_ID*10)) 
 

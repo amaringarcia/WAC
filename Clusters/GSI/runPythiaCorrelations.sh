@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# no more core files
+ulimit -c 0
+echo ulimit `ulimit -c`
+
 # setting the root and pythia scenario
 export ALIEN_SITE=GSI
 source /cvmfs/alice.cern.ch/etc/login.sh

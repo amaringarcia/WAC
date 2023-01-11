@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# no more core files
+ulimit -c 0
+echo ulimit `ulimit -c`
+
 if [ $# -gt 1 ]; then
   echo "usage: runMergePythiaSubsamples filename"
   exit 1
