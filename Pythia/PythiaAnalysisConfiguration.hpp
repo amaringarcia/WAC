@@ -51,38 +51,41 @@ class PythiaAnalysisConfiguration : public TObject
   template <AnalysisConfiguration::RapidityPseudoRapidity r>
   static ParticleFilter<r>* particleFilter(std::string str, AnalysisConfiguration* ac)
   {
-    if (str == "PiP") {
-      return new ParticleFilter<r>(ParticleFilter<r>::Pion, ParticleFilter<r>::Positive, ac->min_pt, ac->max_pt, ac->min_y, ac->max_y);
-    } else if (str == "PiM") {
-      return new ParticleFilter<r>(ParticleFilter<r>::Pion, ParticleFilter<r>::Negative, ac->min_pt, ac->max_pt, ac->min_y, ac->max_y);
-    } else if (str == "Pi0") {
-      return new ParticleFilter<r>(ParticleFilter<r>::Pion, ParticleFilter<r>::Neutral, ac->min_pt, ac->max_pt, ac->min_y, ac->max_y);
-    } else if (str == "KaP") {
-      return new ParticleFilter<r>(ParticleFilter<r>::Kaon, ParticleFilter<r>::Positive, ac->min_pt, ac->max_pt, ac->min_y, ac->max_y);
-    } else if (str == "KaM") {
-      return new ParticleFilter<r>(ParticleFilter<r>::Kaon, ParticleFilter<r>::Negative, ac->min_pt, ac->max_pt, ac->min_y, ac->max_y);
-    } else if (str == "Ka0") {
-      return new ParticleFilter<r>(ParticleFilter<r>::Kaon, ParticleFilter<r>::Neutral, ac->min_pt, ac->max_pt, ac->min_y, ac->max_y);
-    } else if (str == "PrP") {
-      return new ParticleFilter<r>(ParticleFilter<r>::Proton, ParticleFilter<r>::Positive, ac->min_pt, ac->max_pt, ac->min_y, ac->max_y);
-    } else if (str == "PrM") {
-      return new ParticleFilter<r>(ParticleFilter<r>::Proton, ParticleFilter<r>::Negative, ac->min_pt, ac->max_pt, ac->min_y, ac->max_y);
-    } else if (str == "Gam") {
-      return new ParticleFilter<r>(ParticleFilter<r>::Photon, ParticleFilter<r>::Neutral, ac->min_pt, ac->max_pt, ac->min_y, ac->max_y);
-    } else if (str == "La") {
-      return new ParticleFilter<r>(ParticleFilter<r>::Lambda, ParticleFilter<r>::Neutral, ac->min_pt, ac->max_pt, ac->min_y, ac->max_y);
-    } else if (str == "ALa") {
-      return new ParticleFilter<r>(ParticleFilter<r>::ALambda, ParticleFilter<r>::Neutral, ac->min_pt, ac->max_pt, ac->min_y, ac->max_y);
-    } else if (str == "AllP") {
-      return new ParticleFilter<r>(ParticleFilter<r>::AllSpecies, ParticleFilter<r>::Positive, ac->min_pt, ac->max_pt, ac->min_y, ac->max_y);
-    } else if (str == "AllM") {
-      return new ParticleFilter<r>(ParticleFilter<r>::AllSpecies, ParticleFilter<r>::Negative, ac->min_pt, ac->max_pt, ac->min_y, ac->max_y);
-    } else if (str == "AllA") {
-      return new ParticleFilter<r>(ParticleFilter<r>::AllSpecies, ParticleFilter<r>::AllCharges, ac->min_pt, ac->max_pt, ac->min_y, ac->max_y);
-    } else {
-      ::Error("main", "Paricle species %s still not supported for analysis. Please fix it!!", str.c_str());
-      return (ParticleFilter<r>*)nullptr;
-    }
+    auto getparticle = [](auto str) {
+      if (str == "PiP" || str == "PiM" || str == "PiC" || str == "Pi0" || str == "PiA") {
+        return ParticleFilter<r>::Pion;
+      } else if (str == "KaP" || str == "KaM" || str == "KaC" || str == "Ka0" || str == "KaA") {
+        return ParticleFilter<r>::Kaon;
+      } else if (str == "PrP" || str == "PrM" || str == "PrC" || str == "PrA") {
+        return ParticleFilter<r>::Proton;
+      } else if (str == "La" || str == "ALa") {
+        return ParticleFilter<r>::Lambda;
+      } else if (str == "Gam") {
+        return ParticleFilter<r>::Photon;
+      } else if (str == "AllP" || str == "AllM" || str == "AllC" || str == "All0" || str == "AllA") {
+        return ParticleFilter<r>::AllSpecies;
+      } else {
+        ::Fatal("PythiaAnalysisConfiguration::particleFilter()", "Paricle species %s still not supported for analysis. Please fix it!!", str.c_str());
+        return ParticleFilter<r>::AllSpecies;
+      }
+    };
+    auto getcharge = [](auto str) {
+      if (str == "PiP" || str == "KaP" || str == "PrP" || str == "AllP") {
+        return ParticleFilter<r>::Positive;
+      } else if (str == "PiM" || str == "KaM" || str == "PrM" || str == "AllM") {
+        return ParticleFilter<r>::Negative;
+      } else if (str == "PiC" || str == "KaC" || str == "PrC" || str == "AllC") {
+        return ParticleFilter<r>::Charged;
+      } else if (str == "Pi0" || str == "Ka0" || str == "All0" || str == "La" || str == "ALa" || str == "Gam") {
+        return ParticleFilter<r>::Neutral;
+      } else if (str == "PiA" || str == "KaA" || str == "PrA" || str == "AllA") {
+        return ParticleFilter<r>::AllCharges;
+      } else {
+        ::Fatal("PythiaAnalysisConfiguration::particleFilter()", "Paricle species %s still not supported for analysis. Please fix it!!", str.c_str());
+        return ParticleFilter<r>::AllCharges;
+      }
+    };
+    return new ParticleFilter<r>(getparticle(str), getcharge(str), ac->min_pt, ac->max_pt, ac->min_y, ac->max_y);
   }
 
   ClassDef(PythiaAnalysisConfiguration, 1)
