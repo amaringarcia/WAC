@@ -86,6 +86,7 @@ int main(int argc, char* argv[])
     pythiaOptions[nOptions++] = new TString(opt);
   }
   /* add the seed */
+  pythiaOptions[nOptions++] = new TString("Random:setSeed = on");
   pythiaOptions[nOptions++] = new TString(TString::Format("Random:seed = %ld", seed));
 
   PythiaConfiguration* pc = new PythiaConfiguration(conf->projectileA,
