@@ -6,12 +6,11 @@ echo ulimit `ulimit -c`
 
 # setting the root and pythia scenario
 export ALIEN_SITE=GSI
-source /cvmfs/alice.cern.ch/etc/login.sh
 LATEST="VO_ALICE@AliGenerators::v20221125-1"
 export ALIPHYSICS_VERSION=$LATEST
 
-eval $(alienv printenv VO_ALICE@Python::v3.9.12-10)
-eval $(alienv printenv $LATEST)
+source <( /cvmfs/alice.cern.ch/bin/alienv printenv VO_ALICE@Python::v3.9.12-10)
+source <( /cvmfs/alice.cern.ch/bin/alienv printenv $LATEST)
 echo $LATEST
 
 export PYTHIA8=/cvmfs/alice.cern.ch/el7-x86_64/Packages/pythia/v8304-44
