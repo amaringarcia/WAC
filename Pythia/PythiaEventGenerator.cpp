@@ -134,8 +134,9 @@ void PythiaEventGenerator<r>::execute()
     p_z = part.Pz();
     p_e = part.Energy();
     aParticle.setPidPxPyPzE(pdg, charge, p_x, p_y, p_z, p_e);
-    // aParticle.printProperties(cout);
-    // if (reportDebug()) cout << "PythiaEventGenerator::execute() calling filter " << endl;
+
+    /* we count the particle for multiplicity before acceptance  */
+    event->addParticleToMultiplicity(aParticle);
     particleCounted++;
     if (!particleFilter->accept(aParticle))
       continue;
@@ -149,8 +150,8 @@ void PythiaEventGenerator<r>::execute()
     //      }
   }
 
-  event->nParticles = particleAccepted;
-  event->multiplicity = particleAccepted;
+  /* the multiplicity is settled */
+  event->settleMultiplicity(particleAccepted);
   if (reportDebug())
     cout << "PythiaEventGenerator::execute() No of accepted Particles : " << particleAccepted << endl;
   if (reportDebug())

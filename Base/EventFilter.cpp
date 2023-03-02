@@ -39,16 +39,16 @@ bool EventFilter::accept(Event& event)
     case MinBias:
       break;
     case Centrality:
-      condition = event.centrality;
+      condition = event.getMultiplicityClass();
       break;
     case Multiplicity:
-      condition = event.multiplicity;
+      condition = event.getMultiplicity();
       break;
     case ImpactParameter:
-      condition = event.impactParameter;
+      condition = event.getImpactParameter();
       break;
     case Other:
-      condition = event.other;
+      condition = event.getOther();
       break;
   }
 

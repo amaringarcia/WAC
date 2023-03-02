@@ -265,6 +265,11 @@ void TwoPartDiffCorrelationAnalyzer<r>::saveHistograms(TFile* outputFile)
     return;
   }
 
+  /* now save the event histograms */
+  if (reportDebug())
+    cout << "TwoPartDiffCorrelationAnalyzer::saveHistograms(...) saving event histograms." << endl;
+  event->saveHistograms(outputFile);
+
   if (reportDebug())
     cout << "TwoPartDiffCorrelationAnalyzer::saveHistograms(...) saving singles." << endl;
 
@@ -350,7 +355,7 @@ void TwoPartDiffCorrelationAnalyzer<r>::execute()
     cout << "TwoPartDiffCorrelationAnalyzer::analyze(...) Starting" << endl;
   if (event != NULL) {
     if (reportDebug())
-      cout << "TwoPartDiffCorrelationAnalyzer::analyze(...) analyzing " << event->nParticles << " particles" << endl;
+      cout << "TwoPartDiffCorrelationAnalyzer::analyze(...) analyzing " << event->getNParticles() << " particles" << endl;
   } else {
     if (reportError())
       cout << "TwoPartDiffCorrelationAnalyzer::analyze(...) event pointer is NULL. Abort." << endl;
@@ -378,7 +383,7 @@ void TwoPartDiffCorrelationAnalyzer<r>::execute()
   for (uint i = 0; i < partNames.size(); ++i) {
     nAccepted[i] = 0;
   }
-  for (int iParticle = 0; iParticle < event->nParticles; iParticle++) {
+  for (int iParticle = 0; iParticle < event->getNParticles(); iParticle++) {
     if (reportDebug())
       cout << "TwoPartDiffCorrelationAnalyzer::analyze(...) particle: " << iParticle << endl;
     Particle* particle = event->getParticleAt(iParticle);
@@ -403,12 +408,12 @@ void TwoPartDiffCorrelationAnalyzer<r>::execute()
 
   /* now process pairs if required */
   if (analysisConfiguration->fillPairs) {
-    for (int iParticle1 = 0; iParticle1 < event->nParticles; iParticle1++) {
+    for (int iParticle1 = 0; iParticle1 < event->getNParticles(); iParticle1++) {
       Particle& particle1 = *event->getParticleAt(iParticle1);
       int ixID1 = particle1.ixID;
       if (ixID1 < 0)
         continue;
-      for (int iParticle2 = 0; iParticle2 < event->nParticles; iParticle2++) {
+      for (int iParticle2 = 0; iParticle2 < event->getNParticles(); iParticle2++) {
         if (iParticle1 == iParticle2)
           continue;
         Particle& particle2 = *event->getParticleAt(iParticle2);

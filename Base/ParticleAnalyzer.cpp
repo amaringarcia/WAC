@@ -141,6 +141,12 @@ void ParticleAnalyzer<r>::saveHistograms(TFile* outputFile)
 
   /* first save the number of events as a cumulated parameter */
   TParameter<Long64_t>("NoOfEvents", eventsProcessed, '+').Write();
+
+  /* now save the event histograms */
+  if (reportDebug())
+    cout << "PartAnalyzer::saveHistograms(...) saving event histograms." << endl;
+  event->saveHistograms(outputFile);
+
   for (int iFilter = 0; iFilter < nParticleFilters; iFilter++) {
     particleHistos[iFilter]->saveHistograms(outputFile);
   }
@@ -154,7 +160,7 @@ void ParticleAnalyzer<r>::execute()
   // if (reportDebug())  cout << "ParticleAnalyzer::execute(...) Starting" << endl;
   if (event != NULL) {
     if (reportDebug())
-      cout << "ParticleAnalyzer::execute(...) analyzing " << event->nParticles << " particles" << endl;
+      cout << "ParticleAnalyzer::execute(...) analyzing " << event->getNParticles() << " particles" << endl;
   } else {
     if (reportError())
       cout << "ParticleAnalyzer::execute(...) event pointer is NULL. Abort." << endl;
@@ -170,7 +176,7 @@ void ParticleAnalyzer<r>::execute()
   bool accept;
   for (int iFilter = 0; iFilter < nParticleFilters; iFilter++)
     nAccepted[iFilter] = 0;
-  for (int iParticle = 0; iParticle < event->nParticles; iParticle++) {
+  for (int iParticle = 0; iParticle < event->getNParticles(); iParticle++) {
     Particle& particle = *event->getParticleAt(iParticle);
     for (int iFilter = 0; iFilter < nParticleFilters; iFilter++) {
       accept = particleFilters[iFilter]->accept(particle);

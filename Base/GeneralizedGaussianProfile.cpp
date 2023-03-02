@@ -61,11 +61,11 @@ void GeneralizedGaussianProfile::execute()
     cout << "GeneralizedGaussianProfile::process() Begin()" << endl;
   if (event != nullptr) {
     if (reportInfo())
-      cout << "GeneralizedGaussianProfile::process() processing " << event->nParticles << " particles" << endl;
+      cout << "GeneralizedGaussianProfile::process() processing " << event->getNParticles() << " particles" << endl;
 
-    for (int itrack = 0; itrack < event->nParticles; itrack++) {
+    for (int itrack = 0; itrack < event->getNParticles(); itrack++) {
       Particle* particle1 = event->getParticleAt(itrack);
-      for (int jtrack = itrack + 1; jtrack < event->nParticles; jtrack++) {
+      for (int jtrack = itrack + 1; jtrack < event->getNParticles(); jtrack++) {
         Particle* particle2 = event->getParticleAt(jtrack);
         double deltaeta = particle1->eta - particle2->eta;
         double deltaphi = TVector2::Phi_mpi_pi(particle1->phi - particle2->phi);

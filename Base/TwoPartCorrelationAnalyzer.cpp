@@ -212,6 +212,11 @@ void TwoPartCorrelationAnalyzer<r>::saveHistograms(TFile* outputFile)
     return;
   }
 
+  /* now save the event histograms */
+  if (reportDebug())
+    cout << "TwoPartCorrelationAnalyzer::saveHistograms(...) saving event histograms." << endl;
+  event->saveHistograms(outputFile);
+
   if (reportDebug())
     cout << "TwoPartCorrelationAnalyzer::saveHistograms(...) saving singles." << endl;
 
@@ -281,7 +286,7 @@ void TwoPartCorrelationAnalyzer<r>::execute()
     cout << "TwoPartCorrelationAnalyzer::analyze(...) Starting" << endl;
   if (event != NULL) {
     if (reportDebug())
-      cout << "TwoPartCorrelationAnalyzer::analyze(...) analyzing " << event->nParticles << " particles" << endl;
+      cout << "TwoPartCorrelationAnalyzer::analyze(...) analyzing " << event->getNParticles() << " particles" << endl;
   } else {
     if (reportError())
       cout << "TwoPartCorrelationAnalyzer::analyze(...) event pointer is NULL. Abort." << endl;
@@ -311,7 +316,7 @@ void TwoPartCorrelationAnalyzer<r>::execute()
   bool accept22;
 
   /* before filtering let's build the particle indexes to hurry up the process */
-  for (int iParticle = 0; iParticle < event->nParticles; iParticle++) {
+  for (int iParticle = 0; iParticle < event->getNParticles(); iParticle++) {
     if (reportDebug())
       cout << "TwoPartCorrelationAnalyzer::analyze(...) particle: " << iParticle << endl;
     Particle* particle = event->getParticleAt(iParticle);
@@ -320,7 +325,7 @@ void TwoPartCorrelationAnalyzer<r>::execute()
     particle->ixYEtaPhi = analysisConfiguration->getIxYEtaPhi<r>(particle->eta, particle->phi);
   }
 
-  for (int iParticle1 = 0; iParticle1 < event->nParticles; iParticle1++) {
+  for (int iParticle1 = 0; iParticle1 < event->getNParticles(); iParticle1++) {
     Particle& particle1 = *event->getParticleAt(iParticle1);
     accept11 = particleFilter1->accept(particle1);
     accept21 = particleFilter2->accept(particle1);
@@ -334,7 +339,7 @@ void TwoPartCorrelationAnalyzer<r>::execute()
     if (accept21)
       particle2_Histos->fill<r>(particle1, 1.0);
     if (analysisConfiguration->fillPairs) {
-      for (int iParticle2 = 0; iParticle2 < event->nParticles; iParticle2++) {
+      for (int iParticle2 = 0; iParticle2 < event->getNParticles(); iParticle2++) {
         if (iParticle1 == iParticle2)
           continue;
         Particle& particle2 = *event->getParticleAt(iParticle2);

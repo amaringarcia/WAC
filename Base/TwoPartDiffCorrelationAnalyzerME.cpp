@@ -397,7 +397,7 @@ void TwoPartDiffCorrelationAnalyzerME<r>::execute()
     cout << "TwoPartDiffCorrelationAnalyzerME::analyze(...) Starting" << endl;
   if (event != NULL) {
     if (reportDebug())
-      cout << "TwoPartDiffCorrelationAnalyzerME::analyze(...) analyzing " << event->nParticles << " particles" << endl;
+      cout << "TwoPartDiffCorrelationAnalyzerME::analyze(...) analyzing " << event->getNParticles() << " particles" << endl;
   } else {
     if (reportError())
       cout << "TwoPartDiffCorrelationAnalyzerME::analyze(...) event pointer is NULL. Abort." << endl;
@@ -428,7 +428,7 @@ void TwoPartDiffCorrelationAnalyzerME<r>::execute()
   for (uint i = 0; i < partNames.size(); ++i) {
     nAccepted[i] = 0;
   }
-  for (int iParticle = 0; iParticle < event->nParticles; iParticle++) {
+  for (int iParticle = 0; iParticle < event->getNParticles(); iParticle++) {
     if (reportDebug())
       cout << "TwoPartDiffCorrelationAnalyzerME::analyze(...) particle: " << iParticle << endl;
     Particle* particle = event->getParticleAt(iParticle);
@@ -456,13 +456,13 @@ void TwoPartDiffCorrelationAnalyzerME<r>::execute()
   /* now process pairs if required */
   bool eventPoolFull = eventPool.isFull();
   if (analysisConfiguration->fillPairs) {
-    for (int iParticle1 = 0; iParticle1 < event->nParticles; iParticle1++) {
+    for (int iParticle1 = 0; iParticle1 < event->getNParticles(); iParticle1++) {
       Particle& particle1 = *event->getParticleAt(iParticle1);
       int ixID1 = particle1.ixID;
       if (ixID1 < 0)
         continue;
       /* fill the same event histograms */
-      for (int iParticle2 = 0; iParticle2 < event->nParticles; iParticle2++) {
+      for (int iParticle2 = 0; iParticle2 < event->getNParticles(); iParticle2++) {
         if (iParticle1 == iParticle2)
           continue;
         Particle& particle2 = *event->getParticleAt(iParticle2);
