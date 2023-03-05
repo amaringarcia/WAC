@@ -148,6 +148,7 @@ void Event::settleMultiplicity(int npart)
   multiplicityclass = 105;
   multiplicity = 0;
   if (inelgth0) {
+    nParticles = npart;
     if (fhNPartTot != nullptr) {
       fhNPartTot->Fill(npart);
     }
