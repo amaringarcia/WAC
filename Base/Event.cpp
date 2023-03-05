@@ -145,43 +145,45 @@ void Event::saveHistograms(TFile* outfile)
 /// \param npart the number of selected particles
 void Event::settleMultiplicity(int npart)
 {
-  if (fhNPartTot != nullptr) {
-    fhNPartTot->Fill(npart);
-  }
-  if (fhV0Multiplicity != nullptr) {
-    fhV0Multiplicity->Fill(V0AM + V0CM, dNchdEta);
-  }
-  if (fhCL1Multiplicity != nullptr) {
-    fhCL1Multiplicity->Fill(CL1M, dNchdEta);
-  }
-  if (fhCL1EtaGapMultiplicity != nullptr) {
-    fhCL1EtaGapMultiplicity->Fill(CL1EtaGapM, dNchdEta);
-  }
   multiplicityclass = 105;
   multiplicity = 0;
-  switch (classestimator) {
-    case kV0M:
-      if (fhV0MMultPercentile != nullptr) {
-        multiplicityclass = fhV0MMultPercentile->GetBinContent(V0AM + V0CM);
-        multiplicity = V0AM + V0CM;
-      }
-      break;
-    case kCL1:
-      if (fhCL1MultPercentile != nullptr) {
-        multiplicityclass = fhCL1MultPercentile->GetBinContent(CL1M);
-        multiplicity = CL1M;
-      }
-      break;
-    case kCL1GAP:
-      if (fhCL1EtaGapMultPercentile != nullptr) {
-        multiplicityclass = fhCL1EtaGapMultPercentile->GetBinContent(CL1EtaGapM);
-        multiplicity = CL1EtaGapM;
-      }
-      break;
-    default:
-      break;
+  if (inelgth0) {
+    if (fhNPartTot != nullptr) {
+      fhNPartTot->Fill(npart);
+    }
+    if (fhV0Multiplicity != nullptr) {
+      fhV0Multiplicity->Fill(V0AM + V0CM, dNchdEta);
+    }
+    if (fhCL1Multiplicity != nullptr) {
+      fhCL1Multiplicity->Fill(CL1M, dNchdEta);
+    }
+    if (fhCL1EtaGapMultiplicity != nullptr) {
+      fhCL1EtaGapMultiplicity->Fill(CL1EtaGapM, dNchdEta);
+    }
+    switch (classestimator) {
+      case kV0M:
+        if (fhV0MMultPercentile != nullptr) {
+          multiplicityclass = fhV0MMultPercentile->GetBinContent(V0AM + V0CM);
+          multiplicity = V0AM + V0CM;
+        }
+        break;
+      case kCL1:
+        if (fhCL1MultPercentile != nullptr) {
+          multiplicityclass = fhCL1MultPercentile->GetBinContent(CL1M);
+          multiplicity = CL1M;
+        }
+        break;
+      case kCL1GAP:
+        if (fhCL1EtaGapMultPercentile != nullptr) {
+          multiplicityclass = fhCL1EtaGapMultPercentile->GetBinContent(CL1EtaGapM);
+          multiplicity = CL1EtaGapM;
+        }
+        break;
+      default:
+        break;
+    }
+    fhMultiplicity->Fill(multiplicityclass);
   }
-  fhMultiplicity->Fill(multiplicityclass);
 }
 
 ///////////////////////////////////////////////////////
