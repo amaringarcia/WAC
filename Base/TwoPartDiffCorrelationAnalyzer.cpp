@@ -195,25 +195,26 @@ void TwoPartDiffCorrelationAnalyzer<r>::loadHistograms(TFile* inputFile)
 // load the base histograms from given file
 //////////////////////////////////////////////////////////////
 template <AnalysisConfiguration::RapidityPseudoRapidity r>
-void TwoPartDiffCorrelationAnalyzer<r>::loadBaseHistograms(TFile* inputFile)
+void TwoPartDiffCorrelationAnalyzer<r>::loadBaseHistograms(TDirectory* dir)
 {
+  dir->cd();
   if (reportDebug())
     cout << "TwoPartDiffCorrelationAnalyzer::loadHistograms(...) Starting." << endl;
 
   /* first load the number of events as from the  cumulated parameter */
-  TParameter<Long64_t>* par = (TParameter<Long64_t>*)inputFile->Get("NoOfEvents");
+  TParameter<Long64_t>* par = (TParameter<Long64_t>*)dir->Get("NoOfEvents");
   eventsProcessed = par->GetVal();
   delete par;
   AnalysisConfiguration* analysisConfiguration = (AnalysisConfiguration*)getTaskConfiguration();
   LogLevel debugLevel = getReportLevel();
 
   for (uint i = 0; i < partNames.size(); ++i) {
-    particle_Histos[i] = new ParticleHistos(inputFile, partNames[i], analysisConfiguration, debugLevel);
+    particle_Histos[i] = new ParticleHistos(dir, partNames[i], analysisConfiguration, debugLevel);
   }
   if (analysisConfiguration->fillPairs) {
     for (uint i = 0; i < partNames.size(); ++i) {
       for (uint j = 0; j < partNames.size(); ++j) {
-        pairs_Histos[i][j] = new ParticlePairDerivedDiffHistos(inputFile, partNames[i] + partNames[j], analysisConfiguration, debugLevel);
+        pairs_Histos[i][j] = new ParticlePairDerivedDiffHistos(dir, partNames[i] + partNames[j], analysisConfiguration, debugLevel);
       }
     }
     if (analysisConfiguration->calculateDerivedHistograms) {
@@ -243,17 +244,17 @@ void TwoPartDiffCorrelationAnalyzer<r>::loadBaseHistograms(TFile* inputFile)
 // save histograms to given files
 //////////////////////////////////////////////////////////////
 template <AnalysisConfiguration::RapidityPseudoRapidity r>
-void TwoPartDiffCorrelationAnalyzer<r>::saveHistograms(TFile* outputFile)
+void TwoPartDiffCorrelationAnalyzer<r>::saveHistograms(TDirectory* dir)
 {
   if (reportDebug())
     cout << "TwoPartDiffCorrelationAnalyzer::saveHistograms(...) Saving Event histograms to file." << endl;
-  if (!outputFile) {
+  if (!dir) {
     if (reportError())
-      cout << "TwoPartDiffCorrelationAnalyzer::saveHistograms(...) outputFile is a null  pointer." << endl;
+      cout << "TwoPartDiffCorrelationAnalyzer::saveHistograms(...) output directory is a null  pointer." << endl;
     postTaskError();
     return;
   }
-  outputFile->cd();
+  dir->cd();
 
   /* first save the number of events as a cumulated parameter */
   TParameter<Long64_t>("NoOfEvents", eventsProcessed, '+').Write();
@@ -268,13 +269,13 @@ void TwoPartDiffCorrelationAnalyzer<r>::saveHistograms(TFile* outputFile)
   /* now save the event histograms */
   if (reportDebug())
     cout << "TwoPartDiffCorrelationAnalyzer::saveHistograms(...) saving event histograms." << endl;
-  event->saveHistograms(outputFile);
+  event->saveHistograms(dir);
 
   if (reportDebug())
     cout << "TwoPartDiffCorrelationAnalyzer::saveHistograms(...) saving singles." << endl;
 
   for (uint i = 0; i < partNames.size(); ++i) {
-    particle_Histos[i]->saveHistograms(outputFile);
+    particle_Histos[i]->saveHistograms(dir);
   }
 
   if (reportDebug())
@@ -286,19 +287,19 @@ void TwoPartDiffCorrelationAnalyzer<r>::saveHistograms(TFile* outputFile)
 
     for (uint i = 0; i < partNames.size(); ++i) {
       for (uint j = 0; j < partNames.size(); ++j) {
-        pairs_Histos[i][j]->saveHistograms(outputFile);
+        pairs_Histos[i][j]->saveHistograms(dir);
       }
     }
     if (analysisConfiguration->calculateDerivedHistograms) {
       for (uint i = 0; i < partNames.size(); ++i) {
         for (uint j = 0; j < partNames.size() - (i + 1); ++j) {
-          pairs_CIHistos[i][j]->saveHistograms(outputFile);
-          pairs_CDHistos[i][j]->saveHistograms(outputFile);
+          pairs_CIHistos[i][j]->saveHistograms(dir);
+          pairs_CDHistos[i][j]->saveHistograms(dir);
         }
       }
       for (uint i = 0; i < uint(particleFilters.size() / 2); ++i) {
         for (uint j = 0; j < uint(particleFilters.size() / 2); ++j) {
-          pairs_BFHistos[i][j]->saveHistograms(outputFile);
+          pairs_BFHistos[i][j]->saveHistograms(dir);
         }
       }
     }

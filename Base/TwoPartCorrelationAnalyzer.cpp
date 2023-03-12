@@ -190,17 +190,17 @@ void TwoPartCorrelationAnalyzer<r>::loadBaseHistograms(TFile* inputFile)
 // save histograms to given files
 //////////////////////////////////////////////////////////////
 template <AnalysisConfiguration::RapidityPseudoRapidity r>
-void TwoPartCorrelationAnalyzer<r>::saveHistograms(TFile* outputFile)
+void TwoPartCorrelationAnalyzer<r>::saveHistograms(TDirectory* dir)
 {
   if (reportDebug())
-    cout << "TwoPartCorrelationAnalyzer::saveHistograms(...) Saving Event histograms to file." << endl;
-  if (!outputFile) {
+    cout << "TwoPartCorrelationAnalyzer::saveHistograms(...) Saving Event histograms to directory." << endl;
+  if (!dir) {
     if (reportError())
-      cout << "TwoPartCorrelationAnalyzer::saveHistograms(...) outputFile is a null  pointer." << endl;
+      cout << "TwoPartCorrelationAnalyzer::saveHistograms(...) output directory is a null  pointer." << endl;
     postTaskError();
     return;
   }
-  outputFile->cd();
+  dir->cd();
 
   /* first save the number of events as a cumulated parameter */
   TParameter<Long64_t>("NoOfEvents", eventsProcessed, '+').Write();
@@ -215,31 +215,30 @@ void TwoPartCorrelationAnalyzer<r>::saveHistograms(TFile* outputFile)
   /* now save the event histograms */
   if (reportDebug())
     cout << "TwoPartCorrelationAnalyzer::saveHistograms(...) saving event histograms." << endl;
-  event->saveHistograms(outputFile);
+  event->saveHistograms(dir);
 
   if (reportDebug())
     cout << "TwoPartCorrelationAnalyzer::saveHistograms(...) saving singles." << endl;
 
-  // event_Histos  ->saveHistograms(outputFile);
-  particle1_Histos->saveHistograms(outputFile);
-  particle2_Histos->saveHistograms(outputFile);
+  particle1_Histos->saveHistograms(dir);
+  particle2_Histos->saveHistograms(dir);
 
   if (reportDebug())
     cout << "TwoPartCorrelationAnalyzer::saveHistograms(...) saving pairs -- perhaps." << endl;
 
   if (analysisConfiguration->fillPairs) {
-    pair11_Histos->saveHistograms(outputFile);
-    pair22_Histos->saveHistograms(outputFile);
-    pair12_Histos->saveHistograms(outputFile);
+    pair11_Histos->saveHistograms(dir);
+    pair22_Histos->saveHistograms(dir);
+    pair12_Histos->saveHistograms(dir);
     if (analysisConfiguration->calculateDerivedHistograms) {
       if (reportDebug())
         cout << "TwoPartCorrelationAnalyzer::saveHistograms(...) saving calculated histograms." << endl;
 
-      pair11_DerivedHistos->saveHistograms(outputFile);
-      pair22_DerivedHistos->saveHistograms(outputFile);
-      pair12_DerivedHistos->saveHistograms(outputFile);
-      pair12_CIHistos->saveHistograms(outputFile);
-      pair12_CDHistos->saveHistograms(outputFile);
+      pair11_DerivedHistos->saveHistograms(dir);
+      pair22_DerivedHistos->saveHistograms(dir);
+      pair12_DerivedHistos->saveHistograms(dir);
+      pair12_CIHistos->saveHistograms(dir);
+      pair12_CDHistos->saveHistograms(dir);
     }
   }
   if (reportDebug())

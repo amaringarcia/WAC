@@ -48,11 +48,11 @@ ParticlePairDerivedDiffHistos::ParticlePairDerivedDiffHistos(const TString& name
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 // CTOR
 //////////////////////////////////////////////////////////////////////////////////////////////////////
-ParticlePairDerivedDiffHistos::ParticlePairDerivedDiffHistos(TFile* inputFile,
+ParticlePairDerivedDiffHistos::ParticlePairDerivedDiffHistos(TDirectory* dir,
                                                              const TString& name,
                                                              AnalysisConfiguration* configuration,
                                                              LogLevel debugLevel)
-  : ParticlePairDiffHistos(inputFile, name, configuration, debugLevel),
+  : ParticlePairDiffHistos(dir, name, configuration, debugLevel),
     h_n1n1_ptPt(nullptr),
     h_n1n1_DetaDphi(nullptr),
     h_pt1pt1_DetaDphi(nullptr),

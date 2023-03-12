@@ -23,7 +23,7 @@ class PythiaAnalysisConfiguration : public TObject
                                 3.6, 3.8, 4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 8.0, 10.0, 13.0, 20.0};
   int n_ptbins = ptbins.size() - 1;
 
-  long nEventsRequested = 1000000;
+  long nEventsRequested = 500000;
   int nEventsReport = 10000;
   std::string logLevel = "info";
   std::vector<std::string> pythiaOptions = {
@@ -42,9 +42,10 @@ class PythiaAnalysisConfiguration : public TObject
   std::string gparticlefilter = "All";
   std::string gchargefilter = "All";
   bool inrapidity = true;
-  std::string outputfname = "PYTHIA8";
-  std::string taskname = "%s_Rapidity%03dAll";
-  std::string teventfilter = "MB";
+  std::string outputfname = "PYTHIA8_Rapidity%03d";
+  std::string taskname = "%s_All";
+  std::string inputfile = "MultPercentile.root";
+  std::vector<std::string> teventfilter = {"MB"};
   std::vector<std::string> tpairs = {"AllP", "AllM", "La", "ALa", "Gam"};
   std::vector<std::string> tsingles = {"AllA"};
 
@@ -88,7 +89,7 @@ class PythiaAnalysisConfiguration : public TObject
     return new ParticleFilter<r>(getparticle(str), getcharge(str), ac->min_pt, ac->max_pt, ac->min_y, ac->max_y);
   }
 
-  ClassDef(PythiaAnalysisConfiguration, 1)
+  ClassDef(PythiaAnalysisConfiguration, 2)
 };
 
 #endif // PYTHIAANALYSISCONFIGURATION_H

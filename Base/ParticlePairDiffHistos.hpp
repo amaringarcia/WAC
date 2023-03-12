@@ -26,7 +26,7 @@ class ParticlePairDiffHistos : public Histograms
   ParticlePairDiffHistos(const TString& name,
                          AnalysisConfiguration* configuration,
                          LogLevel debugLevel);
-  ParticlePairDiffHistos(TFile* inputFile,
+  ParticlePairDiffHistos(TDirectory* dir,
                          const TString& name,
                          AnalysisConfiguration* configuration,
                          LogLevel debugLevel);
@@ -42,7 +42,7 @@ class ParticlePairDiffHistos : public Histograms
   void getPratt(ParticleType1& particle1, ParticleType2& particle2, double& kT, double& qinv, double& qlong, double& qside, double& qout);
   template <AnalysisConfiguration::RapidityPseudoRapidity r, typename ParticleType1, typename ParticleType2>
   void fill(ParticleType1& particle1, ParticleType2& particle2, double weight1, double weight2, double pTavg1 = 0.0, double pTavg2 = 0.0);
-  void loadHistograms(TFile* inputFile);
+  void loadHistograms(TDirectory* dir);
 
   ////////////////////////////////////////////////////////////////////////////
   // Data Members - Histograms

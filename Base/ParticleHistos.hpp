@@ -19,13 +19,13 @@ class ParticleHistos : public Histograms
   ParticleHistos(const TString& collectionName,
                  AnalysisConfiguration* analysisConfiguration,
                  LogLevel debugLevel);
-  ParticleHistos(TFile* inputFile,
+  ParticleHistos(TDirectory* dir,
                  const TString& collectionName,
                  AnalysisConfiguration* analysisConfiguration,
                  LogLevel debugLevel);
   virtual ~ParticleHistos();
   void createHistograms();
-  void loadHistograms(TFile* inputFile);
+  void loadHistograms(TDirectory* dir);
   template <AnalysisConfiguration::RapidityPseudoRapidity r>
   void fill(Particle& particle, double weight);
   template <AnalysisConfiguration::RapidityPseudoRapidity r>

@@ -182,7 +182,7 @@ class HistogramCollection : public MessageLogger
                             bool sumw2 = true);
 
   void addHistogramsToExtList(TList* list, bool all = false);
-  void saveHistograms(TFile* outputFile, bool saveAll = false);
+  void saveHistograms(TDirectory* dir, bool saveAll = false);
   void scale(double factor, bool scaleAll = false);
   void addHistos(HistogramCollection* c1, double a1);
   void addHistos(HistogramCollection* c1, HistogramCollection* c2, double a1, double a2);
@@ -226,35 +226,35 @@ class HistogramCollection : public MessageLogger
 
   void setHistogram(TH1* h, double v, double ev);
   void setHistogram(TH2* h, double v, double ev);
-  TH1* loadH1(TFile* inputFile,
+  TH1* loadH1(TDirectory* dir,
               const TString& histoName,
               bool scale = false,
               bool save = false,
               bool plot = true,
               bool print = true,
               bool sumw2 = false);
-  TH2* loadH2(TFile* inputFile,
+  TH2* loadH2(TDirectory* dir,
               const TString& histoName,
               bool scale = false,
               bool save = false,
               bool plot = true,
               bool print = true,
               bool sumw2 = false);
-  TH3* loadH3(TFile* inputFile,
+  TH3* loadH3(TDirectory* dir,
               const TString& histoName,
               bool scale = false,
               bool save = false,
               bool plot = true,
               bool print = true,
               bool sumw2 = false);
-  TProfile* loadProfile(TFile* inputFile,
+  TProfile* loadProfile(TDirectory* dir,
                         const TString& histoName,
                         bool scale = false,
                         bool save = false,
                         bool plot = true,
                         bool print = true,
                         bool sumw2 = false);
-  TProfile2D* loadProfile2D(TFile* inputFile,
+  TProfile2D* loadProfile2D(TDirectory* dir,
                             const TString& histoName,
                             bool scale = false,
                             bool save = false,

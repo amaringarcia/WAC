@@ -34,6 +34,7 @@ class TaskConfiguration
 
   TString getInputRootFileName();
   TString getOutputRootFileName();
+  TString getOutputDirectory();
 
   ////////////////////////////////////////////////////
   // Data members
@@ -55,6 +56,7 @@ class TaskConfiguration
   TString rootInputFileName;
   TString outputPath;
   TString rootOuputFileName;
+  TString outputDirectory;
 
   TString dataInputPath;
   TString dataInputFileName;

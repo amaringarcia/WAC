@@ -18,7 +18,7 @@
 ClassImp(EventLoop)
 
   EventLoop::EventLoop()
-  : TaskCollection("EventLoop", nullptr, 100)
+  : TaskCollection("EventLoop", nullptr, 200)
 {
   if (reportDebug())
     cout << "EventLoop::CTOR Started" << endl;

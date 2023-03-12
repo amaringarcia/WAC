@@ -32,7 +32,8 @@ class Event
   virtual void clear();
   virtual void reset();
   virtual void printProperties(ostream& output);
-  void saveHistograms(TFile* outfile);
+  void setMultiplicityPercentiles(TFile* f);
+  void saveHistograms(TDirectory* dir);
 
   Particle* getParticleAt(int index);
   double getMultiplicityClass() { return multiplicityclass; };

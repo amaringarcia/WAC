@@ -18,13 +18,13 @@ ClassImp(ParticleHistos)
   initialize();
 }
 
-ParticleHistos::ParticleHistos(TFile* inputFile,
+ParticleHistos::ParticleHistos(TDirectory* dir,
                                const TString& name,
                                AnalysisConfiguration* configuration,
                                LogLevel debugLevel)
   : Histograms(name, configuration, 100, debugLevel)
 {
-  loadHistograms(inputFile);
+  loadHistograms(dir);
 }
 
 ParticleHistos::~ParticleHistos()
@@ -96,44 +96,46 @@ void ParticleHistos::createHistograms()
 }
 
 //________________________________________________________________________
-void ParticleHistos::loadHistograms(TFile* inputFile)
+void ParticleHistos::loadHistograms(TDirectory* dir)
 {
-  if (!inputFile) {
+  if (!dir) {
     if (reportFatal())
-      cout << "-Fatal- Attempting to load ParticleHistos from an invalid file pointer" << endl;
+      cout << "-Fatal- Attempting to load ParticleHistos from an invalid directory pointer" << endl;
     return;
   }
+  dir->cd();
+
   AnalysisConfiguration& ac = *getConfiguration();
   TString bn = getHistoBaseName();
-  h_n1 = loadH1(inputFile, bn + TString("n1"), true);
-  h_n1_pid = loadH1(inputFile, bn + TString("n1_pid"), true);
-  h_n1_pt = loadH1(inputFile, bn + TString("n1_pt"), true);
-  h_n1_ptXS = loadH1(inputFile, bn + TString("n1_ptXS"), true);
-  h_n1_phi = loadH1(inputFile, bn + TString("n1_phi"), true);
-  h_spt_phi = loadH1(inputFile, bn + TString("sumpt1_phi"), true);
-  h_pt_phi = loadH1(inputFile, bn + TString("pt1_phi"), false, true);
+  h_n1 = loadH1(dir, bn + TString("n1"), true);
+  h_n1_pid = loadH1(dir, bn + TString("n1_pid"), true);
+  h_n1_pt = loadH1(dir, bn + TString("n1_pt"), true);
+  h_n1_ptXS = loadH1(dir, bn + TString("n1_ptXS"), true);
+  h_n1_phi = loadH1(dir, bn + TString("n1_phi"), true);
+  h_spt_phi = loadH1(dir, bn + TString("sumpt1_phi"), true);
+  h_pt_phi = loadH1(dir, bn + TString("pt1_phi"), false, true);
   if (ac.fillYorEta == ac.kPseudorapidity) {
-    h_n1_eta = loadH1(inputFile, bn + TString("n1_eta"), true);
-    h_n1_ptEta = loadH2(inputFile, bn + TString("n1_ptEta"), true);
-    h_n1_phiEta = loadH2(inputFile, bn + TString("n1_phiEta"), true);
-    h_spt_phiEta = loadH2(inputFile, bn + TString("sumpt1_phiEta"), true);
-    h_spt_eta = loadH1(inputFile, bn + TString("sumpt1_eta"), true);
-    h_pt_phiEta = loadH2(inputFile, bn + TString("pt1_phiEta"), false, true);
-    h_pt_eta = loadH1(inputFile, bn + TString("pt1_eta"), false, true);
+    h_n1_eta = loadH1(dir, bn + TString("n1_eta"), true);
+    h_n1_ptEta = loadH2(dir, bn + TString("n1_ptEta"), true);
+    h_n1_phiEta = loadH2(dir, bn + TString("n1_phiEta"), true);
+    h_spt_phiEta = loadH2(dir, bn + TString("sumpt1_phiEta"), true);
+    h_spt_eta = loadH1(dir, bn + TString("sumpt1_eta"), true);
+    h_pt_phiEta = loadH2(dir, bn + TString("pt1_phiEta"), false, true);
+    h_pt_eta = loadH1(dir, bn + TString("pt1_eta"), false, true);
     if (ac.fill3D) {
-      h_n1_ptPhiEta = loadH3(inputFile, bn + TString("n1_ptPhiEta"), true);
+      h_n1_ptPhiEta = loadH3(dir, bn + TString("n1_ptPhiEta"), true);
     }
   }
   if (ac.fillYorEta == ac.kRapidity) {
-    h_n1_y = loadH1(inputFile, bn + TString("n1_y"), true);
-    h_n1_ptY = loadH2(inputFile, bn + TString("n1_ptY"), true);
-    h_n1_phiY = loadH2(inputFile, bn + TString("n1_phiY"), true);
-    h_spt_phiY = loadH2(inputFile, bn + TString("sumpt1_phiY"), true);
-    h_spt_y = loadH1(inputFile, bn + TString("sumpt1_y"), true);
-    h_pt_phiY = loadH2(inputFile, bn + TString("pt1_phiY"), false, true);
-    h_pt_y = loadH1(inputFile, bn + TString("pt1_y"), false, true);
+    h_n1_y = loadH1(dir, bn + TString("n1_y"), true);
+    h_n1_ptY = loadH2(dir, bn + TString("n1_ptY"), true);
+    h_n1_phiY = loadH2(dir, bn + TString("n1_phiY"), true);
+    h_spt_phiY = loadH2(dir, bn + TString("sumpt1_phiY"), true);
+    h_spt_y = loadH1(dir, bn + TString("sumpt1_y"), true);
+    h_pt_phiY = loadH2(dir, bn + TString("pt1_phiY"), false, true);
+    h_pt_y = loadH1(dir, bn + TString("pt1_y"), false, true);
     if (ac.fill3D) {
-      h_n1_ptPhiY = loadH3(inputFile, bn + TString("n1_ptPhiY"), true);
+      h_n1_ptPhiY = loadH3(dir, bn + TString("n1_ptPhiY"), true);
     }
   }
   /* the histograms are not owned */

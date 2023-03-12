@@ -43,8 +43,8 @@ class TwoPartDiffCorrelationAnalyzer : public Task
   virtual void execute();
   virtual void createHistograms();
   virtual void loadHistograms(TFile* inputFile);
-  virtual void loadBaseHistograms(TFile* inputFile);
-  virtual void saveHistograms(TFile* outputFile);
+  virtual void loadBaseHistograms(TDirectory* dir);
+  virtual void saveHistograms(TDirectory* dir);
   virtual void addHistogramsToExtList(TList* list, bool all = false);
   virtual void scaleHistograms(double factor);
   virtual void calculateDerivedHistograms();

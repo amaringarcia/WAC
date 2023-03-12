@@ -33,6 +33,7 @@ TaskConfiguration::TaskConfiguration()
     rootInputFileName(""),
     outputPath("./"),
     rootOuputFileName("output.root"),
+    outputDirectory(""),
     dataInputPath(""),
     dataInputFileName(""),
     dataInputTreeName("tree"),
@@ -58,7 +59,8 @@ TaskConfiguration::TaskConfiguration(const TString& theName, const TString& theT
     configurationFileName("configuration.txt"),
     rootInputFileName(""),
     outputPath("./"),
-    rootOuputFileName("output.root")
+    rootOuputFileName("output.root"),
+    outputDirectory("")
 {
   /* no ops */
 }
@@ -79,7 +81,8 @@ TaskConfiguration::TaskConfiguration(const TaskConfiguration& source)
     configurationFileName(source.configurationFileName),
     rootInputFileName(source.rootInputFileName),
     outputPath(source.outputPath),
-    rootOuputFileName(source.rootOuputFileName)
+    rootOuputFileName(source.rootOuputFileName),
+    outputDirectory(source.outputDirectory)
 {
   /* no ops */
 }
@@ -102,6 +105,7 @@ TaskConfiguration& TaskConfiguration::operator=(const TaskConfiguration& source)
   rootInputFileName = source.rootInputFileName;
   outputPath = source.outputPath;
   rootOuputFileName = source.rootOuputFileName;
+  outputDirectory = source.outputDirectory;
 
   return *this;
 }
@@ -159,4 +163,9 @@ TString TaskConfiguration::getOutputRootFileName()
   TString outputName = outputPath;
   outputName += rootOuputFileName;
   return outputName;
+}
+
+TString TaskConfiguration::getOutputDirectory()
+{
+  return outputDirectory;
 }

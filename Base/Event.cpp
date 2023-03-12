@@ -129,9 +129,22 @@ void Event::reset()
   Particle::getFactory()->reset();
 }
 
-void Event::saveHistograms(TFile* outfile)
+void Event::setMultiplicityPercentiles(TFile* f)
 {
-  outfile->cd();
+  Info("Event::setMultiplicityPercentiles()", "From file %s", f->GetName());
+  fhV0MMultPercentile = (TH1*)f->Get("V0MCentMult")->Clone();
+  fhCL1MultPercentile = (TH1*)f->Get("CL1MCentMult")->Clone();
+  fhCL1EtaGapMultPercentile = (TH1*)f->Get("CL1EtaGapMCentMult")->Clone();
+
+  if (fhV0MMultPercentile == nullptr || fhCL1MultPercentile == nullptr || fhCL1EtaGapMultPercentile == nullptr) {
+    Fatal("Event::setMultiplicityPercentiles()", "Percentiles histograms not correctly loaded. ABORTING!!!");
+    return;
+  }
+}
+
+void Event::saveHistograms(TDirectory* dir)
+{
+  dir->cd();
   fhNPartTot->Write();
   fhMultiplicity->Write();
   fhV0Multiplicity->Write();
@@ -164,19 +177,19 @@ void Event::settleMultiplicity(int npart)
     switch (classestimator) {
       case kV0M:
         if (fhV0MMultPercentile != nullptr) {
-          multiplicityclass = fhV0MMultPercentile->GetBinContent(V0AM + V0CM);
+          multiplicityclass = fhV0MMultPercentile->GetBinContent(fhV0MMultPercentile->FindFixBin(V0AM + V0CM));
           multiplicity = V0AM + V0CM;
         }
         break;
       case kCL1:
         if (fhCL1MultPercentile != nullptr) {
-          multiplicityclass = fhCL1MultPercentile->GetBinContent(CL1M);
+          multiplicityclass = fhCL1MultPercentile->GetBinContent(fhCL1MultPercentile->FindFixBin(CL1M));
           multiplicity = CL1M;
         }
         break;
       case kCL1GAP:
         if (fhCL1EtaGapMultPercentile != nullptr) {
-          multiplicityclass = fhCL1EtaGapMultPercentile->GetBinContent(CL1EtaGapM);
+          multiplicityclass = fhCL1EtaGapMultPercentile->GetBinContent(fhCL1EtaGapMultPercentile->FindFixBin(CL1EtaGapM));
           multiplicity = CL1EtaGapM;
         }
         break;

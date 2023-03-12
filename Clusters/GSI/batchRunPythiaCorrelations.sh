@@ -37,7 +37,6 @@ OUTFNAME=`sed -n '/"outputfname"\s*:\s*"\(.*\)",/p' ${CONFIGURATIONFILE} | sed '
 TASKNAME=`sed -n '/"taskname"\s*:\s*"\(.*\)",/p' ${CONFIGURATIONFILE} | sed 's/\s*"taskname"\s*:\s*"\(.*\)",/\1/'`
 RAPIDITIES=`sed -n '/"abs\_y"\s*:\s*\[\(.*\)\],/p' configuration.json | sed 's/\s*"abs\_y"\s*:\s*\[\(.*\)\],/\1/' | tr ',' ' '`
 CRAPIDITIES=`sed -n '/"abs\_y"\s*:\s*\[\(.*\)\],/p' configuration.json | sed 's/\s*"abs\_y"\s*:\s*\[\(.*\)\],/\1/' | sed 's/,/0/g' | sed 's/0\.//g'`
-EVENTFILTERS=`sed -n '/"teventfilter"\s*:\s*"\(.*\)",/p' configuration.json | sed 's/\s*"teventfilter"\s*:\s*"\(.*\)",/\1/'`
 RAPIDITIESLIST=($CRAPIDITIES)
 NRAPIDITIES=${#RAPIDITIESLIST[@]}
 ARRAYLAST=$(( NRAPIDITIES-1 ))
@@ -64,25 +63,17 @@ do
   # submit the merging of the job array results per rapidity
   for crap in ${CRAPIDITIES}
   do
-    PAIRSFNAMEPATERN=`printf %s_???_${TASKNAME}_%s ${OUTFNAME} "Pairs" ${crap} ${EVENTFILTERS}`
-    SINGLESFNAMEPATERN=`printf %s_???_${TASKNAME}_%s ${OUTFNAME} "Singles" ${crap} ${EVENTFILTERS}`
-    PAIRSMERGEDFNAME=`printf %s_${TASKNAME}_%s ${OUTFNAME} "Pairs" ${crap} ${EVENTFILTERS}`
-    SINGLESMERGEDFNAME=`printf %s_${TASKNAME}_%s ${OUTFNAME} "Singles" ${crap} ${EVENTFILTERS}`
+    FNAMEPATERN=`printf ${OUTFNAME}_??? ${crap}`
+    MERGEDFNAME=`printf ${OUTFNAME} ${crap}`
 
-    # merge the pairs results
-    mergeJOBNAME="waitMergePairs_$(printf "BUNCH%02d_Rap%03d" $ijob ${crap})"
-    cmd="sbatch -J $mergeJOBNAME --workdir=${WORKINGDIRECTORY}/Output --mem-per-cpu=8000 --time=03:00:00 -d afterany:$ARRAYJOBID -o ${WORKINGDIRECTORY}/log/merge/Job_%A.out -e ${WORKINGDIRECTORY}/log/merge/Job_%A.err /lustre/alice/users/${USER}/CLUSTERMODELWAC/Clusters/GSI/runScriptInSingularity.sh /lustre/alice/users/${USER}/CLUSTERMODELWAC/Clusters/GSI/runMergePythiaResults.sh ${PAIRSMERGEDFNAME} ${PAIRSFNAMEPATERN}"
-    PAIRSMERGEJOBID=($(eval $cmd | tee /dev/tty | awk '{print $4}'))
-    echo $cmd >> ${BASEDIRECTORY}/${PRODUCTIONDIRECTORY}/log/submit.log
-
-    # merge the singles results
-    mergeJOBNAME="waitMergeSingles_$(printf "BUNCH%02d_Rap%03d" $ijob ${crap})"
-    cmd="sbatch -J $mergeJOBNAME --workdir=${WORKINGDIRECTORY}/Output --mem-per-cpu=8000 --time=03:00:00 -d afterany:$ARRAYJOBID -o ${WORKINGDIRECTORY}/log/merge/Job_%A.out -e ${WORKINGDIRECTORY}/log/merge/Job_%A.err /lustre/alice/users/${USER}/CLUSTERMODELWAC/Clusters/GSI/runScriptInSingularity.sh /lustre/alice/users/${USER}/CLUSTERMODELWAC/Clusters/GSI/runMergePythiaResults.sh ${SINGLESMERGEDFNAME} ${SINGLESFNAMEPATERN}"
-    SINGLESMERGEJOBID=($(eval $cmd | tee /dev/tty | awk '{print $4}'))
+    # merge the results
+    mergeJOBNAME="waitMerge_$(printf "BUNCH%02d_Rap%03d" $ijob ${crap})"
+    cmd="sbatch -J $mergeJOBNAME --workdir=${WORKINGDIRECTORY}/Output --mem-per-cpu=8000 --time=03:00:00 -d afterany:$ARRAYJOBID -o ${WORKINGDIRECTORY}/log/merge/Job_%A.out -e ${WORKINGDIRECTORY}/log/merge/Job_%A.err /lustre/alice/users/${USER}/CLUSTERMODELWAC/Clusters/GSI/runScriptInSingularity.sh /lustre/alice/users/${USER}/CLUSTERMODELWAC/Clusters/GSI/runMergePythiaResults.sh ${MERGEDFNAME} ${FNAMEPATERN}"
+    MERGEJOBID=($(eval $cmd | tee /dev/tty | awk '{print $4}'))
     echo $cmd >> ${BASEDIRECTORY}/${PRODUCTIONDIRECTORY}/log/submit.log
 
     echo "" >> ${BASEDIRECTORY}/${PRODUCTIONDIRECTORY}/log/submit.log
-    MERGEJOBSIDS=${MERGEJOBSIDS}:${PAIRSMERGEJOBID}:${SINGLESMERGEJOBID}
+    MERGEJOBSIDS=${MERGEJOBSIDS}:${MERGEJOBID}
   done
   sleep 2s
 done
@@ -90,13 +81,9 @@ done
 # submit the final merging for both pairs and singles results
 for crap in ${CRAPIDITIES}
 do
-  PAIRSMERGEDFNAME=`printf %s_${TASKNAME}_%s ${OUTFNAME} "Pairs" ${crap} ${EVENTFILTERS}`
-  SINGLESMERGEDFNAME=`printf %s_${TASKNAME}_%s ${OUTFNAME} "Singles" ${crap} ${EVENTFILTERS}`
+  MERGEDFNAME=`printf ${OUTFNAME} ${crap}`
 
-  cmd="sbatch -J waitSinglesFinalMerge --workdir=${BASEDIRECTORY}/${PRODUCTIONDIRECTORY} --mem-per-cpu=8000 --time=03:00:00 -d afterany${MERGEJOBSIDS} -o ${BASEDIRECTORY}/${PRODUCTIONDIRECTORY}/log/merge/SinglesMergeJob_%A.out -e ${BASEDIRECTORY}/${PRODUCTIONDIRECTORY}/log/merge/SinglesMergeJob_%A.err /lustre/alice/users/${USER}/CLUSTERMODELWAC/Clusters/GSI/runScriptInSingularity.sh /lustre/alice/users/${USER}/CLUSTERMODELWAC/Clusters/GSI/runMergePythiaSubsamples.sh ${SINGLESMERGEDFNAME}"
-  JOBID=($(eval $cmd | tee /dev/tty | awk '{print $4}'))
-  echo $cmd >> ${BASEDIRECTORY}/${PRODUCTIONDIRECTORY}/log/submit.log
-  cmd="sbatch -J waitPairsFinalMerge --workdir=${BASEDIRECTORY}/${PRODUCTIONDIRECTORY} --mem-per-cpu=8000 --time=03:00:00 -d afterany${MERGEJOBSIDS} -o ${BASEDIRECTORY}/${PRODUCTIONDIRECTORY}/log/merge/PairsMergeJob_%A.out -e ${BASEDIRECTORY}/${PRODUCTIONDIRECTORY}/log/merge/PairsMergeJob_%A.err /lustre/alice/users/${USER}/CLUSTERMODELWAC/Clusters/GSI/runScriptInSingularity.sh /lustre/alice/users/${USER}/CLUSTERMODELWAC/Clusters/GSI/runMergePythiaSubsamples.sh ${PAIRSMERGEDFNAME}"
+  cmd="sbatch -J waitFinalMerge --workdir=${BASEDIRECTORY}/${PRODUCTIONDIRECTORY} --mem-per-cpu=8000 --time=03:00:00 -d afterany${MERGEJOBSIDS} -o ${BASEDIRECTORY}/${PRODUCTIONDIRECTORY}/log/merge/SinglesMergeJob_%A.out -e ${BASEDIRECTORY}/${PRODUCTIONDIRECTORY}/log/merge/SinglesMergeJob_%A.err /lustre/alice/users/${USER}/CLUSTERMODELWAC/Clusters/GSI/runScriptInSingularity.sh /lustre/alice/users/${USER}/CLUSTERMODELWAC/Clusters/GSI/runMergePythiaSubsamples.sh ${MERGEDFNAME}"
   JOBID=($(eval $cmd | tee /dev/tty | awk '{print $4}'))
   echo $cmd >> ${BASEDIRECTORY}/${PRODUCTIONDIRECTORY}/log/submit.log
 

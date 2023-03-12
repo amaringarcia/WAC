@@ -127,17 +127,17 @@ void ParticleAnalyzer<r>::loadHistograms(TFile* inputFile)
 // save histograms to given files
 //////////////////////////////////////////////////////////////
 template <AnalysisConfiguration::RapidityPseudoRapidity r>
-void ParticleAnalyzer<r>::saveHistograms(TFile* outputFile)
+void ParticleAnalyzer<r>::saveHistograms(TDirectory* dir)
 {
   if (reportDebug())
-    cout << "ParticleAnalyzer::saveHistograms(...) Saving Event histograms to file." << endl;
-  if (!outputFile) {
+    cout << "ParticleAnalyzer::saveHistograms(...) Saving Event histograms to directory." << endl;
+  if (!dir) {
     if (reportError())
-      cout << "ParticleAnalyzer::saveHistograms(...) outputFile is a null  pointer." << endl;
+      cout << "ParticleAnalyzer::saveHistograms(...) output directory is a null  pointer." << endl;
     postTaskError();
     return;
   }
-  outputFile->cd();
+  dir->cd();
 
   /* first save the number of events as a cumulated parameter */
   TParameter<Long64_t>("NoOfEvents", eventsProcessed, '+').Write();
@@ -145,10 +145,10 @@ void ParticleAnalyzer<r>::saveHistograms(TFile* outputFile)
   /* now save the event histograms */
   if (reportDebug())
     cout << "PartAnalyzer::saveHistograms(...) saving event histograms." << endl;
-  event->saveHistograms(outputFile);
+  event->saveHistograms(dir);
 
   for (int iFilter = 0; iFilter < nParticleFilters; iFilter++) {
-    particleHistos[iFilter]->saveHistograms(outputFile);
+    particleHistos[iFilter]->saveHistograms(dir);
   }
   if (reportDebug())
     cout << "ParticleAnalyzer::saveHistograms(...) Completed." << endl;

@@ -93,7 +93,7 @@ void Histograms::createHistograms()
 // ==============================================================
 // load the cluster histograms from the given file and base name
 // ==============================================================
-void Histograms::loadHistograms(TFile*)
+void Histograms::loadHistograms(TDirectory*)
 {
   if (reportDebug())
     cout << "Histograms::loadHistograms(...) No ops." << endl;

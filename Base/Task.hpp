@@ -80,7 +80,7 @@ class Task : public MessageLogger
   virtual void scaleHistograms(double factor);
   virtual void saveHistogramsAsText();
   virtual void saveHistograms();
-  virtual void saveHistograms(TFile* outputFile);
+  virtual void saveHistograms(TDirectory* dir);
   virtual void addHistogramsToExtList(TList* list, bool all = false);
   Event* getEvent();
 

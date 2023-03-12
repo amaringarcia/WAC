@@ -51,29 +51,38 @@ const char* bfnames[nbf] = {"R2BF", "R2BFPratt1bar2", "R2BFPrattbar12", "N2Pratt
 
 #define LONGITUDINAL AnalysisConfiguration::kRapidity
 
-std::vector<std::string> centfname = {
-  "MB"};
-int ncent = centfname.size();
-
 int nsamples = 10;
 
-TFile* getSampleFile(PythiaAnalysisConfiguration* conf, int irap, int icent, int isample)
+TFile* getSampleFile(PythiaAnalysisConfiguration* conf, int irap, int isample)
 {
-  TFile *f = nullptr;
+  TFile* f = nullptr;
 
   std::string filename = TString::Format("BUNCH%02d/Output/%s",
                                          isample + 1,
-                                         TString::Format("%s_%s_%s.root",
-                                                         conf->outputfname.c_str(),
-                                                         TString::Format(conf->taskname.c_str(), "Pairs", int(conf->abs_y[irap] * 10)).Data(),
-                                                         centfname[icent].c_str())
-                                           .Data())
+                                         TString::Format("%s.root", TString::Format(conf->outputfname.c_str(), int(conf->abs_y[irap] * 10)).Data()).Data())
                            .Data();
   f = new TFile(filename.c_str());
   if (f == nullptr or not f->IsOpen()) {
-    Error("statUncertain::getSampleFile","File %s not found. ABORTING!!!", filename.c_str());
+    Fatal("statUncertain::getSampleFile", "File %s not found. ABORTING!!!", filename.c_str());
   }
   return f;
+}
+
+TDirectory* getSampleDirectory(PythiaAnalysisConfiguration* conf, TFile* file, int irap, const char* cname)
+{
+  TDirectory* dir = nullptr;
+
+  std::string dirname = TString::Format("%s%s_%s",
+                                        TString::Format(conf->outputfname.c_str(), int(conf->abs_y[irap] * 10)).Data(),
+                                        TString::Format(conf->taskname.c_str(), "Pairs").Data(),
+                                        cname)
+                          .Data();
+
+  dir = (TDirectory*)file->GetDirectory(dirname.c_str());
+  if (dir == nullptr) {
+    Fatal("statUncertain::getSampleDirectory", "Directory %s not found in file %s. ABORTING!!!", dirname.c_str(), file->GetName());
+  }
+  return dir;
 }
 
 TH2 *extractHistoMeanAndStDevFromSubSets(const TObjArray &listsarray, Int_t ih, const TString &name) {
@@ -152,8 +161,24 @@ TList* extractMeanAndStDevFromSubSets(const TObjArray& listsarray, const TString
   return list;
 }
 
-TList* extractSampleResults(Option_t* opt, PythiaAnalysisConfiguration* conf, int irap, AnalysisConfiguration* ac, int icent, int isample)
+TList* extractSampleResults(Option_t* opt, PythiaAnalysisConfiguration* conf, TFile* samplefile, AnalysisConfiguration* ac, int irap, std::string evfltr, int isample)
 {
+
+  char* cname = new char[64];
+  auto getEvenFilter = [&cname](auto const& evfltr) {
+    EventFilter* eventFilter = nullptr;
+    if (evfltr == "MB") {
+      sprintf(cname, "MB");
+      eventFilter = new EventFilter(EventFilter::MinBias, 0, 0);
+    } else {
+      float min = 0;
+      float max = 0;
+      sscanf(evfltr.c_str(), "%f-%f", &min, &max);
+      sprintf(cname, "C%dto%d", int(min), int(max));
+      eventFilter = new EventFilter(EventFilter::Centrality, min, max);
+    }
+    return eventFilter;
+  };
 
   /* we will control what goes to the directory tree */
   Bool_t oldstatus = TH1::AddDirectoryStatus();
@@ -161,7 +186,7 @@ TList* extractSampleResults(Option_t* opt, PythiaAnalysisConfiguration* conf, in
 
   std::vector<ParticleFilter<LONGITUDINAL>*> particleFilters;
   if (conf->inrapidity) {
-    for (auto part : conf->tpairs) {
+    for (auto& part : conf->tpairs) {
       auto filter = PythiaAnalysisConfiguration::particleFilter<LONGITUDINAL>(part, ac);
       if (filter != nullptr) {
         particleFilters.push_back(filter);
@@ -171,23 +196,16 @@ TList* extractSampleResults(Option_t* opt, PythiaAnalysisConfiguration* conf, in
     }
   } else {
     Error("extractSampleResults", "Tasks in pseudorapidity still not supported by the analysis. Please, fix it!!");
+    delete[] cname;
     return nullptr;
   }
 
   /* event selection at the analysis task level */
-  EventFilter::EventSelection eventSelection = EventFilter::MinBias;
-  if (conf->teventfilter == "MB") {
-    eventSelection = EventFilter::MinBias;
-  } else {
-    Error("main", "Task event selection %s still not supported by the analysis. Please, fix it!!", conf->teventfilter.c_str());
-    return 0;
-  }
-  EventFilter* eventFilter = new EventFilter(eventSelection, 0.0, 0.0);
-
+  EventFilter* eventFilter = getEvenFilter(evfltr);
   Event* event = Event::getEvent();
 
   /* the pairs taskname */
-  TString taskName = TString::Format(conf->taskname.c_str(), "Pairs", int(conf->abs_y[irap] * 10));
+  TString taskName = TString::Format(conf->taskname.c_str(), "Pairs");
   TwoPartDiffCorrelationAnalyzer<LONGITUDINAL>* eventanalyzer = new TwoPartDiffCorrelationAnalyzer<LONGITUDINAL>(taskName.Data(), ac, event, eventFilter, particleFilters);
 
   if (!TString(opt).Contains("verb"))
@@ -195,10 +213,11 @@ TList* extractSampleResults(Option_t* opt, PythiaAnalysisConfiguration* conf, in
   else
     eventanalyzer->setReportLevel(MessageLogger::Info);
 
-  TFile* myfile = getSampleFile(conf, irap, icent, isample);
-  if (myfile == nullptr) return nullptr;
+  TDirectory* mydir = getSampleDirectory(conf, samplefile, irap, cname);
+  if (mydir == nullptr)
+    return nullptr;
 
-  eventanalyzer->loadBaseHistograms(myfile);
+  eventanalyzer->loadBaseHistograms(mydir);
   eventanalyzer->finalize();
 
   TList *list = new TList();
@@ -211,8 +230,8 @@ TList* extractSampleResults(Option_t* opt, PythiaAnalysisConfiguration* conf, in
     for (int jpart = 0; jpart < npart; ++jpart) { /* second component of the pair */
       TList* plist = new TList();                 /* a list per pair */
       plist->SetOwner(kTRUE);
-      auto addToList = [plist, icent, isample](auto h) {
-        plist->Add(h->Clone(TString::Format("%s%s_Sub%02d", h->GetName(), centfname[icent].c_str(), isample)));
+      auto addToList = [plist, &cname, isample](auto h) {
+        plist->Add(h->Clone(TString::Format("%s%s_Sub%02d", h->GetName(), cname, isample)));
       };
       if (doeta) {
         addToList(eventanalyzer->pairs_Histos[ipart][jpart]->h_P2_DetaDphi_shft);
@@ -262,8 +281,8 @@ TList* extractSampleResults(Option_t* opt, PythiaAnalysisConfiguration* conf, in
     for (int jpart = 0; jpart < int(npart / 2); ++jpart) {
       TList* plist = new TList(); /* a list per pair */
       plist->SetOwner(kTRUE);
-      auto addToList = [plist, icent, isample](auto h) {
-        plist->Add(h->Clone(TString::Format("%s%s_Sub%02d", h->GetName(), centfname[icent].c_str(), isample)));
+      auto addToList = [plist, &cname, isample](auto h) {
+        plist->Add(h->Clone(TString::Format("%s%s_Sub%02d", h->GetName(), cname, isample)));
       };
       if (doeta) {
         addToList(eventanalyzer->pairs_BFHistos[ipart][jpart]->h_R2BF_DetaDphi_shft);
@@ -293,8 +312,8 @@ TList* extractSampleResults(Option_t* opt, PythiaAnalysisConfiguration* conf, in
     for (int jpart = 0; jpart < npart - (ipart + 1); ++jpart) { /* second component of the pair */
       TList* plist = new TList();                               /* a list per pair */
       plist->SetOwner(kTRUE);
-      auto addToList = [plist, icent, isample](auto h) {
-        plist->Add(h->Clone(TString::Format("%s%s_Sub%02d", h->GetName(), centfname[icent].c_str(), isample)));
+      auto addToList = [plist, &cname, isample](auto h) {
+        plist->Add(h->Clone(TString::Format("%s%s_Sub%02d", h->GetName(), cname, isample)));
       };
       if (doeta) {
         addToList(eventanalyzer->pairs_CIHistos[ipart][jpart]->h_P2_DetaDphi_shft);
@@ -315,9 +334,7 @@ TList* extractSampleResults(Option_t* opt, PythiaAnalysisConfiguration* conf, in
     }
   }
 
-  myfile->Close();
-
-  delete myfile;
+  delete mydir;
   delete eventanalyzer;
   delete eventFilter;
   for (auto pf : particleFilters) {
@@ -374,12 +391,7 @@ int main(int argc, char* argv[])
   /* Cummulate errors by default */
   TH1::SetDefaultSumw2(kTRUE);
 
-  TFile* outputfile = new TFile(TString::Format("Histograms%02dSub_%d_%d.root", nsamples, now.GetDate(), now.GetTime()), "RECREATE");
-
-  for (int icent = 0; icent < ncent; icent++) {
-
-    Info("statUncertain", "Setup configuration");
-
+  auto getAnalysisConfiguration = [&conf, &ixrap]() {
     AnalysisConfiguration* ac = new AnalysisConfiguration("PYTHIA8", "UCM-miniWAC", "1.0");
 
     ac->outputPath = "./";
@@ -421,105 +433,137 @@ int main(int argc, char* argv[])
     ac->forceHistogramsRewrite = false;
     ac->calculateDerivedHistograms = true;
 
-    /* the pair single histos, optionally the mixed events pair single histos, the balance function, plus the pair combined histos   */
-    int npart = partname.size();
-    int nmainlists = (TString(opt).Contains("me")) ? 2 * npart * npart + int(npart / 2) * int(npart / 2) + npart * (npart - 1) / 2 : npart * npart + int(npart / 2) * int(npart / 2) + npart * (npart - 1) / 2;
-    std::vector<TObjArray> pairslists(nmainlists, TObjArray(nsamples));
-    for (int ilst = 0; ilst < nmainlists; ++ilst) {
-      pairslists[ilst].SetOwner(kTRUE);
+    return ac;
+  };
+
+  TFile* outputfile = new TFile(TString::Format("Histograms%02dSub_%d_%d.root", nsamples, now.GetDate(), now.GetTime()), "RECREATE");
+  char* ctitle = new char[64];
+  auto getCentMultNames = [ctitle](auto const& evfltr) {
+    if (evfltr == "MB") {
+      sprintf(ctitle, "MB");
+    } else {
+      float min = 0;
+      float max = 0;
+      sscanf(evfltr.c_str(), "%f-%f", &min, &max);
+      sprintf(ctitle, "%d-%d", int(min), int(max));
     }
+  };
 
-    for (Int_t isamp = 0; isamp < nsamples; isamp++) {
-      Warning("statUncertain", "Processing sample %d for centrality %s", isamp, centfname[icent].c_str());
-      TList* list = extractSampleResults(opt, conf, ixrap, ac, icent, isamp);
+  for (Int_t isamp = 0; isamp < nsamples; isamp++) {
+    TFile* samplefile = getSampleFile(conf, ixrap, isamp);
+    if (samplefile != nullptr && samplefile->IsOpen()) {
+      for (auto ef : conf->teventfilter) {
 
-      for (Int_t ilst = 0; ilst < nmainlists; ++ilst) {
-        pairslists[ilst][isamp] = list->At(ilst);
-      }
-      /* we write the individual results if required */
-      if (TString(opt).Contains("savesub")) {
-        outputfile->cd();
-        for (Int_t ixh = 0; ixh < list->GetEntries(); ixh++) {
-          list->At(ixh)->Write();
+        Info("statUncertain", "Setup configuration for sample %d and event filter %s", isamp, ef.c_str());
+
+        AnalysisConfiguration* ac = getAnalysisConfiguration();
+        getCentMultNames(ef);
+
+        /* the pair single histos, optionally the mixed events pair single histos, the balance function, plus the pair combined histos   */
+        int npart = partname.size();
+        int nmainlists = (TString(opt).Contains("me")) ? 2 * npart * npart + int(npart / 2) * int(npart / 2) + npart * (npart - 1) / 2 : npart * npart + int(npart / 2) * int(npart / 2) + npart * (npart - 1) / 2;
+        std::vector<TObjArray> pairslists(nmainlists, TObjArray(nsamples));
+        for (int ilst = 0; ilst < nmainlists; ++ilst) {
+          pairslists[ilst].SetOwner(kTRUE);
         }
-      }
-      delete list;
-    }
+        {
+          Warning("statUncertain", "Processing sample %d for centrality %s", isamp, ctitle);
+          TList* list = extractSampleResults(opt, conf, samplefile, ac, ixrap, ef, isamp);
 
-    /* we will control what goes to the directory tree */
-    Bool_t oldstatus = TH1::AddDirectoryStatus();
-    TH1::AddDirectory(kFALSE);
-
-    const char* raporeta = TString(opt).Contains("eta") ? "eta" : "y";
-    outputfile->cd();
-    for (int ipart = 0; ipart < npart; ++ipart) {
-      for (int jpart = 0; jpart < npart; ++jpart) {
-        int ilst = ipart * npart + jpart;
-        TString pattern = TString::Format("Pythia8_%s%s%%s_D%sDphi_shft_%s", partname[ipart].c_str(), partname[jpart].c_str(), raporeta, centfname[icent].c_str());
-        TList* meanhlist = extractMeanAndStDevFromSubSets(pairslists[ilst], pattern, corrfname);
-        for (int ixh = 0; ixh < meanhlist->GetEntries(); ixh++) {
-          meanhlist->At(ixh)->Write();
-        }
-        delete meanhlist;
-      }
-    }
-    if (TString(opt).Contains("me")) {
-      int ilst = npart * npart;
-      for (int ipart = 0; ipart < npart; ++ipart) {
-        for (int jpart = 0; jpart < npart; ++jpart) {
-          TString pattern = TString::Format("Pythia8_%s%s%%s_D%sDphi_shft_me_%s", partname[ipart].c_str(), partname[jpart].c_str(), raporeta, centfname[icent].c_str());
-          TList* meanhlist = extractMeanAndStDevFromSubSets(pairslists[ilst++], pattern, corrfname);
-          for (int ixh = 0; ixh < meanhlist->GetEntries(); ixh++) {
-            meanhlist->At(ixh)->Write();
+          for (Int_t ilst = 0; ilst < nmainlists; ++ilst) {
+            pairslists[ilst][isamp] = list->At(ilst);
           }
-          delete meanhlist;
+          /* we write the individual results if required */
+          if (TString(opt).Contains("savesub")) {
+            outputfile->cd();
+            for (Int_t ixh = 0; ixh < list->GetEntries(); ixh++) {
+              list->At(ixh)->Write();
+            }
+          }
+          delete list;
         }
-      }
-    }
 
-    /* the charge balance function */
-    int ilst = npart * npart;
-    if (TString(opt).Contains("me")) {
-      ilst *= 2;
-    }
-    for (int ipart = 0; ipart < int(npart / 2); ++ipart) {
-      for (int jpart = 0; jpart < int(npart / 2); ++jpart) {
-        TString pattern = TString::Format("Pythia8_%.2s%.2s%%s_D%sDphi_shft_%s", partname[ipart * 2].c_str(), partname[jpart * 2].c_str(), raporeta, centfname[icent].c_str());
-        TList* meanhlist = extractMeanAndStDevFromSubSets(pairslists[ilst++], pattern, bfnames);
-        for (int ixh = 0; ixh < meanhlist->GetEntries(); ixh++) {
-          meanhlist->At(ixh)->Write();
+        /* we will control what goes to the directory tree */
+        Bool_t oldstatus = TH1::AddDirectoryStatus();
+        TH1::AddDirectory(kFALSE);
+
+        const char* raporeta = TString(opt).Contains("eta") ? "eta" : "y";
+        outputfile->cd();
+        for (int ipart = 0; ipart < npart; ++ipart) {
+          for (int jpart = 0; jpart < npart; ++jpart) {
+            int ilst = ipart * npart + jpart;
+            TString pattern = TString::Format("Pythia8_%s%s%%s_D%sDphi_shft_%s", partname[ipart].c_str(), partname[jpart].c_str(), raporeta, ctitle);
+            TList* meanhlist = extractMeanAndStDevFromSubSets(pairslists[ilst], pattern, corrfname);
+            for (int ixh = 0; ixh < meanhlist->GetEntries(); ixh++) {
+              meanhlist->At(ixh)->Write();
+            }
+            delete meanhlist;
+          }
         }
-        delete meanhlist;
-      }
-    }
-
-    /* the CI, CD, combinations */
-    const char* cfnamecomb[ncorrpart * ncomb] = {nullptr};
-    for (int i = 0; i < ncorrpart; ++i) {
-      for (int j = 0; j < ncomb; ++j) {
-        char* buffer;
-        cfnamecomb[i * ncomb + j] = buffer = new char[std::strlen(corrfname[i]) + strlen(combname[j]) + 1];
-        sprintf(buffer, "%s%s", corrfname[i], combname[j]);
-      }
-    }
-    /* we keep tracking with the previous ilst content */
-    for (int ipart = 0; ipart < npart; ++ipart) {
-      for (int jpart = 0; jpart < npart - (ipart + 1); ++jpart) {
-        TString pattern = TString::Format("Pythia8_%s%s%%s_D%sDphi_shft_%s", partname[ipart].c_str(), partname[ipart + 1 + jpart].c_str(), raporeta, centfname[icent].c_str());
-        TList* meanhlist = extractMeanAndStDevFromSubSets(pairslists[ilst++], pattern, cfnamecomb);
-        for (int ixh = 0; ixh < meanhlist->GetEntries(); ixh++) {
-          meanhlist->At(ixh)->Write();
+        if (TString(opt).Contains("me")) {
+          int ilst = npart * npart;
+          for (int ipart = 0; ipart < npart; ++ipart) {
+            for (int jpart = 0; jpart < npart; ++jpart) {
+              TString pattern = TString::Format("Pythia8_%s%s%%s_D%sDphi_shft_me_%s", partname[ipart].c_str(), partname[jpart].c_str(), raporeta, ctitle);
+              TList* meanhlist = extractMeanAndStDevFromSubSets(pairslists[ilst++], pattern, corrfname);
+              for (int ixh = 0; ixh < meanhlist->GetEntries(); ixh++) {
+                meanhlist->At(ixh)->Write();
+              }
+              delete meanhlist;
+            }
+          }
         }
-        delete meanhlist;
-      }
-    }
 
-    for (auto aname : cfnamecomb) {
-      delete aname;
+        /* the charge balance function */
+        int ilst = npart * npart;
+        if (TString(opt).Contains("me")) {
+          ilst *= 2;
+        }
+        for (int ipart = 0; ipart < int(npart / 2); ++ipart) {
+          for (int jpart = 0; jpart < int(npart / 2); ++jpart) {
+            TString pattern = TString::Format("Pythia8_%.2s%.2s%%s_D%sDphi_shft_%s", partname[ipart * 2].c_str(), partname[jpart * 2].c_str(), raporeta, ctitle);
+            TList* meanhlist = extractMeanAndStDevFromSubSets(pairslists[ilst++], pattern, bfnames);
+            for (int ixh = 0; ixh < meanhlist->GetEntries(); ixh++) {
+              meanhlist->At(ixh)->Write();
+            }
+            delete meanhlist;
+          }
+        }
+
+        /* the CI, CD, combinations */
+        const char* cfnamecomb[ncorrpart * ncomb] = {nullptr};
+        for (int i = 0; i < ncorrpart; ++i) {
+          for (int j = 0; j < ncomb; ++j) {
+            char* buffer;
+            cfnamecomb[i * ncomb + j] = buffer = new char[std::strlen(corrfname[i]) + strlen(combname[j]) + 1];
+            sprintf(buffer, "%s%s", corrfname[i], combname[j]);
+          }
+        }
+        /* we keep tracking with the previous ilst content */
+        for (int ipart = 0; ipart < npart; ++ipart) {
+          for (int jpart = 0; jpart < npart - (ipart + 1); ++jpart) {
+            TString pattern = TString::Format("Pythia8_%s%s%%s_D%sDphi_shft_%s", partname[ipart].c_str(), partname[ipart + 1 + jpart].c_str(), raporeta, ctitle);
+            TList* meanhlist = extractMeanAndStDevFromSubSets(pairslists[ilst++], pattern, cfnamecomb);
+            for (int ixh = 0; ixh < meanhlist->GetEntries(); ixh++) {
+              meanhlist->At(ixh)->Write();
+            }
+            delete meanhlist;
+          }
+        }
+
+        for (auto aname : cfnamecomb) {
+          delete aname;
+        }
+        /* back to normal */
+        TH1::AddDirectory(oldstatus);
+      }
+    } else {
+      Fatal("statUncertainPythia::main", "Cannot open rapidity %d sample file for sample %d. ABORTING!!!", ixrap, isamp);
     }
-    /* back to normal */
-    TH1::AddDirectory(oldstatus);
+    samplefile->Close();
+    delete samplefile;
   }
   outputfile->Close();
+  delete[] ctitle;
   delete outputfile;
 }

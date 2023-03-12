@@ -401,17 +401,17 @@ void HistogramCollection::addHistogramsToExtList(TList* list, bool all)
 ////////////////////////////////////////////////////////////////////////
 // Save Histograms to file
 ////////////////////////////////////////////////////////////////////////
-void HistogramCollection::saveHistograms(TFile* outputFile, bool saveAll)
+void HistogramCollection::saveHistograms(TDirectory* dir, bool saveAll)
 {
   if (reportDebug())
-    cout << "HistogramCollection::saveHistograms(TFile * outputFile) started." << endl;
-  outputFile->cd();
+    cout << "HistogramCollection::saveHistograms(TDirectory* dir) started." << endl;
+  dir->cd();
   for (int k = 0; k < nHistograms; k++) {
     if (isSaved[k] || saveAll)
       histograms[k]->Write();
   }
   if (reportDebug())
-    cout << "HistogramCollection::saveHistograms(TFile * outputFile) completed." << endl;
+    cout << "HistogramCollection::saveHistograms(TDirectory* dir) completed." << endl;
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -1738,7 +1738,7 @@ void HistogramCollection::setHistogram(TH2* h, double v, double ev)
   }
 }
 
-TH1* HistogramCollection::loadH1(TFile* inputFile,
+TH1* HistogramCollection::loadH1(TDirectory* dir,
                                  const TString& histoName,
                                  bool scale,
                                  bool save,
@@ -1746,7 +1746,7 @@ TH1* HistogramCollection::loadH1(TFile* inputFile,
                                  bool print,
                                  bool sumw2)
 {
-  TH1* h = (TH1*)inputFile->Get(histoName);
+  TH1* h = (TH1*)dir->Get(histoName);
   if (!h) {
     if (reportDebug())
       cout << "Could not load histogram " << histoName << endl;
@@ -1758,7 +1758,7 @@ TH1* HistogramCollection::loadH1(TFile* inputFile,
 /// Load the given 1D histogram (name) from the given TFile
 /// No test is //done to verify that the file is properly opened.
 
-TH2* HistogramCollection::loadH2(TFile* inputFile,
+TH2* HistogramCollection::loadH2(TDirectory* dir,
                                  const TString& histoName,
                                  bool scale,
                                  bool save,
@@ -1766,7 +1766,7 @@ TH2* HistogramCollection::loadH2(TFile* inputFile,
                                  bool print,
                                  bool sumw2)
 {
-  TH2* h = (TH2*)inputFile->Get(histoName);
+  TH2* h = (TH2*)dir->Get(histoName);
   if (!h) {
     if (reportDebug())
       cout << "Could not load histogram " << histoName << endl;
@@ -1777,7 +1777,7 @@ TH2* HistogramCollection::loadH2(TFile* inputFile,
 
 /// Load the given 3D histogram (name) from the given TFile
 /// No test is //done to verify that the file is properly opened.
-TH3* HistogramCollection::loadH3(TFile* inputFile,
+TH3* HistogramCollection::loadH3(TDirectory* dir,
                                  const TString& histoName,
                                  bool scale,
                                  bool save,
@@ -1785,7 +1785,7 @@ TH3* HistogramCollection::loadH3(TFile* inputFile,
                                  bool print,
                                  bool sumw2)
 {
-  TH3* h = (TH3*)inputFile->Get(histoName);
+  TH3* h = (TH3*)dir->Get(histoName);
   if (!h) {
     if (reportDebug())
       cout << "Could not load histogram " << histoName << endl;
@@ -1796,7 +1796,7 @@ TH3* HistogramCollection::loadH3(TFile* inputFile,
 
 /// Load the given 1D profile (name) from the given TFile
 /// No test is //done to verify that the file is properly opened.
-TProfile* HistogramCollection::loadProfile(TFile* inputFile,
+TProfile* HistogramCollection::loadProfile(TDirectory* dir,
                                            const TString& histoName,
                                            bool scale,
                                            bool save,
@@ -1804,7 +1804,7 @@ TProfile* HistogramCollection::loadProfile(TFile* inputFile,
                                            bool print,
                                            bool sumw2)
 {
-  TProfile* h = (TProfile*)inputFile->Get(histoName);
+  TProfile* h = (TProfile*)dir->Get(histoName);
   if (!h) {
     if (reportDebug())
       cout << "Could not load profile " << histoName << endl;
@@ -1815,7 +1815,7 @@ TProfile* HistogramCollection::loadProfile(TFile* inputFile,
 
 /// Load the given 2D profile (name) from the given TFile
 /// No test is //done to verify that the file is properly opened.
-TProfile2D* HistogramCollection::loadProfile2D(TFile* inputFile,
+TProfile2D* HistogramCollection::loadProfile2D(TDirectory* dir,
                                                const TString& histoName,
                                                bool scale,
                                                bool save,
@@ -1823,7 +1823,7 @@ TProfile2D* HistogramCollection::loadProfile2D(TFile* inputFile,
                                                bool print,
                                                bool sumw2)
 {
-  TProfile2D* h = (TProfile2D*)inputFile->Get(histoName);
+  TProfile2D* h = (TProfile2D*)dir->Get(histoName);
   if (!h) {
     if (reportDebug())
       cout << "Could not load 2D profile " << histoName << endl;

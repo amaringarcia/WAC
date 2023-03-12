@@ -33,7 +33,7 @@ class Histograms : public HistogramCollection
   virtual void reset();
   virtual void clear();
   virtual void createHistograms();
-  virtual void loadHistograms(TFile* inputFile);
+  virtual void loadHistograms(TDirectory* dir);
 
   AnalysisConfiguration* getConfiguration() const;
   void setConfiguration(AnalysisConfiguration* config);

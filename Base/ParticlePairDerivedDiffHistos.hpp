@@ -21,7 +21,7 @@ class ParticlePairDerivedDiffHistos : public ParticlePairDiffHistos
   ParticlePairDerivedDiffHistos(const TString& name,
                                 AnalysisConfiguration* configuration,
                                 LogLevel debugLevel);
-  ParticlePairDerivedDiffHistos(TFile* inputFile,
+  ParticlePairDerivedDiffHistos(TDirectory* dir,
                                 const TString& name,
                                 AnalysisConfiguration* configuration,
                                 LogLevel debugLevel);

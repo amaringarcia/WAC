@@ -152,12 +152,12 @@ void PythiaEventGenerator<r>::execute()
 
   /* the multiplicity is settled */
   event->settleMultiplicity(particleAccepted);
-  if (reportDebug())
+  if (reportDebug()) {
     cout << "PythiaEventGenerator::execute() No of accepted Particles : " << particleAccepted << endl;
-  if (reportDebug())
     cout << "PythiaEventGenerator::execute() No of counted Particles : " << particleCounted << endl;
-  if (reportDebug())
+    cout << "PythiaEventGenerator::execute() Event multiplicity class : " << event->getMultiplicityClass() << endl;
     cout << "PythiaEventGenerator::execute() event completed!" << endl;
+  }
 }
 
 template <AnalysisConfiguration::RapidityPseudoRapidity r>

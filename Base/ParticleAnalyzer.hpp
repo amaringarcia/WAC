@@ -35,7 +35,7 @@ class ParticleAnalyzer : public Task
   virtual void execute();
   virtual void createHistograms();
   virtual void loadHistograms(TFile* inputFile);
-  virtual void saveHistograms(TFile* outputFile);
+  virtual void saveHistograms(TDirectory* dir);
   virtual void scaleHistograms(double factor);
 
   int nParticleFilters;

@@ -282,17 +282,17 @@ void TwoPartDiffCorrelationAnalyzerME<r>::loadBaseHistograms(TFile* inputFile)
 // save histograms to given files
 //////////////////////////////////////////////////////////////
 template <AnalysisConfiguration::RapidityPseudoRapidity r>
-void TwoPartDiffCorrelationAnalyzerME<r>::saveHistograms(TFile* outputFile)
+void TwoPartDiffCorrelationAnalyzerME<r>::saveHistograms(TDirectory* dir)
 {
   if (reportDebug())
-    cout << "TwoPartDiffCorrelationAnalyzerME::saveHistograms(...) Saving Event histograms to file." << endl;
-  if (!outputFile) {
+    cout << "TwoPartDiffCorrelationAnalyzerME::saveHistograms(...) Saving Event histograms to directory." << endl;
+  if (!dir) {
     if (reportError())
-      cout << "TwoPartDiffCorrelationAnalyzerME::saveHistograms(...) outputFile is a null  pointer." << endl;
+      cout << "TwoPartDiffCorrelationAnalyzerME::saveHistograms(...) output directory is a null  pointer." << endl;
     postTaskError();
     return;
   }
-  outputFile->cd();
+  dir->cd();
 
   /* first save the number of events as a cumulated parameter */
   TParameter<Long64_t>("NoOfEvents", eventsProcessed, '+').Write();
@@ -308,7 +308,7 @@ void TwoPartDiffCorrelationAnalyzerME<r>::saveHistograms(TFile* outputFile)
     cout << "TwoPartDiffCorrelationAnalyzerME::saveHistograms(...) saving singles." << endl;
 
   for (uint i = 0; i < partNames.size(); ++i) {
-    particle_Histos[i]->saveHistograms(outputFile);
+    particle_Histos[i]->saveHistograms(dir);
   }
 
   if (reportDebug())
@@ -320,23 +320,23 @@ void TwoPartDiffCorrelationAnalyzerME<r>::saveHistograms(TFile* outputFile)
 
     for (uint i = 0; i < partNames.size(); ++i) {
       for (uint j = 0; j < partNames.size(); ++j) {
-        pairs_Histos[i][j]->saveHistograms(outputFile);
-        pairs_Histos_me[i][j]->saveHistograms(outputFile);
+        pairs_Histos[i][j]->saveHistograms(dir);
+        pairs_Histos_me[i][j]->saveHistograms(dir);
       }
     }
     if (analysisConfiguration->calculateDerivedHistograms) {
       for (uint i = 0; i < partNames.size(); ++i) {
         for (uint j = 0; j < partNames.size() - (i + 1); ++j) {
-          pairs_CIHistos[i][j]->saveHistograms(outputFile);
-          pairs_CDHistos[i][j]->saveHistograms(outputFile);
-          pairs_CIHistos_me[i][j]->saveHistograms(outputFile);
-          pairs_CDHistos_me[i][j]->saveHistograms(outputFile);
+          pairs_CIHistos[i][j]->saveHistograms(dir);
+          pairs_CDHistos[i][j]->saveHistograms(dir);
+          pairs_CIHistos_me[i][j]->saveHistograms(dir);
+          pairs_CDHistos_me[i][j]->saveHistograms(dir);
         }
       }
       for (uint i = 0; i < uint(particleFilters.size() / 2); ++i) {
         for (uint j = 0; j < uint(particleFilters.size() / 2); ++j) {
-          pairs_BFHistos[i][j]->saveHistograms(outputFile);
-          pairs_BFHistos_me[i][j]->saveHistograms(outputFile);
+          pairs_BFHistos[i][j]->saveHistograms(dir);
+          pairs_BFHistos_me[i][j]->saveHistograms(dir);
         }
       }
     }

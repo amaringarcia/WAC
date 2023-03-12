@@ -79,29 +79,6 @@ void Task::finalize()
     cout << "Task::finalize() Completed task " << getName() << endl;
 }
 
-//  if (analysisConfiguration->scaleHistograms)
-//    {
-//    cout << "Task::finalize() Scale  histograms by 1/nEventsAccepted with nEventsAccepted = " << nEventsAccepted << endl;
-//    double scalingFactor = 1.0/nEventsAccepted;
-//    if (analysisConfiguration->externalScaling != 1.0)
-//      {
-//      if (reportInfo()) cout << "Task::finalize() Additionally scale  histograms by external factor = " << analysisConfiguration->externalScaling << endl;
-//      scalingFactor *= analysisConfiguration->externalScaling;
-//      }
-//    scale(scalingFactor);
-//    /* now be consistent with the stored information */
-//    nEventsAccepted = 1;
-//    }
-//  if (analysisConfiguration->calculateDerived) calculateDerivedHistograms();
-//  if (analysisConfiguration->saveHistosToRootFile) saveHistograms(analysisConfiguration->outputPath + analysisConfiguration->rootOutputFileName, analysisConfiguration->forceRewrite);
-//  if (analysisConfiguration->saveHistosToTextFile) saveHistogramsAsText(); //analysisConfiguration->outputPath + "histograms.txt");
-//}
-// else
-//{
-//  if (reportWarning()) cout  << "Task::finalize() Cannot proceed because nEventsAccepted = " << nEventsAccepted << endl;
-//    }
-//    if (reportDebug())  cout << "Task::finalize() Completed" << endl;
-//    }
 
 void Task::reset()
 {
@@ -244,8 +221,9 @@ void Task::saveHistograms()
   TFile* outputFile;
   TString outputFileName = taskConfiguration->outputPath;
   outputFileName += taskConfiguration->rootOuputFileName;
-  outputFileName += getName();
   outputFileName += ".root";
+  TString directoryName = taskConfiguration->outputDirectory;
+  directoryName += getName();
 
   if (taskConfiguration->forceHistogramsRewrite) {
     if (reportInfo())
@@ -258,26 +236,28 @@ void Task::saveHistograms()
     }
   } else {
     if (reportInfo())
-      cout << "Task::saveHistograms()  Opening root output (NEW) file  " << outputFileName << endl;
-    outputFile = new TFile(outputFileName, "NEW"); // protect past work...
+      cout << "Task::saveHistograms()  Opening root output (UPDATE) file  " << outputFileName << endl;
+    outputFile = new TFile(outputFileName, "UPDATE"); // protect past work...
     if (!outputFile) {
       if (reportError())
         cout << "Task::saveHistograms(outputFileName)  Could not open (NEW) file  " << outputFileName << endl;
       return;
     }
   }
-  saveHistograms(outputFile);
+
+  TDirectory* dir = outputFile->mkdir(directoryName);
+  saveHistograms(dir);
   outputFile->Close();
   if (reportDebug())
     cout << "Task::saveHistograms() Completed." << endl;
 }
 
-void Task::saveHistograms(TFile* outputFile)
+void Task::saveHistograms(TDirectory* dir)
 {
   if (reportDebug())
-    cout << "Task::saveHistograms(TFile * outputFile) No ops  for " << getName() << endl;
-  if (!outputFile && reportError()) {
-    cout << "Task::saveHistograms(TFile * outputFile)  Given file pointer is null." << endl;
+    cout << "Task::saveHistograms(TDirectory * dir) No ops  for " << getName() << endl;
+  if (!dir && reportError()) {
+    cout << "Task::saveHistograms(TDirectory * dir)  Given directory pointer is null." << endl;
   }
 }
 

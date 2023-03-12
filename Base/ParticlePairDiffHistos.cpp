@@ -52,7 +52,7 @@ ParticlePairDiffHistos::ParticlePairDiffHistos(const TString& name,
     cout << "ParticlePairDiffHistos::CTOR() Completed." << endl;
 }
 
-ParticlePairDiffHistos::ParticlePairDiffHistos(TFile* inputFile,
+ParticlePairDiffHistos::ParticlePairDiffHistos(TDirectory* dir,
                                                const TString& name,
                                                AnalysisConfiguration* configuration,
                                                LogLevel debugLevel)
@@ -82,9 +82,10 @@ ParticlePairDiffHistos::ParticlePairDiffHistos(TFile* inputFile,
     h_dptdpt_QoutKt(nullptr),
     h_dptdpt_QlongQsideQout(nullptr)
 {
+  dir->cd();
   if (reportDebug())
     cout << "ParticlePairDiffHistos::CTOR() Started." << endl;
-  loadHistograms(inputFile);
+  loadHistograms(dir);
   if (reportDebug())
     cout << "ParticlePairDiffHistos::CTOR() Completed." << endl;
 }
@@ -216,12 +217,13 @@ void ParticlePairDiffHistos::initialize()
 }
 
 //________________________________________________________________________
-void ParticlePairDiffHistos::loadHistograms(TFile* inputFile)
+void ParticlePairDiffHistos::loadHistograms(TDirectory* dir)
 {
-  if (!inputFile) {
-    cout << "-Fatal- Attempting to load ParticleHistos from an invalid file pointer" << endl;
+  if (!dir) {
+    cout << "-Fatal- Attempting to load ParticleHistos from an invalid directory pointer" << endl;
     return;
   }
+  dir->cd();
   AnalysisConfiguration& ac = *(AnalysisConfiguration*)getConfiguration();
   TString bn = getHistoBaseName();
   if (ac.bin_edges_pt.data()) {
@@ -253,35 +255,35 @@ void ParticlePairDiffHistos::loadHistograms(TFile* inputFile)
   ac.max_Dy = ac.max_y - ac.min_y;
 
   if (ac.fillYorEta == ac.kPseudorapidity) {
-    h_n2_DetaDphi = loadH2(inputFile, bn + TString("n2_DetaDphi"), true);
-    p_n2_DetaDphi = loadProfile2D(inputFile, bn + TString("p_n2_DetaDphi"), false); /* don't downscale the profiles */
-    h_ptpt_DetaDphi = loadH2(inputFile, bn + TString("ptpt_DetaDphi"), true);
-    h_dptdpt_DetaDphi = loadH2(inputFile, bn + TString("dptdpt_DetaDphi"), true);
+    h_n2_DetaDphi = loadH2(dir, bn + TString("n2_DetaDphi"), true);
+    p_n2_DetaDphi = loadProfile2D(dir, bn + TString("p_n2_DetaDphi"), false); /* don't downscale the profiles */
+    h_ptpt_DetaDphi = loadH2(dir, bn + TString("ptpt_DetaDphi"), true);
+    h_dptdpt_DetaDphi = loadH2(dir, bn + TString("dptdpt_DetaDphi"), true);
   }
 
   if (ac.fillYorEta == ac.kRapidity) {
-    h_n2_DyDphi = loadH2(inputFile, bn + TString("n2_DyDphi"), true);
-    p_n2_DyDphi = loadProfile2D(inputFile, bn + TString("p_n2_DyDphi"), false); /* don't downscale the profiles */
-    h_ptpt_DyDphi = loadH2(inputFile, bn + TString("ptpt_DyDphi"), true);
-    h_dptdpt_DyDphi = loadH2(inputFile, bn + TString("dptdpt_DyDphi"), true);
+    h_n2_DyDphi = loadH2(dir, bn + TString("n2_DyDphi"), true);
+    p_n2_DyDphi = loadProfile2D(dir, bn + TString("p_n2_DyDphi"), false); /* don't downscale the profiles */
+    h_ptpt_DyDphi = loadH2(dir, bn + TString("ptpt_DyDphi"), true);
+    h_dptdpt_DyDphi = loadH2(dir, bn + TString("dptdpt_DyDphi"), true);
   }
 
   if (ac.fillPratt) {
-    h_n2_QinvKt = loadH2(inputFile, bn + TString("n2_QinvKt"), true);
-    h_n2_QlongKt = loadH2(inputFile, bn + TString("n2_QlongKt"), true);
-    h_n2_QsideKt = loadH2(inputFile, bn + TString("n2_QsideKt"), true);
-    h_n2_QoutKt = loadH2(inputFile, bn + TString("n2_QsideKt"), true);
-    h_n2_QlongQsideQout = loadH3(inputFile, bn + TString("n2_QlongQsideQout"), true);
-    h_ptpt_QinvKt = loadH2(inputFile, bn + TString("ptpt_QinvKt"), true);
-    h_ptpt_QlongKt = loadH2(inputFile, bn + TString("ptpt_QlongKt"), true);
-    h_ptpt_QsideKt = loadH2(inputFile, bn + TString("ptpt_QsideKt"), true);
-    h_ptpt_QoutKt = loadH2(inputFile, bn + TString("ptpt_QsideKt"), true);
-    h_ptpt_QlongQsideQout = loadH3(inputFile, bn + TString("ptpt_QlongQsideQout"), true);
-    h_dptdpt_QinvKt = loadH2(inputFile, bn + TString("dptdpt_QinvKt"), true);
-    h_dptdpt_QlongKt = loadH2(inputFile, bn + TString("dptdpt_QlongKt"), true);
-    h_dptdpt_QsideKt = loadH2(inputFile, bn + TString("dptdpt_QsideKt"), true);
-    h_dptdpt_QoutKt = loadH2(inputFile, bn + TString("dptdpt_QsideKt"), true);
-    h_dptdpt_QlongQsideQout = loadH3(inputFile, bn + TString("dptdpt_QlongQsideQout"), true);
+    h_n2_QinvKt = loadH2(dir, bn + TString("n2_QinvKt"), true);
+    h_n2_QlongKt = loadH2(dir, bn + TString("n2_QlongKt"), true);
+    h_n2_QsideKt = loadH2(dir, bn + TString("n2_QsideKt"), true);
+    h_n2_QoutKt = loadH2(dir, bn + TString("n2_QsideKt"), true);
+    h_n2_QlongQsideQout = loadH3(dir, bn + TString("n2_QlongQsideQout"), true);
+    h_ptpt_QinvKt = loadH2(dir, bn + TString("ptpt_QinvKt"), true);
+    h_ptpt_QlongKt = loadH2(dir, bn + TString("ptpt_QlongKt"), true);
+    h_ptpt_QsideKt = loadH2(dir, bn + TString("ptpt_QsideKt"), true);
+    h_ptpt_QoutKt = loadH2(dir, bn + TString("ptpt_QsideKt"), true);
+    h_ptpt_QlongQsideQout = loadH3(dir, bn + TString("ptpt_QlongQsideQout"), true);
+    h_dptdpt_QinvKt = loadH2(dir, bn + TString("dptdpt_QinvKt"), true);
+    h_dptdpt_QlongKt = loadH2(dir, bn + TString("dptdpt_QlongKt"), true);
+    h_dptdpt_QsideKt = loadH2(dir, bn + TString("dptdpt_QsideKt"), true);
+    h_dptdpt_QoutKt = loadH2(dir, bn + TString("dptdpt_QsideKt"), true);
+    h_dptdpt_QlongQsideQout = loadH3(dir, bn + TString("dptdpt_QlongQsideQout"), true);
   }
   /* the histograms are not owned */
   bOwnTheHistograms = false;
