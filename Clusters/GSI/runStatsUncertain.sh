@@ -1,11 +1,22 @@
 #!/bin/bash
 
+if [ $# -gt 3 ]; then
+  echo "usage: runStatsUncertain productiontag ixrap ixevtflt"
+  exit 1
+fi
+
+if [ $# -lt 3 ]; then
+  echo "usage: runStatsUncertain productiontag ixrap ixevtflt"
+  exit 1
+fi
+
+PRODUCTIONTAG=$1
+IXRAP=$2
+IXEVTFLT=$3
+
 # no more core files
 ulimit -c 0
 echo ulimit `ulimit -c`
-
-# wait a certain amount of time for the results naming
-sleep $((SLURM_ARRAY_TASK_ID*10)) 
 
 # setting the root and pythia scenario
 export ALIEN_SITE=GSI
@@ -29,7 +40,4 @@ export PATH="$WAC_BIN:$PATH"
 export DYLD_LIBRARY_PATH="$WAC_LIB:$PYTHIA8/lib:$DYLD_LIBRARY_PATH"
 export LD_LIBRARY_PATH="$WAC_LIB:$PYTHIA8/lib:$LD_LIBRARY_PATH"
 
-TASKIX=$SLURM_ARRAY_TASK_ID
-# Execute application code
-
-statUncertainPythia $TASKIX ""
+statUncertainPythia $PRODUCTIONTAG "" $IXRAP $IXEVTFLT
