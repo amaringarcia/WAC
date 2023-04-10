@@ -39,6 +39,8 @@ class ParticlePairDiffHistos : public Histograms
   template <AnalysisConfiguration::RapidityPseudoRapidity r, typename ParticleType1, typename ParticleType2>
   float getDeltaPhi(ParticleType1& particle1, ParticleType2& particle2);
   template <typename ParticleType1, typename ParticleType2>
+  void getInvMass(ParticleType1& particle1, ParticleType2& particle2, double& invMass);
+  template <typename ParticleType1, typename ParticleType2>
   void getPratt(ParticleType1& particle1, ParticleType2& particle2, double& kT, double& qinv, double& qlong, double& qside, double& qout);
   template <AnalysisConfiguration::RapidityPseudoRapidity r, typename ParticleType1, typename ParticleType2>
   void fill(ParticleType1& particle1, ParticleType2& particle2, double weight1, double weight2, double pTavg1 = 0.0, double pTavg2 = 0.0);
@@ -74,7 +76,7 @@ class ParticlePairDiffHistos : public Histograms
   TH2* h_dptdpt_QsideKt;
   TH2* h_dptdpt_QoutKt;
   TH3* h_dptdpt_QlongQsideQout;
-
+  TH1* h_invMass;
   ClassDef(ParticlePairDiffHistos, 3)
 };
 
@@ -111,6 +113,27 @@ inline int ParticlePairDiffHistos::getGlobalDeltaYEtaDeltaPhiBin(ParticleType1& 
     return h_n2_DetaDphi->GetBin(configuration->getDeltaYEtaIndex<r>(p1, p2) + 1, configuration->getDeltaPhiIndex(p1, p2) + 1);
   }
 }
+
+template <typename ParticleType1, typename ParticleType2>
+void ParticlePairDiffHistos::getInvMass(ParticleType1& particle1, ParticleType2& particle2, double& invMass)
+{
+  double p1[4];
+  double p2[4];
+  double p[4];
+  double g[4] = {1.0, -1.0, -1.0, -1.0};
+  double s = 0.0;
+
+  particle1.getEPxPyPz(p1);
+  particle2.getEPxPyPz(p2);
+  for (int i = 0; i < 4; ++i) {
+    p[i] = p1[i] + p2[i];
+    s += g[i] * p[i] * p[i];
+  }
+  if (s>0){
+   invMass = sqrt(s);
+  }
+}
+
 
 template <typename ParticleType1, typename ParticleType2>
 void ParticlePairDiffHistos::getPratt(ParticleType1& particle1, ParticleType2& particle2, double& kT, double& qinv, double& qlong, double& qside, double& qout)
@@ -163,6 +186,8 @@ void ParticlePairDiffHistos::fill(ParticleType1& particle1, ParticleType2& parti
   int globalyetabinno = getGlobalDeltaYEtaDeltaPhiBin<r>(particle1, particle2);
   float deltayeta = getDeltaYEta<r>(particle1, particle2);
   float deltaphi = getDeltaPhi<r>(particle1, particle2);
+  double invMass;
+  getInvMass(particle1, particle2, invMass);
 
   if constexpr (r == AnalysisConfiguration::kRapidity) {
     h_n2_DyDphi->AddBinContent(globalyetabinno, weight1 * weight2);
@@ -172,6 +197,7 @@ void ParticlePairDiffHistos::fill(ParticleType1& particle1, ParticleType2& parti
     h_n2_DyDphi->SetEntries(h_n2_ptPt->GetEntries());
     h_ptpt_DyDphi->SetEntries(h_n2_ptPt->GetEntries());
     h_dptdpt_DyDphi->SetEntries(h_n2_ptPt->GetEntries());
+    h_invMass->Fill(invMass);
   } else {
     h_n2_ptPt->Fill(particle1.pt, particle2.pt, weight1 * weight2);
     p_n2_DetaDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
@@ -181,6 +207,7 @@ void ParticlePairDiffHistos::fill(ParticleType1& particle1, ParticleType2& parti
     h_n2_DetaDphi->SetEntries(h_n2_ptPt->GetEntries());
     h_ptpt_DetaDphi->SetEntries(h_n2_ptPt->GetEntries());
     h_dptdpt_DetaDphi->SetEntries(h_n2_ptPt->GetEntries());
+    h_invMass->Fill(invMass);
   }
   /* TODO: this has to be templated */
   if ((AnalysisConfiguration*)getConfiguration()->fillPratt) {

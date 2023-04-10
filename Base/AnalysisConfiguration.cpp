@@ -98,7 +98,10 @@ ClassImp(AnalysisConfiguration)
     max_mult(200.0),
     nBins_cent(20),
     min_cent(0.0),
-    max_cent(100.0)
+    max_cent(100.0),
+    nBins_invMass(500),
+    minInvMass(0.),
+    maxInvMass(1.)
 {
   max_phi = TMath::TwoPi();
   range_phi = TMath::TwoPi();
@@ -186,7 +189,11 @@ AnalysisConfiguration::AnalysisConfiguration(const AnalysisConfiguration& source
     max_mult(source.max_mult),
     nBins_cent(source.nBins_cent),
     min_cent(source.min_cent),
-    max_cent(source.max_cent)
+    max_cent(source.max_cent),
+    nBins_invMass(source.nBins_invMass),
+    minInvMass(source.minInvMass),
+    maxInvMass(source.maxInvMass)
+
 {
 }
 
@@ -269,6 +276,9 @@ AnalysisConfiguration& AnalysisConfiguration::operator=(const AnalysisConfigurat
   nBins_cent = source.nBins_cent;
   min_cent = source.min_cent;
   max_cent = source.max_cent;
+  nBins_invMass = source.nBins_invMass;
+  minInvMass = source.minInvMass;
+  maxInvMass = source.maxInvMass;
 
   return *this;
 }

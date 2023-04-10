@@ -134,6 +134,12 @@ class AnalysisConfiguration : public TaskConfiguration
   double min_cent;
   double max_cent;
 
+
+  //Inv Mass
+  int nBins_invMass;
+  float minInvMass;
+  float maxInvMass;
+
   ClassDef(AnalysisConfiguration, 0)
 };
 
