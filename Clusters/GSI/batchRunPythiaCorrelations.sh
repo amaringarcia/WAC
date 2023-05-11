@@ -68,7 +68,7 @@ do
 
     # merge the results
     mergeJOBNAME="waitMerge_$(printf "BUNCH%02d_Rap%03d" $ijob ${crap})"
-    cmd="sbatch -J $mergeJOBNAME --workdir=${WORKINGDIRECTORY}/Output --mem-per-cpu=8000 --time=03:00:00 -d afterany:$ARRAYJOBID -o ${WORKINGDIRECTORY}/log/merge/Job_%A.out -e ${WORKINGDIRECTORY}/log/merge/Job_%A.err /lustre/alice/users/${USER}/CLUSTERMODELWAC/Clusters/GSI/runScriptInSingularity.sh /lustre/alice/users/${USER}/CLUSTERMODELWAC/Clusters/GSI/runMergePythiaResults.sh ${MERGEDFNAME} ${FNAMEPATERN}"
+    cmd="sbatch -J $mergeJOBNAME --chdir=${WORKINGDIRECTORY}/Output --mem-per-cpu=8000 --time=03:00:00 -d afterany:$ARRAYJOBID -o ${WORKINGDIRECTORY}/log/merge/Job_%A.out -e ${WORKINGDIRECTORY}/log/merge/Job_%A.err /lustre/alice/users/${USER}/CLUSTERMODELWAC/Clusters/GSI/runScriptInSingularity.sh /lustre/alice/users/${USER}/CLUSTERMODELWAC/Clusters/GSI/runMergePythiaResults.sh ${MERGEDFNAME} ${FNAMEPATERN}"
     MERGEJOBID=($(eval $cmd | tee /dev/tty | awk '{print $4}'))
     echo $cmd >> ${BASEDIRECTORY}/${PRODUCTIONDIRECTORY}/log/submit.log
 
@@ -83,7 +83,7 @@ for crap in ${CRAPIDITIES}
 do
   MERGEDFNAME=`printf ${OUTFNAME} ${crap}`
 
-  cmd="sbatch -J waitFinalMerge --workdir=${BASEDIRECTORY}/${PRODUCTIONDIRECTORY} --mem-per-cpu=8000 --time=03:00:00 -d afterany${MERGEJOBSIDS} -o ${BASEDIRECTORY}/${PRODUCTIONDIRECTORY}/log/merge/SinglesMergeJob_%A.out -e ${BASEDIRECTORY}/${PRODUCTIONDIRECTORY}/log/merge/SinglesMergeJob_%A.err /lustre/alice/users/${USER}/CLUSTERMODELWAC/Clusters/GSI/runScriptInSingularity.sh /lustre/alice/users/${USER}/CLUSTERMODELWAC/Clusters/GSI/runMergePythiaSubsamples.sh ${MERGEDFNAME}"
+  cmd="sbatch -J waitFinalMerge --chdir=${BASEDIRECTORY}/${PRODUCTIONDIRECTORY} --mem-per-cpu=8000 --time=03:00:00 -d afterany${MERGEJOBSIDS} -o ${BASEDIRECTORY}/${PRODUCTIONDIRECTORY}/log/merge/SinglesMergeJob_%A.out -e ${BASEDIRECTORY}/${PRODUCTIONDIRECTORY}/log/merge/SinglesMergeJob_%A.err /lustre/alice/users/${USER}/CLUSTERMODELWAC/Clusters/GSI/runScriptInSingularity.sh /lustre/alice/users/${USER}/CLUSTERMODELWAC/Clusters/GSI/runMergePythiaSubsamples.sh ${MERGEDFNAME}"
   JOBID=($(eval $cmd | tee /dev/tty | awk '{print $4}'))
   echo $cmd >> ${BASEDIRECTORY}/${PRODUCTIONDIRECTORY}/log/submit.log
 
@@ -92,7 +92,7 @@ do
 done
 
 # submit the extraction of results with statistical uncertainties
-cmd="sbatch -J waitStatsUncertain --workdir=${BASEDIRECTORY}/${PRODUCTIONDIRECTORY} --time=01:00:00 -d afterany${MERGEJOBSIDS} -o ${BASEDIRECTORY}/${PRODUCTIONDIRECTORY}/log/merge/WaitStatsUncertainJob.out -e ${BASEDIRECTORY}/${PRODUCTIONDIRECTORY}/log/merge/WaitStatsUncertainJob.err /lustre/alice/users/${USER}/CLUSTERMODELWAC/Clusters/GSI/batchRunStatsUncertain.sh ${BASEDIRECTORY} ${PRODUCTIONDIRECTORY}"
+cmd="sbatch -J waitStatsUncertain --chdir=${BASEDIRECTORY}/${PRODUCTIONDIRECTORY} --time=01:00:00 -d afterany${MERGEJOBSIDS} -o ${BASEDIRECTORY}/${PRODUCTIONDIRECTORY}/log/merge/WaitStatsUncertainJob.out -e ${BASEDIRECTORY}/${PRODUCTIONDIRECTORY}/log/merge/WaitStatsUncertainJob.err /lustre/alice/users/${USER}/CLUSTERMODELWAC/Clusters/GSI/batchRunStatsUncertain.sh ${BASEDIRECTORY} ${PRODUCTIONDIRECTORY}"
 JOBID=($(eval $cmd | tee /dev/tty | awk '{print $4}'))
 echo $cmd >> ${BASEDIRECTORY}/${PRODUCTIONDIRECTORY}/log/submit.log
 echo "" >> ${BASEDIRECTORY}/${PRODUCTIONDIRECTORY}/log/submit.log

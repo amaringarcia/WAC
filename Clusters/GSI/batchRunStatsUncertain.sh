@@ -48,7 +48,7 @@ do
     fi
     echo Submitting multiplicity class ${EVENTFILTERS[j]}
     JOBNAME=`printf "waitStatsUncertain_%03d_%03d" ${i} ${j}`
-    cmd="sbatch -J ${JOBNAME} ${DEPENDENCY} --workdir=${BASEDIRECTORY}/${PRODUCTIONDIRECTORY} --mem-per-cpu=8000 --time=07:00:00 -o ${BASEDIRECTORY}/${PRODUCTIONDIRECTORY}/log/merge/${JOBNAME}Job.out -e ${BASEDIRECTORY}/${PRODUCTIONDIRECTORY}/log/merge/${JOBNAME}Job.err /lustre/alice/users/${USER}/CLUSTERMODELWAC/Clusters/GSI/runScriptInSingularity.sh /lustre/alice/users/${USER}/CLUSTERMODELWAC/Clusters/GSI/runStatsUncertain.sh ${PRODUCTIONTAG} ${i} ${j}"
+    cmd="sbatch -J ${JOBNAME} ${DEPENDENCY} --chdir=${BASEDIRECTORY}/${PRODUCTIONDIRECTORY} --mem-per-cpu=8000 --time=07:00:00 -o ${BASEDIRECTORY}/${PRODUCTIONDIRECTORY}/log/merge/${JOBNAME}Job.out -e ${BASEDIRECTORY}/${PRODUCTIONDIRECTORY}/log/merge/${JOBNAME}Job.err /lustre/alice/users/${USER}/CLUSTERMODELWAC/Clusters/GSI/runScriptInSingularity.sh /lustre/alice/users/${USER}/CLUSTERMODELWAC/Clusters/GSI/runStatsUncertain.sh ${PRODUCTIONTAG} ${i} ${j}"
     JOBID=($(eval $cmd | tee /dev/tty | awk '{print $4}'))
     echo $cmd >> ${BASEDIRECTORY}/${PRODUCTIONDIRECTORY}/log/submit.log
     echo "" >> ${BASEDIRECTORY}/${PRODUCTIONDIRECTORY}/log/submit.log
