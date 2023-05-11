@@ -43,7 +43,8 @@ ParticlePairDiffHistos::ParticlePairDiffHistos(const TString& name,
     h_dptdpt_QlongKt(nullptr),
     h_dptdpt_QsideKt(nullptr),
     h_dptdpt_QoutKt(nullptr),
-    h_dptdpt_QlongQsideQout(nullptr)
+    h_dptdpt_QlongQsideQout(nullptr),
+    h_invMass(nullptr)
 {
   if (reportDebug())
     cout << "ParticlePairDiffHistos::CTOR() Started." << endl;
@@ -80,7 +81,8 @@ ParticlePairDiffHistos::ParticlePairDiffHistos(TDirectory* dir,
     h_dptdpt_QlongKt(nullptr),
     h_dptdpt_QsideKt(nullptr),
     h_dptdpt_QoutKt(nullptr),
-    h_dptdpt_QlongQsideQout(nullptr)
+    h_dptdpt_QlongQsideQout(nullptr),
+    h_invMass(nullptr)
 {
   dir->cd();
   if (reportDebug())
@@ -210,6 +212,9 @@ void ParticlePairDiffHistos::initialize()
     noSumW2(h_dptdpt_QlongQsideQout);
   }
 
+  h_invMass  = createHistogram(bn + TString("invMass"), ac.nBins_invMass, ac.minInvMass, ac.maxInvMass,"#it{m}_{inv}", "N", notScaled, saved, notPlotted, notPrinted);
+
+
   /* back to default behavior */
   TH1::SetDefaultSumw2(defsumw2);
   if (reportDebug())
@@ -285,6 +290,9 @@ void ParticlePairDiffHistos::loadHistograms(TDirectory* dir)
     h_dptdpt_QoutKt = loadH2(dir, bn + TString("dptdpt_QsideKt"), true);
     h_dptdpt_QlongQsideQout = loadH3(dir, bn + TString("dptdpt_QlongQsideQout"), true);
   }
+
+  h_invMass = loadH1(dir, bn + TString("InvMass"), true); 
+
   /* the histograms are not owned */
   bOwnTheHistograms = false;
   return;
