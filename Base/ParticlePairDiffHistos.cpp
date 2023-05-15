@@ -48,7 +48,12 @@ ParticlePairDiffHistos::ParticlePairDiffHistos(const TString& name,
     h_Pi0GG_DetaDphi(nullptr),
     h_Pi0GG_DyDphi(nullptr),
     h_Pi0GGSide_DetaDphi(nullptr),
-    h_Pi0GGSide_DyDphi(nullptr)
+    h_Pi0GGSide_DyDphi(nullptr),
+    h_EtaGG_DetaDphi(nullptr),
+    h_EtaGG_DyDphi(nullptr),
+    h_EtaGGSide_DetaDphi(nullptr),
+    h_EtaGGSide_DyDphi(nullptr)
+
 {
   if (reportDebug())
     cout << "ParticlePairDiffHistos::CTOR() Started." << endl;
@@ -88,7 +93,13 @@ ParticlePairDiffHistos::ParticlePairDiffHistos(TDirectory* dir,
     h_dptdpt_QlongQsideQout(nullptr),
     h_invMass(nullptr),
     h_Pi0GG_DetaDphi(nullptr),
-    h_Pi0GGSide_DetaDphi(nullptr)
+    h_Pi0GG_DyDphi(nullptr),
+    h_Pi0GGSide_DetaDphi(nullptr),
+    h_Pi0GGSide_DyDphi(nullptr),
+    h_EtaGG_DetaDphi(nullptr),
+    h_EtaGG_DyDphi(nullptr),
+    h_EtaGGSide_DetaDphi(nullptr),
+    h_EtaGGSide_DyDphi(nullptr)
 
 {
   dir->cd();
@@ -155,6 +166,8 @@ void ParticlePairDiffHistos::initialize()
 
     h_Pi0GG_DetaDphi = createHistogram(bn + TString("Pi0GG_DetaDphi"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta#eta", "#Delta#varphi", "<n_{2}>", scaled, saved, notPlotted, notPrinted, false);
     h_Pi0GGSide_DetaDphi = createHistogram(bn + TString("Pi0GGSide_DetaDphi"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta#eta", "#Delta#varphi", "<n_{2}>", scaled, saved, notPlotted, notPrinted, false);
+    h_EtaGG_DetaDphi = createHistogram(bn + TString("EtaGG_DetaDphi"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta#eta", "#Delta#varphi", "<n_{2}>", scaled, saved, notPlotted, notPrinted, false);
+    h_EtaGGSide_DetaDphi = createHistogram(bn + TString("EtaGGSide_DetaDphi"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta#eta", "#Delta#varphi", "<n_{2}>", scaled, saved, notPlotted, notPrinted, false);
 
     /* big histograms are forced to be created without sumw2 structure for it will not be used */
     h_n2_DetaDphi->SetBit(TH1::kIsNotW);
@@ -181,6 +194,8 @@ void ParticlePairDiffHistos::initialize()
 
     h_Pi0GG_DyDphi = createHistogram(bn + TString("Pi0GG_DyDphi"), ac.nBins_Dy, ac.min_Dy, ac.max_Dy, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta y", "#Delta#varphi", "<n_{2}>", scaled, saved, notPlotted, notPrinted, false);
     h_Pi0GGSide_DyDphi = createHistogram(bn + TString("Pi0GGSide_DyDphi"), ac.nBins_Dy, ac.min_Dy, ac.max_Dy, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta y", "#Delta#varphi", "<n_{2}>", scaled, saved, notPlotted, notPrinted, false);
+    h_EtaGG_DyDphi = createHistogram(bn + TString("EtaGG_DyDphi"), ac.nBins_Dy, ac.min_Dy, ac.max_Dy, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta y", "#Delta#varphi", "<n_{2}>", scaled, saved, notPlotted, notPrinted, false);
+    h_EtaGGSide_DyDphi = createHistogram(bn + TString("EtaGGSide_DyDphi"), ac.nBins_Dy, ac.min_Dy, ac.max_Dy, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta y", "#Delta#varphi", "<n_{2}>", scaled, saved, notPlotted, notPrinted, false);
 
 
     /* big histograms are forced to be created without sumw2 structure for it will not be used */
@@ -197,6 +212,10 @@ void ParticlePairDiffHistos::initialize()
     h_Pi0GG_DyDphi->Sumw2(false);
     h_Pi0GGSide_DyDphi->SetBit(TH1::kIsNotW);
     h_Pi0GGSide_DyDphi->Sumw2(false);
+    h_EtaGG_DyDphi->SetBit(TH1::kIsNotW);
+    h_EtaGG_DyDphi->Sumw2(false);
+    h_EtaGGSide_DyDphi->SetBit(TH1::kIsNotW);
+    h_EtaGGSide_DyDphi->Sumw2(false);
 
 
 
@@ -296,6 +315,8 @@ void ParticlePairDiffHistos::loadHistograms(TDirectory* dir)
 
     h_Pi0GG_DetaDphi = loadH2(dir, bn + TString("Pi0GG_DetaDphi"), true);
     h_Pi0GGSide_DetaDphi = loadH2(dir, bn + TString("Pi0GGSide_DetaDphi"), true);
+    h_EtaGG_DetaDphi = loadH2(dir, bn + TString("EtaGG_DetaDphi"), true);
+    h_EtaGGSide_DetaDphi = loadH2(dir, bn + TString("EtaGGSide_DetaDphi"), true);
 
   }
 
@@ -307,6 +328,8 @@ void ParticlePairDiffHistos::loadHistograms(TDirectory* dir)
 
     h_Pi0GG_DyDphi = loadH2(dir, bn + TString("Pi0GG_DyDphi"), true);
     h_Pi0GGSide_DyDphi = loadH2(dir, bn + TString("Pi0GGSide_DyDphi"), true);
+    h_EtaGG_DyDphi = loadH2(dir, bn + TString("EtaGG_DyDphi"), true);
+    h_EtaGGSide_DyDphi = loadH2(dir, bn + TString("EtaGGSide_DyDphi"), true);
 
 
   }

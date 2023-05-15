@@ -83,6 +83,11 @@ class ParticlePairDiffHistos : public Histograms
   TH2* h_Pi0GGSide_DetaDphi;
   TH2* h_Pi0GGSide_DyDphi;
 
+  TH2* h_EtaGG_DetaDphi;
+  TH2* h_EtaGG_DyDphi;
+  TH2* h_EtaGGSide_DetaDphi;
+  TH2* h_EtaGGSide_DyDphi;
+
   ClassDef(ParticlePairDiffHistos, 5)
 };
 
@@ -201,6 +206,9 @@ void ParticlePairDiffHistos::fill(ParticleType1& particle1, ParticleType2& parti
   float sideMass= 0.01;     //  offset for side window
   float deltaMass = 0.002;  //  width of the mass window 
 
+  float etaMass = 0.547862;  // eta invariant mass
+
+
   if constexpr (r == AnalysisConfiguration::kRapidity) {
     h_n2_DyDphi->AddBinContent(globalyetabinno, weight1 * weight2);
     p_n2_DyDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
@@ -213,7 +221,12 @@ void ParticlePairDiffHistos::fill(ParticleType1& particle1, ParticleType2& parti
       h_Pi0GG_DyDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
     }else if ( abs(invMass-pi0Mass-sideMass)<2*deltaMass   ){
       h_Pi0GGSide_DyDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
+    } else if ( abs(invMass-etaMass)<deltaMass ){
+      h_EtaGG_DyDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
+    }else if ( abs(invMass-etaMass-sideMass)<2*deltaMass   ){
+      h_EtaGGSide_DyDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
     }
+
   } else {
     h_n2_ptPt->Fill(particle1.pt, particle2.pt, weight1 * weight2);
     p_n2_DetaDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
@@ -227,6 +240,10 @@ void ParticlePairDiffHistos::fill(ParticleType1& particle1, ParticleType2& parti
        h_Pi0GG_DetaDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
     } else if (abs(invMass-pi0Mass-sideMass)<2*deltaMass   ){
       h_Pi0GGSide_DetaDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
+    } else if (	abs(invMass-etaMass)<deltaMass ){
+      h_EtaGG_DetaDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
+    } else if ( abs(invMass-etaMass-sideMass)<2*deltaMass   ){
+      h_EtaGGSide_DetaDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
     }
 
 
