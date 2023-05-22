@@ -44,6 +44,7 @@ class ParticlePairDiffHistos : public Histograms
   void getPratt(ParticleType1& particle1, ParticleType2& particle2, double& kT, double& qinv, double& qlong, double& qside, double& qout);
   template <AnalysisConfiguration::RapidityPseudoRapidity r, typename ParticleType1, typename ParticleType2>
   void fill(ParticleType1& particle1, ParticleType2& particle2, double weight1, double weight2, double pTavg1 = 0.0, double pTavg2 = 0.0);
+  void fillPairsProfile(double centrality, double nAcceptedPairs, double weight);
   void loadHistograms(TDirectory* dir);
 
   ////////////////////////////////////////////////////////////////////////////
@@ -60,6 +61,8 @@ class ParticlePairDiffHistos : public Histograms
   TProfile2D* p_n2_DyDphi;
   TH2* h_ptpt_DyDphi;
   TH2* h_dptdpt_DyDphi;
+  
+  TProfile * hp_n2_vsC;
 
   TH2* h_n2_QinvKt;
   TH2* h_n2_QlongKt;
@@ -88,7 +91,7 @@ class ParticlePairDiffHistos : public Histograms
   TH2* h_EtaGGSide_DetaDphi;
   TH2* h_EtaGGSide_DyDphi;
 
-  ClassDef(ParticlePairDiffHistos, 5)
+  ClassDef(ParticlePairDiffHistos, 6)
 };
 
 /// WARNING: for performance reasons no checks are done about the consistency

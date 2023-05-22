@@ -77,6 +77,9 @@ void ParticleHistos::createHistograms()
     h_pt_phiY = createHistogram(bn + TString("pt1_phiY"), ac.nBins_y, ac.min_y, ac.max_y, ac.nBins_phi, ac.min_phi, ac.max_phi, "y", "#varphi", "#LTp_{T}#GT", notScaled, saved, notPlotted, notPrinted);
   }
 
+  hp_n1_vsC = createProfile(bn + TString("n1_vsC"), 100, 0.0,100.0, "Centrality", "N", saved, notPlotted, notPrinted);
+
+ 
   if (ac.fill3D) {
     if (ac.fillYorEta == ac.kPseudorapidity) {
       h_n1_ptPhiEta = createHistogram(bn + TString("n1_ptPhiEta"),
@@ -138,6 +141,9 @@ void ParticleHistos::loadHistograms(TDirectory* dir)
       h_n1_ptPhiY = loadH3(dir, bn + TString("n1_ptPhiY"), true);
     }
   }
+  hp_n1_vsC = loadProfile(dir, bn + TString("n1_vsC"), true);
+
+
   /* the histograms are not owned */
   bOwnTheHistograms = false;
   return;
@@ -147,6 +153,17 @@ void ParticleHistos::fillMultiplicity(double nAccepted, double weight)
 {
   h_n1->Fill(nAccepted, weight);
 }
+
+void ParticleHistos::fillMultiplicityProfile(double multiplicity, double nAccepted, double weight)
+{
+  hp_n1_vsC->Fill(multiplicity,nAccepted);
+}
+
+
+//void ParticleHistos::fillPairsProfile(double multiplicity, double nAcceptedPairs, double weight)
+//{
+//  hp_n2_vsC->Fill(multiplicity,nAcceptedPairs);
+//}
 
 // complete filling the addicional histograms by projecting the
 // higher dimensional ones

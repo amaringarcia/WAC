@@ -29,6 +29,7 @@ ParticlePairDiffHistos::ParticlePairDiffHistos(const TString& name,
     p_n2_DyDphi(nullptr),
     h_ptpt_DyDphi(nullptr),
     h_dptdpt_DyDphi(nullptr),
+    hp_n2_vsC(nullptr),
     h_n2_QinvKt(nullptr),
     h_n2_QlongKt(nullptr),
     h_n2_QsideKt(nullptr),
@@ -76,6 +77,7 @@ ParticlePairDiffHistos::ParticlePairDiffHistos(TDirectory* dir,
     p_n2_DyDphi(nullptr),
     h_ptpt_DyDphi(nullptr),
     h_dptdpt_DyDphi(nullptr),
+    hp_n2_vsC(nullptr),
     h_n2_QinvKt(nullptr),
     h_n2_QlongKt(nullptr),
     h_n2_QsideKt(nullptr),
@@ -220,6 +222,11 @@ void ParticlePairDiffHistos::initialize()
 
 
   }
+
+// Profile to calculate quantities per event
+    hp_n2_vsC = createProfile(bn + TString("n2_vsC"), 100,0.0,100.0, "Centrality", "<n_{2}>", saved, notPlotted, notPrinted);
+
+
   if (ac.fillPratt) {
     h_n2_QinvKt = createHistogram(bn + TString("n2_QinvKt"), ac.nBins_kT, ac.min_kT, ac.max_kT, ac.nBins_Qinv, ac.min_Qinv, ac.max_Qinv, "#it{k}_{T}", "#it{Q}_{inv}", "<n_{2}>", scaled, saved, notPlotted, notPrinted, false);
     h_n2_QlongKt = createHistogram(bn + TString("n2_QlongKt"), ac.nBins_kT, ac.min_kT, ac.max_kT, ac.nBins_Qlong, ac.min_Qlong, ac.max_Qlong, "#it{k}_{T}", "#it{Q}_{long}", "<n_{2}>", scaled, saved, notPlotted, notPrinted, false);
@@ -352,11 +359,17 @@ void ParticlePairDiffHistos::loadHistograms(TDirectory* dir)
     h_dptdpt_QlongQsideQout = loadH3(dir, bn + TString("dptdpt_QlongQsideQout"), true);
   }
 
+  hp_n2_vsC = loadProfile(dir, bn + TString("n2_vsC"), true);
+
   h_invMass = loadH1(dir, bn + TString("InvMass"), true); 
 
   /* the histograms are not owned */
   bOwnTheHistograms = false;
   return;
+}
+void ParticlePairDiffHistos::fillPairsProfile(double multiplicity, double nAcceptedPairs, double weight)
+{
+  hp_n2_vsC->Fill(multiplicity,nAcceptedPairs);
 }
 
 ClassImp(ParticlePairDiffHistos)
