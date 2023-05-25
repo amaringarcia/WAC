@@ -320,10 +320,10 @@ void ParticlePairDiffHistos::loadHistograms(TDirectory* dir)
     h_ptpt_DetaDphi = loadH2(dir, bn + TString("ptpt_DetaDphi"), true);
     h_dptdpt_DetaDphi = loadH2(dir, bn + TString("dptdpt_DetaDphi"), true);
 
-    h_Pi0GG_DetaDphi = loadH2(dir, bn + TString("Pi0GG_DetaDphi"), true);
-    h_Pi0GGSide_DetaDphi = loadH2(dir, bn + TString("Pi0GGSide_DetaDphi"), true);
-    h_EtaGG_DetaDphi = loadH2(dir, bn + TString("EtaGG_DetaDphi"), true);
-    h_EtaGGSide_DetaDphi = loadH2(dir, bn + TString("EtaGGSide_DetaDphi"), true);
+    h_Pi0GG_DetaDphi = loadH2(dir, bn + TString("Pi0GG_DetaDphi"), false);
+    h_Pi0GGSide_DetaDphi = loadH2(dir, bn + TString("Pi0GGSide_DetaDphi"), false);
+    h_EtaGG_DetaDphi = loadH2(dir, bn + TString("EtaGG_DetaDphi"), false);
+    h_EtaGGSide_DetaDphi = loadH2(dir, bn + TString("EtaGGSide_DetaDphi"), false);
 
   }
 
@@ -333,10 +333,10 @@ void ParticlePairDiffHistos::loadHistograms(TDirectory* dir)
     h_ptpt_DyDphi = loadH2(dir, bn + TString("ptpt_DyDphi"), true);
     h_dptdpt_DyDphi = loadH2(dir, bn + TString("dptdpt_DyDphi"), true);
 
-    h_Pi0GG_DyDphi = loadH2(dir, bn + TString("Pi0GG_DyDphi"), true);
-    h_Pi0GGSide_DyDphi = loadH2(dir, bn + TString("Pi0GGSide_DyDphi"), true);
-    h_EtaGG_DyDphi = loadH2(dir, bn + TString("EtaGG_DyDphi"), true);
-    h_EtaGGSide_DyDphi = loadH2(dir, bn + TString("EtaGGSide_DyDphi"), true);
+    h_Pi0GG_DyDphi = loadH2(dir, bn + TString("Pi0GG_DyDphi"), false);
+    h_Pi0GGSide_DyDphi = loadH2(dir, bn + TString("Pi0GGSide_DyDphi"), false);
+    h_EtaGG_DyDphi = loadH2(dir, bn + TString("EtaGG_DyDphi"), false);
+    h_EtaGGSide_DyDphi = loadH2(dir, bn + TString("EtaGGSide_DyDphi"), false);
 
 
   }
@@ -359,9 +359,9 @@ void ParticlePairDiffHistos::loadHistograms(TDirectory* dir)
     h_dptdpt_QlongQsideQout = loadH3(dir, bn + TString("dptdpt_QlongQsideQout"), true);
   }
 
-  hp_n2_vsC = loadProfile(dir, bn + TString("n2_vsC"), true);
+  hp_n2_vsC = loadProfile(dir, bn + TString("n2_vsC"), false);
 
-  h_invMass = loadH1(dir, bn + TString("InvMass"), true); 
+  h_invMass = loadH1(dir, bn + TString("invMass"), false); 
 
   /* the histograms are not owned */
   bOwnTheHistograms = false;
