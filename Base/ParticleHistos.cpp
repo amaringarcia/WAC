@@ -141,7 +141,7 @@ void ParticleHistos::loadHistograms(TDirectory* dir)
       h_n1_ptPhiY = loadH3(dir, bn + TString("n1_ptPhiY"), true);
     }
   }
-  hp_n1_vsC = loadProfile(dir, bn + TString("n1_vsC"), true);
+  hp_n1_vsC = loadProfile(dir, bn + TString("n1_vsC"), false);
 
 
   /* the histograms are not owned */
