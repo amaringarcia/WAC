@@ -44,6 +44,7 @@ class ParticlePairDiffHistos : public Histograms
   void getPratt(ParticleType1& particle1, ParticleType2& particle2, double& kT, double& qinv, double& qlong, double& qside, double& qout);
   template <AnalysisConfiguration::RapidityPseudoRapidity r, typename ParticleType1, typename ParticleType2>
   void fill(ParticleType1& particle1, ParticleType2& particle2, double weight1, double weight2, double pTavg1 = 0.0, double pTavg2 = 0.0);
+  void fillPairsProfile(double centrality, double nAcceptedPairs, double weight);
   void loadHistograms(TDirectory* dir);
 
   ////////////////////////////////////////////////////////////////////////////
@@ -60,6 +61,8 @@ class ParticlePairDiffHistos : public Histograms
   TProfile2D* p_n2_DyDphi;
   TH2* h_ptpt_DyDphi;
   TH2* h_dptdpt_DyDphi;
+  
+  TProfile * hp_n2_vsC;
 
   TH2* h_n2_QinvKt;
   TH2* h_n2_QlongKt;
@@ -78,8 +81,17 @@ class ParticlePairDiffHistos : public Histograms
   TH3* h_dptdpt_QlongQsideQout;
 
   TH1* h_invMass;
+  TH2* h_Pi0GG_DetaDphi;
+  TH2* h_Pi0GG_DyDphi;
+  TH2* h_Pi0GGSide_DetaDphi;
+  TH2* h_Pi0GGSide_DyDphi;
 
-  ClassDef(ParticlePairDiffHistos, 4)
+  TH2* h_EtaGG_DetaDphi;
+  TH2* h_EtaGG_DyDphi;
+  TH2* h_EtaGGSide_DetaDphi;
+  TH2* h_EtaGGSide_DyDphi;
+
+  ClassDef(ParticlePairDiffHistos, 6)
 };
 
 /// WARNING: for performance reasons no checks are done about the consistency
@@ -191,6 +203,15 @@ void ParticlePairDiffHistos::fill(ParticleType1& particle1, ParticleType2& parti
   float deltayeta = getDeltaYEta<r>(particle1, particle2);
   float deltaphi = getDeltaPhi<r>(particle1, particle2);
 
+  float invMass = getInvMass(particle1, particle2);
+  h_invMass->Fill(invMass);
+  float pi0Mass = 0.134977;  // pi0 invariant mass
+  float sideMass= 0.01;     //  offset for side window
+  float deltaMass = 0.002;  //  width of the mass window 
+
+  float etaMass = 0.547862;  // eta invariant mass
+
+
   if constexpr (r == AnalysisConfiguration::kRapidity) {
     h_n2_DyDphi->AddBinContent(globalyetabinno, weight1 * weight2);
     p_n2_DyDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
@@ -199,6 +220,16 @@ void ParticlePairDiffHistos::fill(ParticleType1& particle1, ParticleType2& parti
     h_n2_DyDphi->SetEntries(h_n2_ptPt->GetEntries());
     h_ptpt_DyDphi->SetEntries(h_n2_ptPt->GetEntries());
     h_dptdpt_DyDphi->SetEntries(h_n2_ptPt->GetEntries());
+    if ( abs(invMass-pi0Mass)<deltaMass ){
+      h_Pi0GG_DyDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
+    }else if ( abs(invMass-pi0Mass-sideMass)<2*deltaMass   ){
+      h_Pi0GGSide_DyDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
+    } else if ( abs(invMass-etaMass)<deltaMass ){
+      h_EtaGG_DyDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
+    }else if ( abs(invMass-etaMass-sideMass)<2*deltaMass   ){
+      h_EtaGGSide_DyDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
+    }
+
   } else {
     h_n2_ptPt->Fill(particle1.pt, particle2.pt, weight1 * weight2);
     p_n2_DetaDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
@@ -208,9 +239,19 @@ void ParticlePairDiffHistos::fill(ParticleType1& particle1, ParticleType2& parti
     h_n2_DetaDphi->SetEntries(h_n2_ptPt->GetEntries());
     h_ptpt_DetaDphi->SetEntries(h_n2_ptPt->GetEntries());
     h_dptdpt_DetaDphi->SetEntries(h_n2_ptPt->GetEntries());
+    if ( abs(invMass-pi0Mass)<deltaMass ){
+       h_Pi0GG_DetaDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
+    } else if (abs(invMass-pi0Mass-sideMass)<2*deltaMass   ){
+      h_Pi0GGSide_DetaDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
+    } else if (	abs(invMass-etaMass)<deltaMass ){
+      h_EtaGG_DetaDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
+    } else if ( abs(invMass-etaMass-sideMass)<2*deltaMass   ){
+      h_EtaGGSide_DetaDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
+    }
+
+
   }
 
-  h_invMass->Fill(getInvMass(particle1, particle2));
 
   /* TODO: this has to be templated */
   if ((AnalysisConfiguration*)getConfiguration()->fillPratt) {

@@ -30,7 +30,8 @@ TwoPartDiffCorrelationAnalyzer<r>::TwoPartDiffCorrelationAnalyzer(const TString&
     nAccepted(particleFilters.size()),
     event_Histos(nullptr),
     particle_Histos{particleFilters.size(), nullptr},
-    pairs_Histos{particleFilters.size(), {particleFilters.size(), nullptr}}
+    pairs_Histos{particleFilters.size(), {particleFilters.size(), nullptr}},
+    nAcceptedPairs(particleFilters.size(),std::vector<int>(particleFilters.size(),0))
 {
   if (reportDebug())
     cout << "TwoPartDiffCorrelationAnalyzer::CTOR(...) Started." << endl;
@@ -384,6 +385,14 @@ void TwoPartDiffCorrelationAnalyzer<r>::execute()
   for (uint i = 0; i < partNames.size(); ++i) {
     nAccepted[i] = 0;
   }
+
+  for (uint i = 0; i < partNames.size(); ++i) {
+    for (uint j = 0; j < partNames.size(); ++j) {
+      nAcceptedPairs[i][j] = 0;
+    }
+  }
+
+
   for (int iParticle = 0; iParticle < event->getNParticles(); iParticle++) {
     if (reportDebug())
       cout << "TwoPartDiffCorrelationAnalyzer::analyze(...) particle: " << iParticle << endl;
@@ -403,8 +412,11 @@ void TwoPartDiffCorrelationAnalyzer<r>::execute()
       cout << "  accepted as: " << particleFilters[particle->ixID]->getName() << endl;
     }
   }
+
+	
   for (uint i = 0; i < partNames.size(); ++i) {
     particle_Histos[i]->fillMultiplicity(nAccepted[i], 1.0);
+    particle_Histos[i]->fillMultiplicityProfile(event->getMultiplicityClass(),nAccepted[i], 1.0);
   }
 
   /* now process pairs if required */
@@ -423,9 +435,18 @@ void TwoPartDiffCorrelationAnalyzer<r>::execute()
           continue;
 
         pairs_Histos[ixID1][ixID2]->fill<r>(particle1, particle2, 1.0, 1.0);
+        nAcceptedPairs[ixID1][ixID2] += 1;
       }
     }
   }
+
+  for (uint i = 0; i < partNames.size(); ++i) {
+    for (uint j = 0; j < partNames.size(); ++j) {
+      pairs_Histos[i][j]->fillPairsProfile(event->getMultiplicityClass(),nAcceptedPairs[i][j], 1.0);
+    }
+  }
+
+  // Fill here the profiles
   eventsProcessed++;
   if (reportDebug())
     cout << "TwoPartDiffCorrelationAnalyzer::execute() Completed" << endl;

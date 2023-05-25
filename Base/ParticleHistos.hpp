@@ -32,6 +32,7 @@ class ParticleHistos : public Histograms
   void fill(TLorentzVector& p, double weight);
   void completeFill();
   void fillMultiplicity(double nAccepted, double weight);
+  void fillMultiplicityProfile(double centrality, double nAccepted, double weight);
   void calculateAverages();
 
   ////////////////////////////////////////////////////////////////////////////
@@ -61,8 +62,9 @@ class ParticleHistos : public Histograms
   TH2* h_spt_phiY;
   TH1* h_pt_y;
   TH2* h_pt_phiY;
+  TProfile * hp_n1_vsC;
 
-  ClassDef(ParticleHistos, 3)
+  ClassDef(ParticleHistos, 4)
 };
 
 template <AnalysisConfiguration::RapidityPseudoRapidity r>

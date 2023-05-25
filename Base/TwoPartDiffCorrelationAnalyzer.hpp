@@ -62,11 +62,13 @@ class TwoPartDiffCorrelationAnalyzer : public Task
   EventHistos* event_Histos;
   std::vector<ParticleHistos*> particle_Histos;
   std::vector<std::vector<ParticlePairDerivedDiffHistos*>> pairs_Histos;
+
+  std::vector<std::vector<int>> nAcceptedPairs;
   std::vector<std::vector<ParticlePairCombinedDiffHistos*>> pairs_CIHistos;
   std::vector<std::vector<ParticlePairCombinedDiffHistos*>> pairs_CDHistos;
   std::vector<std::vector<ParticlePairBalanceFunctionDiffHistos*>> pairs_BFHistos;
 
-  ClassDef(TwoPartDiffCorrelationAnalyzer, 2)
+  ClassDef(TwoPartDiffCorrelationAnalyzer, 3)
 };
 
 #endif /* TwoPartDiffCorrelationAnalyzer_hpp */
