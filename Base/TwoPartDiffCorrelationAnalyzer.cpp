@@ -27,11 +27,11 @@ TwoPartDiffCorrelationAnalyzer<r>::TwoPartDiffCorrelationAnalyzer(const TString&
   : Task(name, configuration, event),
     eventFilter(ef),
     particleFilters(particleFilters),
-    nAccepted(particleFilters.size()),
+    nAccepted(particleFilters.size(), 0),
+    nAcceptedPairs{particleFilters.size(), std::vector<int>(particleFilters.size(), 0)},
     event_Histos(nullptr),
     particle_Histos{particleFilters.size(), nullptr},
-    pairs_Histos{particleFilters.size(), {particleFilters.size(), nullptr}},
-    nAcceptedPairs(particleFilters.size(),std::vector<int>(particleFilters.size(),0))
+    pairs_Histos{particleFilters.size(), {particleFilters.size(), nullptr}}
 {
   if (reportDebug())
     cout << "TwoPartDiffCorrelationAnalyzer::CTOR(...) Started." << endl;
@@ -384,6 +384,9 @@ void TwoPartDiffCorrelationAnalyzer<r>::execute()
   /* process the singles building the particle indexes to hurry up the pairs process */
   for (uint i = 0; i < partNames.size(); ++i) {
     nAccepted[i] = 0;
+    for (uint j = 0; j < partNames.size(); ++j) {
+      nAcceptedPairs[i][j] = 0;
+    }
   }
 
   for (uint i = 0; i < partNames.size(); ++i) {
@@ -413,12 +416,6 @@ void TwoPartDiffCorrelationAnalyzer<r>::execute()
     }
   }
 
-	
-  for (uint i = 0; i < partNames.size(); ++i) {
-    particle_Histos[i]->fillMultiplicity(nAccepted[i], 1.0);
-    particle_Histos[i]->fillMultiplicityProfile(event->getMultiplicityClass(),nAccepted[i], 1.0);
-  }
-
   /* now process pairs if required */
   if (analysisConfiguration->fillPairs) {
     for (int iParticle1 = 0; iParticle1 < event->getNParticles(); iParticle1++) {
@@ -439,10 +436,12 @@ void TwoPartDiffCorrelationAnalyzer<r>::execute()
       }
     }
   }
-
   for (uint i = 0; i < partNames.size(); ++i) {
-    for (uint j = 0; j < partNames.size(); ++j) {
-      pairs_Histos[i][j]->fillPairsProfile(event->getMultiplicityClass(),nAcceptedPairs[i][j], 1.0);
+    particle_Histos[i]->fillEventWiseInfo(event->getMultiplicityClass(), nAccepted[i], 1.0);
+    if (analysisConfiguration->fillPairs) {
+      for (uint j = 0; j < partNames.size(); ++j) {
+        pairs_Histos[i][j]->fillEventWiseInfo(event->getMultiplicityClass(),nAcceptedPairs[i][j], 1.0);
+      }
     }
   }
 

@@ -6,7 +6,6 @@
 //  Copyright © 2016 Claude Pruneau. All rights reserved.
 //
 
-#include "TLorentzVector.h"
 #include "ParticleHistos.hpp"
 ClassImp(ParticleHistos)
 
@@ -38,6 +37,7 @@ void ParticleHistos::createHistograms()
   AnalysisConfiguration& ac = *getConfiguration();
   TString bn = getHistoBaseName();
   h_n1 = createHistogram(bn + TString("n1"), 1000, -0.5, 999.5, "n_1", "N", scaled, saved, plotted, notPrinted);
+  p_n1_vsC = createProfile(bn + TString("n1_vsC"), 101, -0.5,100.5, "Centrality/Multiplicity (%)", "#LTn_{1}#GT", saved, notPlotted, notPrinted);
   h_n1_pid = createHistogram(bn + TString("n1_pid"), 100, 0.5, 100.5, "PID", "N", scaled, saved, plotted, notPrinted);
   if (ac.bin_edges_pt.size() > 0) {
     h_n1_pt = createHistogram(bn + TString("n1_pt"), ac.bin_edges_pt, "p_{T}", "N", scaled, saved, plotted, notPrinted);
@@ -77,9 +77,6 @@ void ParticleHistos::createHistograms()
     h_pt_phiY = createHistogram(bn + TString("pt1_phiY"), ac.nBins_y, ac.min_y, ac.max_y, ac.nBins_phi, ac.min_phi, ac.max_phi, "y", "#varphi", "#LTp_{T}#GT", notScaled, saved, notPlotted, notPrinted);
   }
 
-  hp_n1_vsC = createProfile(bn + TString("n1_vsC"), 100, 0.0,100.0, "Centrality", "N", saved, notPlotted, notPrinted);
-
- 
   if (ac.fill3D) {
     if (ac.fillYorEta == ac.kPseudorapidity) {
       h_n1_ptPhiEta = createHistogram(bn + TString("n1_ptPhiEta"),
@@ -111,6 +108,7 @@ void ParticleHistos::loadHistograms(TDirectory* dir)
   AnalysisConfiguration& ac = *getConfiguration();
   TString bn = getHistoBaseName();
   h_n1 = loadH1(dir, bn + TString("n1"), true);
+  p_n1_vsC = loadProfile(dir, bn + TString("n1_vsC"), false);
   h_n1_pid = loadH1(dir, bn + TString("n1_pid"), true);
   h_n1_pt = loadH1(dir, bn + TString("n1_pt"), true);
   h_n1_ptXS = loadH1(dir, bn + TString("n1_ptXS"), true);
@@ -141,29 +139,17 @@ void ParticleHistos::loadHistograms(TDirectory* dir)
       h_n1_ptPhiY = loadH3(dir, bn + TString("n1_ptPhiY"), true);
     }
   }
-  hp_n1_vsC = loadProfile(dir, bn + TString("n1_vsC"), false);
-
 
   /* the histograms are not owned */
   bOwnTheHistograms = false;
   return;
 }
 
-void ParticleHistos::fillMultiplicity(double nAccepted, double weight)
+void ParticleHistos::fillEventWiseInfo(float multiplicity, double nAccepted, float weight)
 {
   h_n1->Fill(nAccepted, weight);
+  p_n1_vsC->Fill(multiplicity, nAccepted, weight);
 }
-
-void ParticleHistos::fillMultiplicityProfile(double multiplicity, double nAccepted, double weight)
-{
-  hp_n1_vsC->Fill(multiplicity,nAccepted);
-}
-
-
-//void ParticleHistos::fillPairsProfile(double multiplicity, double nAcceptedPairs, double weight)
-//{
-//  hp_n2_vsC->Fill(multiplicity,nAcceptedPairs);
-//}
 
 // complete filling the addicional histograms by projecting the
 // higher dimensional ones

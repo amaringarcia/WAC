@@ -44,13 +44,14 @@ class ParticlePairDiffHistos : public Histograms
   void getPratt(ParticleType1& particle1, ParticleType2& particle2, double& kT, double& qinv, double& qlong, double& qside, double& qout);
   template <AnalysisConfiguration::RapidityPseudoRapidity r, typename ParticleType1, typename ParticleType2>
   void fill(ParticleType1& particle1, ParticleType2& particle2, double weight1, double weight2, double pTavg1 = 0.0, double pTavg2 = 0.0);
-  void fillPairsProfile(double centrality, double nAcceptedPairs, double weight);
   void loadHistograms(TDirectory* dir);
+  void fillEventWiseInfo(float multiplicity, double nAccepted, float weight);
 
   ////////////////////////////////////////////////////////////////////////////
   // Data Members - Histograms
   ////////////////////////////////////////////////////////////////////////////
   TH2* h_n2_ptPt;
+  TProfile* p_n2_vsC;
 
   TH2* h_n2_DetaDphi;
   TProfile2D* p_n2_DetaDphi;
@@ -62,8 +63,6 @@ class ParticlePairDiffHistos : public Histograms
   TH2* h_ptpt_DyDphi;
   TH2* h_dptdpt_DyDphi;
   
-  TProfile * hp_n2_vsC;
-
   TH2* h_n2_QinvKt;
   TH2* h_n2_QlongKt;
   TH2* h_n2_QsideKt;
@@ -95,7 +94,6 @@ class ParticlePairDiffHistos : public Histograms
   TH2* h_PhiKK_DyDphi;
   TH2* h_PhiKKSide_DetaDphi;
   TH2* h_PhiKKSide_DyDphi;
-
 
   ClassDef(ParticlePairDiffHistos, 6)
 };
@@ -135,7 +133,7 @@ inline int ParticlePairDiffHistos::getGlobalDeltaYEtaDeltaPhiBin(ParticleType1& 
 }
 
 template <typename ParticleType1, typename ParticleType2>
-float ParticlePairDiffHistos::getInvMass(ParticleType1& particle1, ParticleType2& particle2)
+inline float ParticlePairDiffHistos::getInvMass(ParticleType1& particle1, ParticleType2& particle2)
 {
   double p1[4];
   double p2[4];
