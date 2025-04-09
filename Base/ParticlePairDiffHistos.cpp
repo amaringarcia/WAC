@@ -53,8 +53,11 @@ ParticlePairDiffHistos::ParticlePairDiffHistos(const TString& name,
     h_EtaGG_DetaDphi(nullptr),
     h_EtaGG_DyDphi(nullptr),
     h_EtaGGSide_DetaDphi(nullptr),
-    h_EtaGGSide_DyDphi(nullptr)
-
+    h_EtaGGSide_DyDphi(nullptr),
+    h_PhiKK_DetaDphi(nullptr),
+    h_PhiKK_DyDphi(nullptr),
+    h_PhiKKSide_DetaDphi(nullptr),
+    h_PhiKKSide_DyDphi(nullptr)
 {
   if (reportDebug())
     cout << "ParticlePairDiffHistos::CTOR() Started." << endl;
@@ -101,7 +104,11 @@ ParticlePairDiffHistos::ParticlePairDiffHistos(TDirectory* dir,
     h_EtaGG_DetaDphi(nullptr),
     h_EtaGG_DyDphi(nullptr),
     h_EtaGGSide_DetaDphi(nullptr),
-    h_EtaGGSide_DyDphi(nullptr)
+    h_EtaGGSide_DyDphi(nullptr),
+    h_PhiKK_DetaDphi(nullptr),
+    h_PhiKK_DyDphi(nullptr),
+    h_PhiKKSide_DetaDphi(nullptr),
+    h_PhiKKSide_DyDphi(nullptr) 
 
 {
   dir->cd();
@@ -170,6 +177,8 @@ void ParticlePairDiffHistos::initialize()
     h_Pi0GGSide_DetaDphi = createHistogram(bn + TString("Pi0GGSide_DetaDphi"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta#eta", "#Delta#varphi", "<n_{2}>", scaled, saved, notPlotted, notPrinted, false);
     h_EtaGG_DetaDphi = createHistogram(bn + TString("EtaGG_DetaDphi"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta#eta", "#Delta#varphi", "<n_{2}>", scaled, saved, notPlotted, notPrinted, false);
     h_EtaGGSide_DetaDphi = createHistogram(bn + TString("EtaGGSide_DetaDphi"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta#eta", "#Delta#varphi", "<n_{2}>", scaled, saved, notPlotted, notPrinted, false);
+    h_PhiKK_DetaDphi = createHistogram(bn + TString("PhiKK_DetaDphi"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta#eta", "#Delta#varphi", "<n_{2}>", scaled, saved, notPlotted, notPrinted, false);
+    h_PhiKKSide_DetaDphi = createHistogram(bn + TString("PhiKKSide_DetaDphi"), ac.nBins_Deta, ac.min_Deta, ac.max_Deta, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta#eta", "#Delta#varphi", "<n_{2}>", scaled, saved, notPlotted, notPrinted, false);
 
     /* big histograms are forced to be created without sumw2 structure for it will not be used */
     h_n2_DetaDphi->SetBit(TH1::kIsNotW);
@@ -186,6 +195,15 @@ void ParticlePairDiffHistos::initialize()
     h_Pi0GGSide_DetaDphi->SetBit(TH1::kIsNotW);
     h_Pi0GGSide_DetaDphi->Sumw2(false);
 
+    h_EtaGG_DetaDphi->SetBit(TH1::kIsNotW);
+    h_EtaGG_DetaDphi->Sumw2(false);
+    h_EtaGGSide_DetaDphi->SetBit(TH1::kIsNotW);
+    h_EtaGGSide_DetaDphi->Sumw2(false);
+
+    h_PhiKK_DetaDphi->SetBit(TH1::kIsNotW);
+    h_PhiKK_DetaDphi->Sumw2(false);
+    h_PhiKKSide_DetaDphi->SetBit(TH1::kIsNotW);
+    h_PhiKKSide_DetaDphi->Sumw2(false);
 
   }
   if (ac.fillYorEta == ac.kRapidity) {
@@ -198,6 +216,8 @@ void ParticlePairDiffHistos::initialize()
     h_Pi0GGSide_DyDphi = createHistogram(bn + TString("Pi0GGSide_DyDphi"), ac.nBins_Dy, ac.min_Dy, ac.max_Dy, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta y", "#Delta#varphi", "<n_{2}>", scaled, saved, notPlotted, notPrinted, false);
     h_EtaGG_DyDphi = createHistogram(bn + TString("EtaGG_DyDphi"), ac.nBins_Dy, ac.min_Dy, ac.max_Dy, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta y", "#Delta#varphi", "<n_{2}>", scaled, saved, notPlotted, notPrinted, false);
     h_EtaGGSide_DyDphi = createHistogram(bn + TString("EtaGGSide_DyDphi"), ac.nBins_Dy, ac.min_Dy, ac.max_Dy, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta y", "#Delta#varphi", "<n_{2}>", scaled, saved, notPlotted, notPrinted, false);
+    h_PhiKK_DyDphi = createHistogram(bn + TString("PhiKK_DyDphi"), ac.nBins_Dy, ac.min_Dy, ac.max_Dy, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta y", "#Delta#varphi", "<n_{2}>", scaled, saved, notPlotted, notPrinted, false);
+    h_PhiKKSide_DyDphi = createHistogram(bn + TString("PhiKKSide_DyDphi"), ac.nBins_Dy, ac.min_Dy, ac.max_Dy, ac.nBins_Dphi, ac.min_Dphi, ac.max_Dphi, "#Delta y", "#Delta#varphi", "<n_{2}>", scaled, saved, notPlotted, notPrinted, false);
 
 
     /* big histograms are forced to be created without sumw2 structure for it will not be used */
@@ -218,6 +238,10 @@ void ParticlePairDiffHistos::initialize()
     h_EtaGG_DyDphi->Sumw2(false);
     h_EtaGGSide_DyDphi->SetBit(TH1::kIsNotW);
     h_EtaGGSide_DyDphi->Sumw2(false);
+    h_PhiKK_DyDphi->SetBit(TH1::kIsNotW);
+    h_PhiKK_DyDphi->Sumw2(false);
+    h_PhiKKSide_DyDphi->SetBit(TH1::kIsNotW);
+    h_PhiKKSide_DyDphi->Sumw2(false);
 
 
 
@@ -325,6 +349,9 @@ void ParticlePairDiffHistos::loadHistograms(TDirectory* dir)
     h_EtaGG_DetaDphi = loadH2(dir, bn + TString("EtaGG_DetaDphi"), false);
     h_EtaGGSide_DetaDphi = loadH2(dir, bn + TString("EtaGGSide_DetaDphi"), false);
 
+    h_PhiKK_DetaDphi = loadH2(dir, bn + TString("PhiKK_DetaDphi"), false);
+    h_PhiKKSide_DetaDphi = loadH2(dir, bn + TString("PhiKKSide_DetaDphi"), false);
+
   }
 
   if (ac.fillYorEta == ac.kRapidity) {
@@ -337,6 +364,8 @@ void ParticlePairDiffHistos::loadHistograms(TDirectory* dir)
     h_Pi0GGSide_DyDphi = loadH2(dir, bn + TString("Pi0GGSide_DyDphi"), false);
     h_EtaGG_DyDphi = loadH2(dir, bn + TString("EtaGG_DyDphi"), false);
     h_EtaGGSide_DyDphi = loadH2(dir, bn + TString("EtaGGSide_DyDphi"), false);
+    h_PhiKK_DyDphi = loadH2(dir, bn + TString("PhiKK_DyDphi"), false);
+    h_PhiKKSide_DyDphi = loadH2(dir, bn + TString("PhiKKSide_DyDphi"), false);
 
 
   }

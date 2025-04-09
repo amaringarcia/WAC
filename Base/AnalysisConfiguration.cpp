@@ -99,9 +99,9 @@ ClassImp(AnalysisConfiguration)
     nBins_cent(20),
     min_cent(0.0),
     max_cent(100.0),
-    nBins_invMass(500),
+    nBins_invMass(550),
     minInvMass(0.),
-    maxInvMass(1.)
+    maxInvMass(1.1)
 {
   max_phi = TMath::TwoPi();
   range_phi = TMath::TwoPi();

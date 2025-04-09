@@ -91,6 +91,12 @@ class ParticlePairDiffHistos : public Histograms
   TH2* h_EtaGGSide_DetaDphi;
   TH2* h_EtaGGSide_DyDphi;
 
+  TH2* h_PhiKK_DetaDphi;
+  TH2* h_PhiKK_DyDphi;
+  TH2* h_PhiKKSide_DetaDphi;
+  TH2* h_PhiKKSide_DyDphi;
+
+
   ClassDef(ParticlePairDiffHistos, 6)
 };
 
@@ -206,10 +212,18 @@ void ParticlePairDiffHistos::fill(ParticleType1& particle1, ParticleType2& parti
   float invMass = getInvMass(particle1, particle2);
   h_invMass->Fill(invMass);
   float pi0Mass = 0.134977;  // pi0 invariant mass
-  float sideMass= 0.01;     //  offset for side window
+  float sidePi0MassR= 0.140;     //  right mass
+  float sidePi0MassL= 0.130;     //  left mass
   float deltaMass = 0.002;  //  width of the mass window 
 
   float etaMass = 0.547862;  // eta invariant mass
+  float sideEtaMassR= 0.552;     //  right mass
+  float sideEtaMassL= 0.542;     //  left mass
+
+  float phiMass = 1.02;  // phi invariant mass
+  float sidePhiMassR= 1.035;     //  right mass
+  float sidePhiMassL= 1.005;     //  left mass
+
 
 
   if constexpr (r == AnalysisConfiguration::kRapidity) {
@@ -222,14 +236,23 @@ void ParticlePairDiffHistos::fill(ParticleType1& particle1, ParticleType2& parti
     h_dptdpt_DyDphi->SetEntries(h_n2_ptPt->GetEntries());
     if ( abs(invMass-pi0Mass)<deltaMass ){
       h_Pi0GG_DyDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
-    }else if ( abs(invMass-pi0Mass-sideMass)<2*deltaMass   ){
+    }else if ( abs(invMass-sidePi0MassR)<deltaMass   ){
+      h_Pi0GGSide_DyDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
+    }else if ( abs(invMass-sidePi0MassL)<deltaMass   ){
       h_Pi0GGSide_DyDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
     } else if ( abs(invMass-etaMass)<deltaMass ){
       h_EtaGG_DyDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
-    }else if ( abs(invMass-etaMass-sideMass)<2*deltaMass   ){
+    }else if ( abs(invMass-sideEtaMassR)<deltaMass   ){
       h_EtaGGSide_DyDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
-    }
-
+    }else if ( abs(invMass-sideEtaMassL)<deltaMass   ){
+      h_EtaGGSide_DyDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
+    }else if ( abs(invMass-phiMass)<2*deltaMass ){
+      h_PhiKK_DyDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
+    }else if ( abs(invMass-sidePhiMassR)<2*deltaMass   ){
+      h_PhiKKSide_DyDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
+    }else if ( abs(invMass-sidePhiMassL)<2*deltaMass   ){
+      h_PhiKKSide_DyDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
+    } 
   } else {
     h_n2_ptPt->Fill(particle1.pt, particle2.pt, weight1 * weight2);
     p_n2_DetaDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
@@ -241,14 +264,23 @@ void ParticlePairDiffHistos::fill(ParticleType1& particle1, ParticleType2& parti
     h_dptdpt_DetaDphi->SetEntries(h_n2_ptPt->GetEntries());
     if ( abs(invMass-pi0Mass)<deltaMass ){
        h_Pi0GG_DetaDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
-    } else if (abs(invMass-pi0Mass-sideMass)<2*deltaMass   ){
+    } else if (abs(invMass-sidePi0MassR)<deltaMass   ){
+      h_Pi0GGSide_DetaDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
+    } else if (abs(invMass-sidePi0MassL)<deltaMass   ){
       h_Pi0GGSide_DetaDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
     } else if (	abs(invMass-etaMass)<deltaMass ){
       h_EtaGG_DetaDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
-    } else if ( abs(invMass-etaMass-sideMass)<2*deltaMass   ){
+    } else if ( abs(invMass-sideEtaMassR)<deltaMass   ){
       h_EtaGGSide_DetaDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
+    } else if ( abs(invMass-sideEtaMassL)<deltaMass   ){
+      h_EtaGGSide_DetaDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
+    } else if ( abs(invMass-phiMass)<2*deltaMass ){
+      h_PhiKK_DetaDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
+    } else if ( abs(invMass-sidePhiMassR)<2*deltaMass   ){
+      h_PhiKKSide_DetaDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
+    } else if ( abs(invMass-sidePhiMassL)<2*deltaMass   ){
+      h_PhiKKSide_DetaDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
     }
-
 
   }
 
