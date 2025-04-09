@@ -140,7 +140,7 @@ class AnalysisConfiguration : public TaskConfiguration
   float minInvMass;
   float maxInvMass;
 
-  ClassDef(AnalysisConfiguration, 0)
+  ClassDef(AnalysisConfiguration, 1)
 };
 
 template <AnalysisConfiguration::RapidityPseudoRapidity r>

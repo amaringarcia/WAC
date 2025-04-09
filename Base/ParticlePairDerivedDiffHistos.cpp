@@ -351,8 +351,8 @@ void ParticlePairDerivedDiffHistos::calculateDerivedHistograms(ParticleHistos* p
     shiftY(*h_P2_DetaDphi, *h_P2_DetaDphi_shft, configuration->nBins_Dphi_shft);
 
     /* calculate BF component from R2 */
-    double rho1_1 = part1Histos->h_n1_phiEta->Integral() / (kTWOPI * (configuration->max_eta - configuration->min_eta));
-    double volume = kTWOPI * (configuration->max_eta - configuration->min_eta);
+    double rho1_1 = part1Histos->h_n1_phiEta->Integral();
+    double volume = kTWOPI * (part2Histos->h_n1_phiEta->GetXaxis()->GetBinUpEdge(part2Histos->h_n1_phiEta->GetNbinsX()) - part2Histos->h_n1_phiEta->GetXaxis()->GetBinLowEdge(1));
     h_R2bf12_DetaDphi_shft->Reset();
     h_R2bf12_DetaDphi_shft->Add(h_R2_DetaDphi_shft, rho1_1 / volume);
 
@@ -429,7 +429,7 @@ void ParticlePairDerivedDiffHistos::calculateDerivedHistograms(ParticleHistos* p
     shiftY(*h_P2_DyDphi, *h_P2_DyDphi_shft, configuration->nBins_Dphi_shft);
 
     /* calculate BF from R2 */
-    double rho1_1 = part1Histos->h_n1_phiY->Integral() / (kTWOPI * (configuration->max_y - configuration->min_y));
+    double rho1_1 = part1Histos->h_n1_phiY->Integral();
     double volume = kTWOPI * (configuration->max_y - configuration->min_y);
     h_R2bf12_DyDphi_shft->Reset();
     h_R2bf12_DyDphi_shft->Add(h_R2_DyDphi_shft, rho1_1 / volume);
