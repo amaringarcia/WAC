@@ -388,14 +388,6 @@ void TwoPartDiffCorrelationAnalyzer<r>::execute()
       nAcceptedPairs[i][j] = 0;
     }
   }
-
-  for (uint i = 0; i < partNames.size(); ++i) {
-    for (uint j = 0; j < partNames.size(); ++j) {
-      nAcceptedPairs[i][j] = 0;
-    }
-  }
-
-
   for (int iParticle = 0; iParticle < event->getNParticles(); iParticle++) {
     if (reportDebug())
       cout << "TwoPartDiffCorrelationAnalyzer::analyze(...) particle: " << iParticle << endl;
@@ -444,8 +436,6 @@ void TwoPartDiffCorrelationAnalyzer<r>::execute()
       }
     }
   }
-
-  // Fill here the profiles
   eventsProcessed++;
   if (reportDebug())
     cout << "TwoPartDiffCorrelationAnalyzer::execute() Completed" << endl;
