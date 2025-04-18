@@ -18,6 +18,7 @@
 #define WAC_ParticlePairHistos
 
 #include "Histograms.hpp"
+#include "Particle.hpp"
 
 class ParticlePairHistos : public Histograms
 {

@@ -198,7 +198,7 @@ void ParticlePairDerivedDiffHistos::reduce(const TH2* source, TH2* target, int n
 void ParticlePairDerivedDiffHistos::downscale(const TH2* source, TH2* target, int nEtaBins, int nPhiBins)
 {
   /* downscale to compensate the limited acceptance */
-  int dPhi, dEta, iPhi, iEta, jPhi, jEta, i, j;
+  int dPhi, dEta, iPhi, iEta, jPhi, jEta;
   int nWrk = nPhiBins * (2 * nEtaBins - 1);
   int index;
   double* denominator = new double[nWrk];
@@ -206,10 +206,8 @@ void ParticlePairDerivedDiffHistos::downscale(const TH2* source, TH2* target, in
     denominator[k] = 0;
   }
 
-  i = 1;
   for (iEta = 0; iEta < nEtaBins; ++iEta) {
     for (iPhi = 0; iPhi < nPhiBins; ++iPhi) {
-      j = 1;
       for (jEta = 0; jEta < nEtaBins; ++jEta) {
         for (jPhi = 0; jPhi < nPhiBins; ++jPhi) {
           dPhi = iPhi - jPhi;
@@ -219,10 +217,8 @@ void ParticlePairDerivedDiffHistos::downscale(const TH2* source, TH2* target, in
           dEta = iEta - jEta + nEtaBins;
           index = (dEta - 1) * nPhiBins + dPhi - 1;
           denominator[index] += 1.;
-          ++j;
         }
       }
-      ++i;
     }
   }
 
@@ -252,7 +248,7 @@ double ParticlePairDerivedDiffHistos::downscaleMax(int nEtaBins, int nPhiBins)
 {
   /* maximum downscale to compensate the limited acceptance */
   /* always presesrve the integral                  */
-  int dPhi, dEta, iPhi, iEta, jPhi, jEta, i, j;
+  int dPhi, dEta, iPhi, iEta, jPhi, jEta;
   int nWrk = nPhiBins * (2 * nEtaBins - 1);
   int index;
   double* denominator = new double[nWrk];
@@ -260,10 +256,8 @@ double ParticlePairDerivedDiffHistos::downscaleMax(int nEtaBins, int nPhiBins)
     denominator[k] = 0;
   }
 
-  i = 1;
   for (iEta = 0; iEta < nEtaBins; ++iEta) {
     for (iPhi = 0; iPhi < nPhiBins; ++iPhi) {
-      j = 1;
       for (jEta = 0; jEta < nEtaBins; ++jEta) {
         for (jPhi = 0; jPhi < nPhiBins; ++jPhi) {
           dPhi = iPhi - jPhi;
@@ -273,10 +267,8 @@ double ParticlePairDerivedDiffHistos::downscaleMax(int nEtaBins, int nPhiBins)
           dEta = iEta - jEta + nEtaBins;
           index = (dEta - 1) * nPhiBins + dPhi - 1;
           denominator[index] += 1.;
-          ++j;
         }
       }
-      ++i;
     }
   }
 

@@ -10,6 +10,7 @@
 #ifndef WAC_ParticleHistos
 #define WAC_ParticleHistos
 #include "Histograms.hpp"
+#include "Particle.hpp"
 #include "TLorentzVector.h"
 #include "AnalysisConfiguration.hpp"
 

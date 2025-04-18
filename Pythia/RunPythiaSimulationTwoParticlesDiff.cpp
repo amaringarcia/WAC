@@ -24,7 +24,7 @@ int nAnalysisTasks = 200;
 Task** analysisTasks;
 int iTask = 0;
 
-template <AnalysisConfiguration::RapidityPseudoRapidity r>
+template <AnalysisConfiguration::RapidityPseudoRapidity r, AnalysisConfiguration::FillPairOptions options>
 bool configureTasks(std::string efd,
                     const PythiaAnalysisConfiguration* conf,
                     AnalysisConfiguration* ac,
@@ -49,7 +49,7 @@ bool configureTasks(std::string efd,
   TString taskName = TString::Format(conf->taskname.c_str(), TString::Format("PairsFDRej%s", efd.c_str()).Data());
 
   /* the two-particle analyzer */
-  analysisTasks[iTask++] = new TwoPartDiffCorrelationAnalyzer<r>(taskName, ac, event, eventFilter, particleFilters);
+  analysisTasks[iTask++] = new TwoPartDiffCorrelationAnalyzer<r, options>(taskName, ac, event, eventFilter, particleFilters);
 
   /* single particle analysis filters and task if any */
   if (conf->tsingles.size() > 0) {
@@ -242,7 +242,8 @@ int main(int argc, char* argv[])
 
     ac->fillPairs = true;
     ac->fill3D = false;
-    ac->fillPratt = false;
+    ac->fillPratt = conf->fillpratt;
+    ac->fillInvariantMass = conf->fillinvmass;
     if (conf->inrapidity) {
       ac->fillYorEta = AnalysisConfiguration::kRapidity;
     } else {
@@ -267,12 +268,48 @@ int main(int argc, char* argv[])
         /* - after the charged particles the might come any number of neutral                                    */
         /* - the balance function produced for neutrals will not have any sense                                  */
         if (conf->inrapidity) {
-          if (!configureTasks<AnalysisConfiguration::kRapidity>(fd, conf, ac, eventFilter, event)) {
-            return 0;
+          if (conf->fillpratt || conf->fillinvmass) {
+            if (conf->fillinvmass) {
+              if (conf->fillpratt) {
+                if (!configureTasks<AnalysisConfiguration::kRapidity, AnalysisConfiguration::kFillPrattAndInvariantMass>(fd, conf, ac, eventFilter, event)) {
+                  return 0;
+                }
+              } else {
+                if (!configureTasks<AnalysisConfiguration::kRapidity, AnalysisConfiguration::kFillInvariantMass>(fd, conf, ac, eventFilter, event)) {
+                  return 0;
+                }
+              }
+            } else {
+              if (!configureTasks<AnalysisConfiguration::kRapidity, AnalysisConfiguration::kFillPratt>(fd, conf, ac, eventFilter, event)) {
+                return 0;
+              }
+            }
+          } else {
+            if (!configureTasks<AnalysisConfiguration::kRapidity, AnalysisConfiguration::kNoAdditionalOptions>(fd, conf, ac, eventFilter, event)) {
+              return 0;
+            }
           }
         } else {
-          if (!configureTasks<AnalysisConfiguration::kPseudorapidity>(fd, conf, ac, eventFilter, event)) {
-            return 0;
+          if (conf->fillpratt || conf->fillinvmass) {
+            if (conf->fillinvmass) {
+              if (conf->fillpratt) {
+                if (!configureTasks<AnalysisConfiguration::kPseudorapidity, AnalysisConfiguration::kFillPrattAndInvariantMass>(fd, conf, ac, eventFilter, event)) {
+                  return 0;
+                }
+              } else {
+                if (!configureTasks<AnalysisConfiguration::kPseudorapidity, AnalysisConfiguration::kFillInvariantMass>(fd, conf, ac, eventFilter, event)) {
+                  return 0;
+                }
+              }
+            } else {
+              if (!configureTasks<AnalysisConfiguration::kPseudorapidity, AnalysisConfiguration::kFillPratt>(fd, conf, ac, eventFilter, event)) {
+                return 0;
+              }
+            }
+          } else {
+            if (!configureTasks<AnalysisConfiguration::kPseudorapidity, AnalysisConfiguration::kNoAdditionalOptions>(fd, conf, ac, eventFilter, event)) {
+              return 0;
+            }
           }
         }
       }

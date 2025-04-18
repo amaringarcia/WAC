@@ -159,7 +159,7 @@ TList* extractMeanAndStDevFromSubSets(const TObjArray& listsarray, const TString
   return list;
 }
 
-template <AnalysisConfiguration::RapidityPseudoRapidity r>
+template <AnalysisConfiguration::RapidityPseudoRapidity r, AnalysisConfiguration::FillPairOptions options>
 TList* extractSampleResults(Option_t* opt, PythiaAnalysisConfiguration* conf, TFile* samplefile, AnalysisConfiguration* ac, int irap, std::string evfltr, int isample)
 {
   std::string feeddownrej = "none";
@@ -199,7 +199,7 @@ TList* extractSampleResults(Option_t* opt, PythiaAnalysisConfiguration* conf, TF
 
   /* the pairs taskname */
   TString taskName = TString::Format(conf->taskname.c_str(), TString::Format("PairsFDRej%s", feeddownrej.c_str()).Data());
-  TwoPartDiffCorrelationAnalyzer<r>* eventanalyzer = new TwoPartDiffCorrelationAnalyzer<r>(taskName.Data(), ac, event, eventFilter, particleFilters);
+  TwoPartDiffCorrelationAnalyzer<r, options>* eventanalyzer = new TwoPartDiffCorrelationAnalyzer<r, options>(taskName.Data(), ac, event, eventFilter, particleFilters);
 
   if (!TString(opt).Contains("verb"))
     eventanalyzer->setReportLevel(MessageLogger::Error);
@@ -468,9 +468,9 @@ int main(int argc, char* argv[])
       Warning("statUncertain", "Processing sample %d for centrality %s", isamp, ctitle);
       TList* list;
       if (conf->inrapidity) {
-        list = extractSampleResults<AnalysisConfiguration::kRapidity>(opt, conf, samplefile, ac, ixrap, ef, isamp);
+        list = extractSampleResults<AnalysisConfiguration::kRapidity, AnalysisConfiguration::kNoAdditionalOptions>(opt, conf, samplefile, ac, ixrap, ef, isamp);
       } else {
-        list = extractSampleResults<AnalysisConfiguration::kPseudorapidity>(opt, conf, samplefile, ac, ixrap, ef, isamp);
+        list = extractSampleResults<AnalysisConfiguration::kPseudorapidity, AnalysisConfiguration::kNoAdditionalOptions>(opt, conf, samplefile, ac, ixrap, ef, isamp);
       }
 
       for (Int_t ilst = 0; ilst < nmainlists; ++ilst) {

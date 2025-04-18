@@ -8,7 +8,6 @@
 
 #ifndef WAC_ParticlePairDerivedDiffHistos
 #define WAC_ParticlePairDerivedDiffHistos
-#include "Histograms.hpp"
 #include "ParticleHistos.hpp"
 #include "ParticlePairDiffHistos.hpp"
 

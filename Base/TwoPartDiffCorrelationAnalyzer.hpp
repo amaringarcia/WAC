@@ -27,7 +27,7 @@
 #include "ParticlePairBalanceFunctionDiffHistos.hpp"
 #include "ParticlePairCombinedDiffHistos.hpp"
 
-template <AnalysisConfiguration::RapidityPseudoRapidity r>
+template <AnalysisConfiguration::RapidityPseudoRapidity r, AnalysisConfiguration::FillPairOptions options>
 class TwoPartDiffCorrelationAnalyzer : public Task
 {
  public:
@@ -68,7 +68,7 @@ class TwoPartDiffCorrelationAnalyzer : public Task
   std::vector<std::vector<ParticlePairCombinedDiffHistos*>> pairs_CDHistos;
   std::vector<std::vector<ParticlePairBalanceFunctionDiffHistos*>> pairs_BFHistos;
 
-  ClassDef(TwoPartDiffCorrelationAnalyzer, 3)
+  ClassDef(TwoPartDiffCorrelationAnalyzer, 4)
 };
 
 #endif /* TwoPartDiffCorrelationAnalyzer_hpp */

@@ -90,6 +90,7 @@ ClassImp(AnalysisConfiguration)
     fillPairs(true),
     fillPratt(false),
     fill3D(false),
+    fillInvariantMass(false),
     fillYorEta(kPseudorapidity),
     nuDynVsMult(true),
     nuDynVsCent(false),
@@ -181,6 +182,7 @@ AnalysisConfiguration::AnalysisConfiguration(const AnalysisConfiguration& source
     fillPairs(source.fillPairs),
     fillPratt(source.fillPratt),
     fill3D(source.fill3D),
+    fillInvariantMass(source.fillInvariantMass),
     fillYorEta(source.fillYorEta),
     nuDynVsMult(source.nuDynVsMult),
     nuDynVsCent(source.nuDynVsCent),
@@ -267,6 +269,7 @@ AnalysisConfiguration& AnalysisConfiguration::operator=(const AnalysisConfigurat
   fillPairs = source.fillPairs;
   fillPratt = source.fillPratt;
   fill3D = source.fill3D;
+  fillInvariantMass = source.fillInvariantMass;
   fillYorEta = source.fillYorEta;
   nuDynVsMult = source.nuDynVsMult;
   nuDynVsCent = source.nuDynVsCent;
@@ -308,7 +311,11 @@ void AnalysisConfiguration::printConfiguration(ostream& os)
     << "                fillPairs: " << fillPairs << endl
     << "                fillPratt: " << fillPratt << endl
     << "                   fill3D: " << fill3D << endl
+    << "          fillInvariantMass" << fillInvariantMass << endl
     << "             fillY or eta: " << ((fillYorEta == kRapidity) ? "Y" : "eta") << endl
+    << "       nBinsInvariantMass: " << (fillInvariantMass ? nBins_invMass : 0) << endl
+    << "               minInvMass: " << (fillInvariantMass ? minInvMass : 0) << endl
+    << "               maxInvMass: " << (fillInvariantMass ? maxInvMass : 0) << endl
     << "        +- bin correction: " << binCorrPM << endl
     << "        -+ bin correction: " << binCorrMP << endl
     << "        ++ bin correction: " << binCorrPP << endl

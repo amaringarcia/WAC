@@ -49,6 +49,7 @@ const int nbf = 8;
 const char* bfnames[nbf] = {"R2BF", "R2BFPratt1bar2", "R2BFPrattbar12", "N2PrattBF", "N2PrattBF1bar2", "N2PrattBFbar12", "PrattBF1bar2", "PrattBFbar12"};
 
 #define LONGITUDINAL AnalysisConfiguration::kRapidity
+#define NOADDITIONALOPTIONS AnalysisConfiguration::kNoAdditionalOptions
 
 std::vector<std::string> centfname = {
   "MB"};
@@ -175,7 +176,7 @@ TList* extractSampleResults(Option_t* opt, AnalysisConfiguration* ac, int icent,
 
   Event *event = Event::getEvent();
 
-  TwoPartDiffCorrelationAnalyzer<LONGITUDINAL>* eventanalyzer = new TwoPartDiffCorrelationAnalyzer<LONGITUDINAL>("NarrowPiKaPrLa", ac, event, eventFilter, particleFilters);
+  TwoPartDiffCorrelationAnalyzer<LONGITUDINAL, NOADDITIONALOPTIONS>* eventanalyzer = new TwoPartDiffCorrelationAnalyzer<LONGITUDINAL, NOADDITIONALOPTIONS>("NarrowPiKaPrLa", ac, event, eventFilter, particleFilters);
 
   if (!TString(opt).Contains("verb"))
     eventanalyzer->setReportLevel(MessageLogger::Error);
@@ -384,6 +385,7 @@ int main(int argc, char* argv[])
     ac->fill3D = false;
     ac->fillPratt = false;
     ac->fillYorEta = LONGITUDINAL;
+    ac->fillInvariantMass = false;
 
     ac->scaleHistograms = true;
     ac->createHistograms = false;

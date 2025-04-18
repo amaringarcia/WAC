@@ -42,7 +42,7 @@ class ParticlePairDiffHistos : public Histograms
   float getInvMass(ParticleType1& particle1, ParticleType2& particle2);
   template <typename ParticleType1, typename ParticleType2>
   void getPratt(ParticleType1& particle1, ParticleType2& particle2, double& kT, double& qinv, double& qlong, double& qside, double& qout);
-  template <AnalysisConfiguration::RapidityPseudoRapidity r, typename ParticleType1, typename ParticleType2>
+  template <AnalysisConfiguration::RapidityPseudoRapidity r, AnalysisConfiguration::FillPairOptions options, typename ParticleType1, typename ParticleType2>
   void fill(ParticleType1& particle1, ParticleType2& particle2, double weight1, double weight2, double pTavg1 = 0.0, double pTavg2 = 0.0);
   void loadHistograms(TDirectory* dir);
   void fillEventWiseInfo(float multiplicity, double nAccepted, float weight);
@@ -62,7 +62,7 @@ class ParticlePairDiffHistos : public Histograms
   TProfile2D* p_n2_DyDphi;
   TH2* h_ptpt_DyDphi;
   TH2* h_dptdpt_DyDphi;
-  
+
   TH2* h_n2_QinvKt;
   TH2* h_n2_QlongKt;
   TH2* h_n2_QsideKt;
@@ -137,7 +137,6 @@ inline float ParticlePairDiffHistos::getInvMass(ParticleType1& particle1, Partic
 {
   double p1[4];
   double p2[4];
-  double p[4];
   double g[4] = {1.0, -1.0, -1.0, -1.0};
   double s = 0.0;
   float invMass = 0.0;
@@ -145,15 +144,13 @@ inline float ParticlePairDiffHistos::getInvMass(ParticleType1& particle1, Partic
   particle1.getEPxPyPz(p1);
   particle2.getEPxPyPz(p2);
   for (int i = 0; i < 4; ++i) {
-    p[i] = p1[i] + p2[i];
-    s += g[i] * p[i] * p[i];
+    s += g[i] * (p1[i] + p2[i]) * (p1[i] + p2[i]);
   }
   if (s>0){
    invMass = sqrt(s);
   }
   return invMass;
 }
-
 
 template <typename ParticleType1, typename ParticleType2>
 void ParticlePairDiffHistos::getPratt(ParticleType1& particle1, ParticleType2& particle2, double& kT, double& qinv, double& qlong, double& qside, double& qout)
@@ -200,29 +197,25 @@ void ParticlePairDiffHistos::getPratt(ParticleType1& particle1, ParticleType2& p
   }
 }
 
-template <AnalysisConfiguration::RapidityPseudoRapidity r, typename ParticleType1, typename ParticleType2>
+template <AnalysisConfiguration::RapidityPseudoRapidity r, AnalysisConfiguration::FillPairOptions options, typename ParticleType1, typename ParticleType2>
 void ParticlePairDiffHistos::fill(ParticleType1& particle1, ParticleType2& particle2, double weight1, double weight2, double pTavg1, double pTavg2)
 {
   int globalyetabinno = getGlobalDeltaYEtaDeltaPhiBin<r>(particle1, particle2);
   float deltayeta = getDeltaYEta<r>(particle1, particle2);
   float deltaphi = getDeltaPhi<r>(particle1, particle2);
 
-  float invMass = getInvMass(particle1, particle2);
-  h_invMass->Fill(invMass);
-  float pi0Mass = 0.134977;  // pi0 invariant mass
-  float sidePi0MassR= 0.140;     //  right mass
-  float sidePi0MassL= 0.130;     //  left mass
-  float deltaMass = 0.002;  //  width of the mass window 
+  constexpr float pi0Mass = 0.134977;   // pi0 invariant mass
+  constexpr float sidePi0MassR = 0.140; //  right mass
+  constexpr float sidePi0MassL = 0.130; //  left mass
+  constexpr float deltaMass = 0.002;    //  width of the mass window
 
-  float etaMass = 0.547862;  // eta invariant mass
-  float sideEtaMassR= 0.552;     //  right mass
-  float sideEtaMassL= 0.542;     //  left mass
+  constexpr float etaMass = 0.547862;   // eta invariant mass
+  constexpr float sideEtaMassR = 0.552; //  right mass
+  constexpr float sideEtaMassL = 0.542; //  left mass
 
-  float phiMass = 1.02;  // phi invariant mass
-  float sidePhiMassR= 1.035;     //  right mass
-  float sidePhiMassL= 1.005;     //  left mass
-
-
+  constexpr float phiMass = 1.02;       // phi invariant mass
+  constexpr float sidePhiMassR = 1.035; //  right mass
+  constexpr float sidePhiMassL = 1.005; //  left mass
 
   if constexpr (r == AnalysisConfiguration::kRapidity) {
     h_n2_ptPt->Fill(particle1.pt, particle2.pt, weight1 * weight2);
@@ -233,25 +226,31 @@ void ParticlePairDiffHistos::fill(ParticleType1& particle1, ParticleType2& parti
     h_n2_DyDphi->SetEntries(h_n2_ptPt->GetEntries());
     h_ptpt_DyDphi->SetEntries(h_n2_ptPt->GetEntries());
     h_dptdpt_DyDphi->SetEntries(h_n2_ptPt->GetEntries());
-    if ( abs(invMass-pi0Mass)<deltaMass ){
-      h_Pi0GG_DyDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
-    }else if ( abs(invMass-sidePi0MassR)<deltaMass   ){
-      h_Pi0GGSide_DyDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
-    }else if ( abs(invMass-sidePi0MassL)<deltaMass   ){
-      h_Pi0GGSide_DyDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
-    } else if ( abs(invMass-etaMass)<deltaMass ){
-      h_EtaGG_DyDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
-    }else if ( abs(invMass-sideEtaMassR)<deltaMass   ){
-      h_EtaGGSide_DyDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
-    }else if ( abs(invMass-sideEtaMassL)<deltaMass   ){
-      h_EtaGGSide_DyDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
-    }else if ( abs(invMass-phiMass)<2*deltaMass ){
-      h_PhiKK_DyDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
-    }else if ( abs(invMass-sidePhiMassR)<2*deltaMass   ){
-      h_PhiKKSide_DyDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
-    }else if ( abs(invMass-sidePhiMassL)<2*deltaMass   ){
-      h_PhiKKSide_DyDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
-    } 
+
+    if constexpr ((options & AnalysisConfiguration::kFillInvariantMass) == AnalysisConfiguration::kFillInvariantMass) {
+      float invMass = getInvMass(particle1, particle2);
+      h_invMass->Fill(invMass);
+
+      if (std::abs(invMass - pi0Mass) < deltaMass) {
+        h_Pi0GG_DyDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
+      } else if (std::abs(invMass - sidePi0MassR) < deltaMass) {
+        h_Pi0GGSide_DyDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
+      } else if (std::abs(invMass - sidePi0MassL) < deltaMass) {
+        h_Pi0GGSide_DyDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
+      } else if (std::abs(invMass - etaMass) < deltaMass) {
+        h_EtaGG_DyDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
+      } else if (std::abs(invMass - sideEtaMassR) < deltaMass) {
+        h_EtaGGSide_DyDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
+      } else if (std::abs(invMass - sideEtaMassL) < deltaMass) {
+        h_EtaGGSide_DyDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
+      } else if (std::abs(invMass - phiMass) < 2 * deltaMass) {
+        h_PhiKK_DyDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
+      } else if (std::abs(invMass - sidePhiMassR) < 2 * deltaMass) {
+        h_PhiKKSide_DyDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
+      } else if (std::abs(invMass - sidePhiMassL) < 2 * deltaMass) {
+        h_PhiKKSide_DyDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
+      }
+    }
   } else {
     h_n2_ptPt->Fill(particle1.pt, particle2.pt, weight1 * weight2);
     p_n2_DetaDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
@@ -261,31 +260,35 @@ void ParticlePairDiffHistos::fill(ParticleType1& particle1, ParticleType2& parti
     h_n2_DetaDphi->SetEntries(h_n2_ptPt->GetEntries());
     h_ptpt_DetaDphi->SetEntries(h_n2_ptPt->GetEntries());
     h_dptdpt_DetaDphi->SetEntries(h_n2_ptPt->GetEntries());
-    if ( abs(invMass-pi0Mass)<deltaMass ){
-       h_Pi0GG_DetaDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
-    } else if (abs(invMass-sidePi0MassR)<deltaMass   ){
-      h_Pi0GGSide_DetaDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
-    } else if (abs(invMass-sidePi0MassL)<deltaMass   ){
-      h_Pi0GGSide_DetaDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
-    } else if (	abs(invMass-etaMass)<deltaMass ){
-      h_EtaGG_DetaDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
-    } else if ( abs(invMass-sideEtaMassR)<deltaMass   ){
-      h_EtaGGSide_DetaDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
-    } else if ( abs(invMass-sideEtaMassL)<deltaMass   ){
-      h_EtaGGSide_DetaDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
-    } else if ( abs(invMass-phiMass)<2*deltaMass ){
-      h_PhiKK_DetaDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
-    } else if ( abs(invMass-sidePhiMassR)<2*deltaMass   ){
-      h_PhiKKSide_DetaDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
-    } else if ( abs(invMass-sidePhiMassL)<2*deltaMass   ){
-      h_PhiKKSide_DetaDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
-    }
 
+    if constexpr ((options & AnalysisConfiguration::kFillInvariantMass) == AnalysisConfiguration::kFillInvariantMass) {
+      float invMass = getInvMass(particle1, particle2);
+      h_invMass->Fill(invMass);
+
+      if (abs(invMass - pi0Mass) < deltaMass) {
+        h_Pi0GG_DetaDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
+      } else if (std::abs(invMass - sidePi0MassR) < deltaMass) {
+        h_Pi0GGSide_DetaDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
+      } else if (std::abs(invMass - sidePi0MassL) < deltaMass) {
+        h_Pi0GGSide_DetaDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
+      } else if (std::abs(invMass - etaMass) < deltaMass) {
+        h_EtaGG_DetaDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
+      } else if (std::abs(invMass - sideEtaMassR) < deltaMass) {
+        h_EtaGGSide_DetaDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
+      } else if (std::abs(invMass - sideEtaMassL) < deltaMass) {
+        h_EtaGGSide_DetaDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
+      } else if (std::abs(invMass - phiMass) < 2 * deltaMass) {
+        h_PhiKK_DetaDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
+      } else if (std::abs(invMass - sidePhiMassR) < 2 * deltaMass) {
+        h_PhiKKSide_DetaDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
+      } else if (std::abs(invMass - sidePhiMassL) < 2 * deltaMass) {
+        h_PhiKKSide_DetaDphi->Fill(deltayeta, deltaphi, weight1 * weight2);
+      }
+    }
   }
 
-
   /* TODO: this has to be templated */
-  if ((AnalysisConfiguration*)getConfiguration()->fillPratt) {
+  if constexpr ((options & AnalysisConfiguration::kFillPratt) == AnalysisConfiguration::kFillPratt) {
     double kT, Qinv, Qlong, Qside, Qout;
     getPratt(particle1, particle2, kT, Qinv, Qlong, Qside, Qout);
 

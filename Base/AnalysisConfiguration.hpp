@@ -11,8 +11,6 @@
 #define WAC_AnalysisConfiguration
 #include "TMath.h"
 #include "TaskConfiguration.hpp"
-#include "Particle.hpp"
-#include "EventPool.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Configuration of a given analysis
@@ -32,6 +30,13 @@ class AnalysisConfiguration : public TaskConfiguration
     kRapidity = 0,
     kPseudorapidity = 1
   } RapidityPseudoRapidity;
+
+  typedef enum {
+    kNoAdditionalOptions = 0,
+    kFillPratt = 1,
+    kFillInvariantMass = 2,
+    kFillPrattAndInvariantMass = 3,
+  } FillPairOptions;
 
   void printConfiguration(ostream& os);
   template <RapidityPseudoRapidity r>
@@ -123,6 +128,7 @@ class AnalysisConfiguration : public TaskConfiguration
   bool fillPairs;
   bool fillPratt;
   bool fill3D;
+  bool fillInvariantMass;
   RapidityPseudoRapidity fillYorEta;
 
   bool nuDynVsMult;
@@ -134,12 +140,12 @@ class AnalysisConfiguration : public TaskConfiguration
   double min_cent;
   double max_cent;
 
-  //Inv Mass
+  // tracking invariant mass
   int nBins_invMass;
   float minInvMass;
   float maxInvMass;
 
-  ClassDef(AnalysisConfiguration, 2)
+  ClassDef(AnalysisConfiguration, 3)
 };
 
 template <AnalysisConfiguration::RapidityPseudoRapidity r>

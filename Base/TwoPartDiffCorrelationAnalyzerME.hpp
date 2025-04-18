@@ -14,16 +14,13 @@
 #include <TParameter.h>
 #include "TFile.h"
 #include "TList.h"
-#include "Particle.hpp"
 #include "Task.hpp"
 #include "Event.hpp"
 #include "EventPool.hpp"
 #include "EventFilter.hpp"
 #include "EventHistos.hpp"
 #include "ParticleFilter.hpp"
-#include "ParticlePairFilter.hpp"
 #include "ParticleHistos.hpp"
-#include "ParticlePairDiffHistos.hpp"
 #include "ParticlePairDerivedDiffHistos.hpp"
 #include "ParticlePairBalanceFunctionDiffHistos.hpp"
 #include "ParticlePairCombinedDiffHistos.hpp"
@@ -31,7 +28,7 @@
 #define EVENTPOOLSIZE 10
 #define PARTICLESPEREVENT 2000
 
-template <AnalysisConfiguration::RapidityPseudoRapidity r>
+template <AnalysisConfiguration::RapidityPseudoRapidity r, AnalysisConfiguration::FillPairOptions>
 class TwoPartDiffCorrelationAnalyzerME : public Task
 {
  public:
@@ -77,7 +74,7 @@ class TwoPartDiffCorrelationAnalyzerME : public Task
   std::vector<std::vector<ParticlePairCombinedDiffHistos*>> pairs_CDHistos_me;
   std::vector<std::vector<ParticlePairBalanceFunctionDiffHistos*>> pairs_BFHistos_me;
 
-  ClassDef(TwoPartDiffCorrelationAnalyzerME, 3)
+  ClassDef(TwoPartDiffCorrelationAnalyzerME, 4)
 };
 
 #endif /* TwoPartDiffCorrelationAnalyzerME_hpp */

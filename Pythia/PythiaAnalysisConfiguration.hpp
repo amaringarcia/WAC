@@ -42,6 +42,8 @@ class PythiaAnalysisConfiguration : public TObject
   std::string gparticlefilter = "All";
   std::string gchargefilter = "All";
   bool inrapidity = true;
+  bool fillpratt = false;
+  bool fillinvmass = false;
   std::string outputfname = "PYTHIA8_Rapidity%03d";
   std::string taskname = "%s_All";
   std::string inputfile = "MultPercentile.root";
@@ -102,7 +104,7 @@ class PythiaAnalysisConfiguration : public TObject
     return new ParticleFilter<r>(getparticle(str), getcharge(str), getfeeddown(fdstr), ac->min_pt, ac->max_pt, ac->min_y, ac->max_y);
   }
 
-  ClassDef(PythiaAnalysisConfiguration, 2)
+  ClassDef(PythiaAnalysisConfiguration, 3)
 };
 
 #endif // PYTHIAANALYSISCONFIGURATION_H
