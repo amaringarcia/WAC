@@ -4,6 +4,8 @@
 .cproject
 .project
 .settings
+.cache
+.qtc_clangd
 *.user
 
 # install directories
