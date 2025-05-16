@@ -57,7 +57,7 @@ ClassImp(AnalysisConfiguration)
     binCorrMP(1.0),
     binCorrMM(1.0),
     binCorrPP(1.0),
-    nBins_Qinv(40),
+    nBins_Qinv(60),
     min_Qinv(0.0),
     max_Qinv(2.0),
     nBins_Qlong(20),

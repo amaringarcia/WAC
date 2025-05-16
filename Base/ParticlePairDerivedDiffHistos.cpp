@@ -420,7 +420,7 @@ void ParticlePairDerivedDiffHistos::calculateDerivedHistograms(ParticleHistos* p
     shiftY(*h_P2_DyDphi, *h_P2_DyDphi_shft, configuration->nBins_Dphi_shft);
 
     /* calculate BF from R2 */
-    double n1_2 = part1Histos->h_n1_phiY->Integral();
+    double n1_2 = part2Histos->h_n1_phiY->Integral();
     double volume = kTWOPI * (part2Histos->h_n1_phiY->GetXaxis()->GetBinUpEdge(part2Histos->h_n1_phiY->GetNbinsX()) - part2Histos->h_n1_phiY->GetXaxis()->GetBinLowEdge(1));
     h_R2bf12_DyDphi_shft->Reset();
     h_R2bf12_DyDphi_shft->Add(h_R2_DyDphi_shft, n1_2 / volume);
